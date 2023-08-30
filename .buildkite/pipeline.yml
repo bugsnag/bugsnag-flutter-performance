@@ -1,0 +1,7 @@
+agents:
+  queue: macos-12-arm
+
+steps:
+  - label: "Test"
+    commands:
+      - echo "Hello"
