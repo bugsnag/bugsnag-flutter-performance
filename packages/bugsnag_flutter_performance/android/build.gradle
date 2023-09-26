@@ -50,6 +50,12 @@ android {
         testImplementation 'org.mockito:mockito-core:5.0.0'
     }
 
+    buildTypes {
+        profile {
+            initWith debug
+        }
+    }
+
     testOptions {
         unitTests.all {
             useJUnitPlatform()
