@@ -2,23 +2,23 @@ FLUTTER_BIN?=flutter
 
 all: format build lint test
 
-.PHONY: clean build bump aar examples/flutter test format lint e2e_android_local e2e_ios_local
+.PHONY: clean build bump aar examples/bugsnag_performance_example test format lint e2e_android_local e2e_ios_local
 
 clean:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) clean --suppress-analytics
-	cd examples/flutter && $(FLUTTER_BIN) clean --suppress-analytics && \
+	cd examples/bugsnag_performance_example && $(FLUTTER_BIN) clean --suppress-analytics && \
 			rm -rf .idea bugsnag_flutter_performance_example.iml \
 			       ios/{Pods,.symlinks,Podfile.lock} \
 				   ios/{Runner.xcworkspace,Runner.xcodeproj,Runner.xcodeproj/project.xcworkspace}/xcuserdata \
 				   android/{.idea,.gradle,gradlew,gradlew.bat,local.properties,bugsnag_flutter_performance_example_android.iml}
 	rm -rf staging
 
-build: aar examples/flutter
+build: aar examples/bugsnag_performance_example
 
 aar:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) build aar --suppress-analytics
 
-examples/flutter:
+examples/bugsnag_performance_example:
 	cd $@ && $(FLUTTER_BIN) pub get
 	cd $@ && $(FLUTTER_BIN) build apk --suppress-analytics --no-tree-shake-icons
 	cd $@ && $(FLUTTER_BIN) build ios --no-codesign --suppress-analytics --no-tree-shake-icons
