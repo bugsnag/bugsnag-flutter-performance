@@ -1,7 +1,5 @@
 library bugsnag_flutter_performance;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/client.dart';
+export 'src/configuration.dart';
+export 'src/span.dart' show BugsnagPerformanceSpan;
