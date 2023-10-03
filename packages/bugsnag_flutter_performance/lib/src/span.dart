@@ -3,7 +3,6 @@ abstract class BugsnagPerformanceSpan {
 }
 
 class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
-
   BugsnagPerformanceSpanImpl({required this.name, required this.startTime});
   final DateTime startTime;
   final String name;
