@@ -10,10 +10,10 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
 
   @override
   void end() {
-    if(endTime != null) {
+    if (endTime != null) {
       return;
     }
-    
+
     endTime = DateTime.now();
   }
 }
