@@ -1,3 +1,6 @@
+import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
+import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
+
 abstract class BugsnagPerformanceSpan {
   void end();
 }
@@ -16,4 +19,17 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
 
     endTime = DateTime.now();
   }
+
+  BugsnagPerformanceSpanImpl.fromJson(Map<String, dynamic> json)
+      : startTime = (json['startTimeUnixNano'] as int).timeFromNanos,
+        name = json['name'] as String,
+        endTime = json['endTimeUnixNano'] != null
+            ? (json['endTimeUnixNano'] as int).timeFromNanos
+            : null;
+
+  dynamic toJson() => {
+        'startTimeUnixNano': startTime.nanosecondsSinceEpoch,
+        'name': name,
+        if (endTime != null) 'endTimeUnixNano': endTime!.nanosecondsSinceEpoch,
+      };
 }
