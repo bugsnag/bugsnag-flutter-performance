@@ -8,7 +8,8 @@ abstract class BugsnagFlutterPerformancePlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static BugsnagFlutterPerformancePlatform _instance = MethodChannelBugsnagFlutterPerformance();
+  static BugsnagFlutterPerformancePlatform _instance =
+      MethodChannelBugsnagFlutterPerformance();
 
   /// The default instance of [BugsnagFlutterPerformancePlatform] to use.
   ///
