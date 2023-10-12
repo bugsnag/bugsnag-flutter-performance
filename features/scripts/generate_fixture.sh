@@ -25,8 +25,8 @@ echo "Add perf sdk dep"
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_performance:{'path':'$PACKAGE_PATH'}"
 
-echo "Move Ios Export Options"
+# echo "Move Ios Export Options"
 
-cp $EXPORT_OPTIONS $EXPORT_OPTIONS_DEST
+# cp $EXPORT_OPTIONS $EXPORT_OPTIONS_DEST
 
 echo "Move Fixture Code"
