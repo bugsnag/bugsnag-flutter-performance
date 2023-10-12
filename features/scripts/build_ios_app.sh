@@ -7,5 +7,6 @@ fi
 
 echo "Flutter Bin: $FLUTTER_BIN"
 
-cd features/fixtures/flutterperformancefixture
-$FLUTTER_BIN build ipa --export-options-plist=ios/exportOptions.plist --no-tree-shake-icons
+cd features/fixtures/mazerunner
+
+$FLUTTER_BIN build ipa --export-options-plist="$(pwd)/features/fixture_resources/exportOptions.plist" --no-tree-shake-icons
