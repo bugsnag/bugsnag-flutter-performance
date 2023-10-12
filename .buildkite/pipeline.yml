@@ -42,6 +42,7 @@ steps:
     commands:
       - pod repo update trunk
       - bundle install
+      - features/scripts/generate_fixture.sh
       - features/scripts/build_ios_app.sh
     plugins:
       artifacts#v1.5.0:
@@ -56,6 +57,7 @@ steps:
       FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
     commands:
       - bundle install
+      - features/scripts/generate_fixture.sh
       - features/scripts/build_android_app.sh
     plugins:
       artifacts#v1.5.0:
