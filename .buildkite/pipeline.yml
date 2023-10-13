@@ -37,7 +37,97 @@ steps:
   - label: Build iOS Test Fixture 3.10.0
     key: "ios-fixture-3-10-0"
     agents:
-      queue: ms-arm-12-3
+      queue: ms-arm-12-1
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    commands:
+      - pod repo update trunk
+      - bundle install
+      - features/scripts/generate_fixture.sh
+      - features/scripts/build_ios_app.sh
+    plugins:
+      artifacts#v1.5.0:
+        upload:
+          from: "features/fixtures/app/build/ios/ipa/app.ipa"
+          to: "features/fixtures/app/build/ios/ipa/app-3.10.0.ipa"
+
+  - label: Build iOS Test Fixture 3.10.0
+    key: "ios-fixture-3-10-0"
+    agents:
+      queue: ms-arm-12-2
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    commands:
+      - pod repo update trunk
+      - bundle install
+      - features/scripts/generate_fixture.sh
+      - features/scripts/build_ios_app.sh
+    plugins:
+      artifacts#v1.5.0:
+        upload:
+          from: "features/fixtures/app/build/ios/ipa/app.ipa"
+          to: "features/fixtures/app/build/ios/ipa/app-3.10.0.ipa"
+
+  - label: Build iOS Test Fixture 3.10.0
+    key: "ios-fixture-3-10-0"
+    agents:
+      queue: ms-arm-12-4
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    commands:
+      - pod repo update trunk
+      - bundle install
+      - features/scripts/generate_fixture.sh
+      - features/scripts/build_ios_app.sh
+    plugins:
+      artifacts#v1.5.0:
+        upload:
+          from: "features/fixtures/app/build/ios/ipa/app.ipa"
+          to: "features/fixtures/app/build/ios/ipa/app-3.10.0.ipa"
+
+  - label: Build iOS Test Fixture 3.10.0
+    key: "ios-fixture-3-10-0"
+    agents:
+      queue: ms-arm-12-5
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    commands:
+      - pod repo update trunk
+      - bundle install
+      - features/scripts/generate_fixture.sh
+      - features/scripts/build_ios_app.sh
+    plugins:
+      artifacts#v1.5.0:
+        upload:
+          from: "features/fixtures/app/build/ios/ipa/app.ipa"
+          to: "features/fixtures/app/build/ios/ipa/app-3.10.0.ipa"
+
+  - label: Build iOS Test Fixture 3.10.0
+    key: "ios-fixture-3-10-0"
+    agents:
+      queue: ms-arm-12-6
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    commands:
+      - pod repo update trunk
+      - bundle install
+      - features/scripts/generate_fixture.sh
+      - features/scripts/build_ios_app.sh
+    plugins:
+      artifacts#v1.5.0:
+        upload:
+          from: "features/fixtures/app/build/ios/ipa/app.ipa"
+          to: "features/fixtures/app/build/ios/ipa/app-3.10.0.ipa"
+
+  - label: Build iOS Test Fixture 3.10.0
+    key: "ios-fixture-3-10-0"
+    agents:
+      queue: ms-arm-12-7
     timeout_in_minutes: 20
     env:
       FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
