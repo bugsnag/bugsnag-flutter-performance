@@ -7,5 +7,5 @@ fi
 
 echo "Flutter Bin: $FLUTTER_BIN"
 
-cd features/fixtures/app
+cd features/fixtures/mazerunner
 $FLUTTER_BIN build apk --no-tree-shake-icons

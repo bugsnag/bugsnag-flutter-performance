@@ -5,7 +5,7 @@ if [ -z "$FLUTTER_BIN" ]; then
   FLUTTER_BIN="flutter"
 fi
 
-FIXTURE_LOCATION="features/fixtures/app"
+FIXTURE_LOCATION="features/fixtures/mazerunner"
 
 PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance" 
 

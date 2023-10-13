@@ -36,6 +36,8 @@ steps:
   #
   - label: Build iOS Test Fixture 3.10.0
     key: "ios-fixture-3-10-0"
+    agents:
+      queue: ms-arm-12-3
     timeout_in_minutes: 20
     env:
       FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
