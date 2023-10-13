@@ -15,6 +15,6 @@ ls
 
 cd ..
 
-cd build/ios
+cd build/ios/ipa
 
 ls
