@@ -11,7 +11,7 @@ PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance"
 
 EXPORT_OPTIONS="features/fixture_resources/exportOptions.plist"
 
-XCODE_PROJECT=features/fixtures/app/ios/Runner.xcodeproj/project.pbxproj
+XCODE_PROJECT=features/fixtures/mazerunner/ios/Runner.xcodeproj/project.pbxproj
 
 echo "Remove old fixture"
 
