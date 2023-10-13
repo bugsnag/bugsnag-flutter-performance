@@ -11,6 +11,6 @@ EXPORT_OPTIONS="$(pwd)/features/fixture_resources/exportOptions.plist"
 
 echo "EXPORT OPTIONS: $EXPORT_OPTIONS"
 
-cd features/fixtures/mazerunner/ios
+cd features/fixtures/app/ios
 
 $FLUTTER_BIN build ipa --export-options-plist=$EXPORT_OPTIONS --no-tree-shake-icons

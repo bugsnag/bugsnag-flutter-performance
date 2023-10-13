@@ -5,15 +5,13 @@ if [ -z "$FLUTTER_BIN" ]; then
   FLUTTER_BIN="flutter"
 fi
 
-FIXTURE_LOCATION="features/fixtures/mazerunner"
+FIXTURE_LOCATION="features/fixtures/app"
 
 PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance" 
 
 EXPORT_OPTIONS="features/fixture_resources/exportOptions.plist"
 
-EXPORT_OPTIONS_DEST="features/fixtures/flutterperformancefixture/ios/exportOptions.plist"
-
-XCODE_PROJECT=features/fixtures/mazerunner/ios/Runner.xcodeproj/project.pbxproj
+XCODE_PROJECT=features/fixtures/app/ios/Runner.xcodeproj/project.pbxproj
 
 echo "Remove old fixture"
 
