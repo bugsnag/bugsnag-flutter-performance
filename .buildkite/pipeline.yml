@@ -29,8 +29,8 @@ steps:
       - sed -i '' -e 's/add_your_api_key_here/my_api_key/' examples/bugsnag_performance_example/lib/main.dart
       - make examples/bugsnag_performance_example
       - dwarfdump --arch=arm64 --uuid examples/bugsnag_performance_example/build/ios/iphoneos/Runner.app/Frameworks/App.framework/App | tee uuid_after
-      - echo "$(cat uuid_before)"
-      - echo "$(cat uuid_after)"
+      - echo "UUID BEFORE: $(cat uuid_before)"
+      - echo "UUID AFTER: $(cat uuid_after)"
       - test "$(cat uuid_before)" != "$(cat uuid_after)"
 
   #
