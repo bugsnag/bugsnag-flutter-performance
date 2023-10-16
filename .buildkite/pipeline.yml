@@ -26,7 +26,7 @@ steps:
       - make examples/bugsnag_performance_example
       # Verify that App.framework's UUID (and therefore our `codeIdentifier`) changes when Dart code is touched
       - dwarfdump --arch=arm64 --uuid examples/bugsnag_performance_example/build/ios/iphoneos/Runner.app/Frameworks/App.framework/App | tee uuid_before
-      - rm -rf examples/bugsnag_performance_example/build/ios/iphoneos/Runner.app
+      - rm -rf examples/bugsnag_performance_example/build
       - sed -i '' -e 's/add_your_api_key_here/my_api_key/' examples/bugsnag_performance_example/lib/main.dart
       - make examples/bugsnag_performance_example
       - dwarfdump --arch=arm64 --uuid examples/bugsnag_performance_example/build/ios/iphoneos/Runner.app/Frameworks/App.framework/App | tee uuid_after
