@@ -23,14 +23,17 @@ steps:
       FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
     commands:
       - pod repo update
+      - echo "POD UPDATE"
       - make examples/bugsnag_performance_example
+      - echo "MAKE 1"
       # Verify that App.framework's UUID (and therefore our `codeIdentifier`) changes when Dart code is touched
       - dwarfdump --arch=arm64 --uuid examples/bugsnag_performance_example/build/ios/iphoneos/Runner.app/Frameworks/App.framework/App | tee uuid_before
-      - rm -rf examples/bugsnag_performance_example/build
-      - sed -i '' -e 's/add_your_api_key_here/my_api_key/' examples/bugsnag_performance_example/lib/main.dart
-      - make examples/bugsnag_performance_example
-      - dwarfdump --arch=arm64 --uuid examples/bugsnag_performance_example/build/ios/iphoneos/Runner.app/Frameworks/App.framework/App | tee uuid_after
       - echo "UUID BEFORE: $(cat uuid_before)"
+      - sed -i '' -e 's/add_your_api_key_here/my_api_key/' examples/bugsnag_performance_example/lib/main.dart
+      - echo "CHANGE DART"
+      - make examples/bugsnag_performance_example
+      - echo "MAKE 2"
+      - dwarfdump --arch=arm64 --uuid examples/bugsnag_performance_example/build/ios/iphoneos/Runner.app/Frameworks/App.framework/App | tee uuid_after
       - echo "UUID AFTER: $(cat uuid_after)"
       - test "$(cat uuid_before)" != "$(cat uuid_after)"
 

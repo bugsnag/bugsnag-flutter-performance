@@ -20,7 +20,7 @@ aar:
 
 examples/bugsnag_performance_example:
 	cd $@ && $(FLUTTER_BIN) pub get
-	cd $@ && $(FLUTTER_BIN) build apk --suppress-analytics --no-tree-shake-icons
+	cd $@ && $(FLUTTER_BIN) build apk --suppress-analytics
 	cd $@ && $(FLUTTER_BIN) build ios --no-codesign --suppress-analytics --no-tree-shake-icons
 
 test:
