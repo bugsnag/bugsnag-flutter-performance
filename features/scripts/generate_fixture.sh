@@ -15,6 +15,8 @@ XCODE_PROJECT=features/fixtures/mazerunner/ios/Runner.xcodeproj/project.pbxproj
 
 DART_LOCATION=features/fixtures/mazerunner/lib
 
+DART_TEST_LOCATION=features/fixtures/test
+
 BS_DART_LOACTION=features/fixture_resources/lib
 
 BS_DART_DESTINATION=features/fixtures/mazerunner
@@ -27,15 +29,19 @@ echo "Create blank fixture"
 
 $FLUTTER_BIN create $FIXTURE_LOCATION  --org com.bugsnag --platforms=ios,android
 
-echo "Add perf sdk dep"
+echo "Add deps"
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_performance:{'path':'$PACKAGE_PATH'}"
+
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" path_provider
 
 echo "Add dev team to xcode project"
 
 sed -i '' "s/ENABLE_BITCODE = NO;/ENABLE_BITCODE = NO;\nDEVELOPMENT_TEAM = 7W9PZ27Y5F;\nCODE_SIGN_STYLE = Automatic;/g" "$XCODE_PROJECT"
 
 echo "copy over dart code"
+
+rm -rf $DART_TEST_LOCATION
 
 rm -rf $DART_LOCATION
 
