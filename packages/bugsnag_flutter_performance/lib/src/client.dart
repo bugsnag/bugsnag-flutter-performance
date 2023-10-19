@@ -1,3 +1,10 @@
+import 'dart:io';
+
+import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
+import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
+import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
+import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
+
 import 'configuration.dart';
 import 'span.dart';
 
@@ -8,17 +15,56 @@ abstract class BugsnagPerformance {
 
 class BugsnagPerformanceClient implements BugsnagPerformance {
   BugsnagPerformanceConfiguration? configuration;
+  Uploader? _uploader;
+  SpanBatch? _currentBatch;
+  final PackageBuilder _packageBuilder = PackageBuilderImpl();
   @override
   Future<void> start({String? apiKey, Uri? endpoint}) async {
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
       endpoint: endpoint,
     );
+    _setup();
   }
 
   @override
   BugsnagPerformanceSpan startSpan(String name, {DateTime? startTime}) {
-    return BugsnagPerformanceSpanImpl(
-        name: name, startTime: startTime ?? DateTime.now());
+    final span = BugsnagPerformanceSpanImpl(
+      name: name,
+      startTime: startTime ?? DateTime.now(),
+      onEnded: (endedSpan) {
+        _currentBatch?.add(endedSpan);
+      },
+    );
+    if (configuration != null) {
+      _currentBatch ??= SpanBatchImpl();
+      _currentBatch?.configure(configuration!);
+      _currentBatch?.onBatchFull = _sendBatch;
+      _currentBatch?.add(span);
+    }
+    return span;
+  }
+
+  void _setup() {
+    if (configuration?.endpoint != null && configuration?.apiKey != null) {
+      _uploader = UploaderImpl(
+        apiKey: configuration!.apiKey!,
+        url: configuration!.endpoint!,
+        client: UploaderClientImpl(httpClient: HttpClient()),
+      );
+    }
+  }
+
+  void _sendBatch(SpanBatch batch) {
+    final spans = batch.drain();
+    if (spans.isEmpty) {
+      return;
+    }
+    final package = _packageBuilder.build(spans);
+    _uploader?.upload(package: package);
+  }
+
+  void setBatchSize(int batchSize) {
+    configuration?.autoTriggerExportOnBatchSize = batchSize;
   }
 }
