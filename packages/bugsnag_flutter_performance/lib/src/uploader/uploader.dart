@@ -22,12 +22,13 @@ class UploaderImpl implements Uploader {
     var headers = {
       'Bugsnag-Api-Key': apiKey,
       'Bugsnag-Sent-At': DateTime.now().toUtc().toIso8601String(),
+      'Bugsnag-Span-Sampling': '1:1'
     };
     headers.addAll(package.headers);
     final request = await client.post(url: url);
     request.setHeaders(headers);
     request.setBody(package.payload);
     final response = await request.send();
-    return response.statusCode == 200;
+    return response.statusCode / 100 == 2;
   }
 }
