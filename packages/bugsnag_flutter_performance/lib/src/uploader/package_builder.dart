@@ -37,7 +37,7 @@ class PackageBuilderImpl implements PackageBuilder {
   List<int> _buildPayload({
     required List<BugsnagPerformanceSpan> spans,
   }) {
-    final jsonList = spans.map((span) => span.toJson());
+    final jsonList = spans.map((span) => span.toJson()).toList();
     final json = jsonEncode(jsonList);
     return utf8.encode(json);
   }

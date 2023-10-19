@@ -8,6 +8,8 @@ import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'configuration.dart';
 import 'span.dart';
 
+const _defaultEndpoint = 'https://otlp.bugsnag.com/v1/traces';
+
 abstract class BugsnagPerformance {
   Future<void> start({String? apiKey, Uri? endpoint});
   BugsnagPerformanceSpan startSpan(String name, {DateTime? startTime});
@@ -22,7 +24,7 @@ class BugsnagPerformanceClient implements BugsnagPerformance {
   Future<void> start({String? apiKey, Uri? endpoint}) async {
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
-      endpoint: endpoint,
+      endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
     );
     _setup();
   }
