@@ -68,7 +68,7 @@ steps:
         run: maze-runner
         service-ports: true
         command:
-          - "--app=/app/features/fixtures/app/build/app/outputs/flutter-apk/app-release.apk"
+          - "--app=features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
           - "--farm=bb"
           - "--device=ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13"
           - "--no-tunnel"
