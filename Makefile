@@ -27,7 +27,7 @@ test:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) test -r expanded --suppress-analytics
 
 format:
-	$(FLUTTER_BIN) format packages/bugsnag_flutter_performance example features/fixtures/app
+	cd packages/bugsnag_flutter_performance && dart format .
 
 lint:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) analyze --suppress-analytics

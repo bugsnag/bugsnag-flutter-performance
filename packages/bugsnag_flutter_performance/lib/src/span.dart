@@ -1,5 +1,6 @@
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
+import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:bugsnag_flutter_performance/src/util/random.dart';
 
 typedef TraceId = BigInt;
@@ -36,6 +37,7 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
   final DateTime startTime;
   DateTime? endTime;
   late final void Function(BugsnagPerformanceSpan) onEnded;
+  late final BugsnagClock clock;
 
   @override
   void end() {
@@ -43,7 +45,7 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
       return;
     }
 
-    endTime = DateTime.now();
+    endTime = clock.now();
   }
 
   BugsnagPerformanceSpanImpl.fromJson(Map<String, dynamic> json,
