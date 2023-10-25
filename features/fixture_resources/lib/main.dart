@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'scenarios/scenario.dart';
 import 'scenarios/scenarios.dart';
+import 'package:http/http.dart' as http;
 
 void log(String message) {
   print('[MazeRunner] $message');
@@ -149,27 +150,40 @@ class _HomePageState extends State<MazeRunnerHomePage> {
   /// Fetches the next command
   void _onRunCommand(BuildContext context, {bool retry = false}) async {
     log('Fetching the next command');
-    final commandUrl = _commandEndpointController.value.text;
-    final commandStr = await MazeRunnerChannels.getCommand(commandUrl);
-    log('The command is: $commandStr');
 
-    if (commandStr.isEmpty) {
-      log('Empty command, retrying...');
+    final commandUrl = _commandEndpointController.value.text;
+
+    final response = await http
+        .get(Uri.parse(commandUrl));
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      log('The body is:${response.body}');
+
+      if (response.body.isEmpty) {
+        log('Empty command, retrying...');
+        if (retry) {
+          Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
+        }
+        return;
+      }
+      final command = Command.fromJsonString(response.body);
+      _scenarioNameController.text = command.scenarioName;
+      _extraConfigController.text = command.extraConfig;
+      switch (command.action) {
+        case 'run_scenario':
+          _onRunScenario(context);
+          break;
+      }
+    }
+    else
+    {
       if (retry) {
         Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
       }
-      return;
     }
 
-    final command = Command.fromJsonString(commandStr);
-    _scenarioNameController.text = command.scenarioName;
-    _extraConfigController.text = command.extraConfig;
-
-    switch (command.action) {
-      case 'run_scenario':
-        _onRunScenario(context);
-        break;
-    }
   }
 
   /// Starts Bugsnag
