@@ -30,5 +30,5 @@ Package.resolved
 Podfile.lock
 maze_output/
 
-# ignroed as fixtures are generated
+# ignored as fixtures are generated
 features/fixtures
