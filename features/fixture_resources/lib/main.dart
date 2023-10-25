@@ -80,7 +80,7 @@ class MazeRunnerFlutterApp extends StatelessWidget {
               Map<String, dynamic> json = jsonDecode(text);
               if (json.containsKey('maze_address')) {
                 print("fixture_config.json found with contents: $text");
-                FixtureConfig.MAZE_HOST = Uri.parse(json['maze_address']);
+                FixtureConfig.MAZE_HOST = Uri.parse("http://" + json['maze_address']);
                 return json['maze_address'];
               }
             } catch (e) {
