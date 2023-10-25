@@ -17,16 +17,63 @@ steps:
     commands:
       - make lint
 
-  - label: Build Example App 3.10.0
-    timeout_in_minutes: 10
+  #
+  # iOS
+  #
+  - label: Build iOS Test Fixture
+    key: "ios-fixture-3-10-0"
+    timeout_in_minutes: 20
     env:
       FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
     commands:
-      - pod repo update
-      - make examples/flutter
-      # Verify that App.framework's UUID (and therefore our `codeIdentifier`) changes when Dart code is touched
-      - dwarfdump --arch=arm64 --uuid examples/flutter/build/ios/iphoneos/Runner.app/Frameworks/App.framework/App | tee uuid_before
-      - sed -i '' -e 's/add_your_api_key_here/my_api_key/' examples/flutter/lib/main.dart
-      - make examples/flutter
-      - dwarfdump --arch=arm64 --uuid examples/flutter/build/ios/iphoneos/Runner.app/Frameworks/App.framework/App | tee uuid_after
-      - test "$(cat uuid_before)" != "$(cat uuid_after)"
+      - pod repo update trunk
+      - bundle install
+      - features/scripts/generate_fixture.sh
+      - features/scripts/build_ios_app.sh
+    plugins:
+      artifacts#v1.5.0:
+        upload:
+          - "features/fixtures/mazerunner/build/ios/ipa/mazerunner.ipa"
+  #
+  # Android
+  #
+  - label: Build Android Test Fixture
+    key: "android-fixture-3-10-0"
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      JAVA_VERSION: "11"
+    commands:
+      - bundle install
+      - features/scripts/generate_fixture.sh
+      - features/scripts/build_android_app.sh
+    plugins:
+      artifacts#v1.5.0:
+        upload:
+          - "features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
+
+  - label: ':bitbar: Android 12 end-to-end tests 3.10.0'
+    depends_on: "android-fixture-3-10-0"
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    agents:
+      queue: opensource
+    plugins:
+      artifacts#v1.5.0:
+        download: "features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
+        upload: "maze_output/failed/**/*"
+      docker-compose#v4.7.0:
+        pull: maze-runner
+        run: maze-runner
+        service-ports: true
+        command:
+          - "--app=features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
+          - "--farm=bb"
+          - "--device=ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13"
+          - "--no-tunnel"
+          - "--aws-public-ip"
+          - "--fail-fast"
+    concurrency: 25
+    concurrency_group: 'bitbar'
+    concurrency_method: eager
