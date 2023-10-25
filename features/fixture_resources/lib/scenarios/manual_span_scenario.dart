@@ -11,7 +11,7 @@ class ManualSpan extends Scenario {
     const apiKey = '0123456789abcdef0123456789abcdef';
     BugsnagPerformanceClient client = BugsnagPerformanceClient();
     log("using MAZE_HOST: " + FixtureConfig.MAZE_HOST.toString());
-    client.start(apiKey: apiKey, endpoint: FixtureConfig.MAZE_HOST);
+    client.start(apiKey: apiKey, endpoint: Uri.parse("https://webhook.site/2c429399-3f1e-4c44-b4dd-59853fd1ff79"));
     client.setBatchSize(1);
     client.startSpan('Test').end();
   }
