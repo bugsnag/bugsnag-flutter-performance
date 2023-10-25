@@ -171,6 +171,8 @@ class _HomePageState extends State<MazeRunnerHomePage> {
       final command = Command.fromJsonString(response.body);
       _scenarioNameController.text = command.scenarioName;
       _extraConfigController.text = command.extraConfig;
+
+
       switch (command.action) {
         case 'run_scenario':
           _onRunScenario(context);
@@ -198,8 +200,8 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     if (scenario == null) {
       return;
     }
-
-    await scenario.clearPersistentData();
+    //TODO: Clear persistent data
+    // await scenario.clearPersistentData();
 
     scenario.extraConfig = _extraConfigController.value.text;
 
