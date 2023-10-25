@@ -19,10 +19,10 @@ class PackageBuilderImpl implements PackageBuilder {
     var payload = _buildPayload(spans: spans);
     var isZipped = false;
     final uncompressedDataLength = payload.length;
-    if (payload.length >= _minSizeForGzip) {
-      payload = GZipCodec().encode(payload);
-      isZipped = true;
-    }
+    //if (payload.length >= _minSizeForGzip) {
+      //payload = GZipCodec().encode(payload);
+      //isZipped = true;
+    //}
     final headers = _buildHeaders(
       payload: payload,
       uncompressedDataLength: uncompressedDataLength,
