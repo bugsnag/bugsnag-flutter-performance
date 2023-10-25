@@ -27,7 +27,10 @@ extension StringGet<K, V> on Map<K, V> {
     return value is String ? value : null;
   }
 }
-
+class FixtureConfig
+{
+  static Uri MAZE_HOST = Uri.parse("");
+}
 /// Represents a MazeRunner command
 class Command {
   final String action;
@@ -39,6 +42,8 @@ class Command {
     required this.scenarioName,
     required this.extraConfig,
   });
+
+
 
   factory Command.fromJsonString(String jsonString) {
     final map = json.decode(jsonString) as Map<String, dynamic>;
@@ -75,6 +80,7 @@ class MazeRunnerFlutterApp extends StatelessWidget {
               Map<String, dynamic> json = jsonDecode(text);
               if (json.containsKey('maze_address')) {
                 print("fixture_config.json found with contents: $text");
+                FixtureConfig.MAZE_HOST = Uri.parse(json['maze_address']);
                 return json['maze_address'];
               }
             } catch (e) {
@@ -83,6 +89,7 @@ class MazeRunnerFlutterApp extends StatelessWidget {
             await Future.delayed(const Duration(seconds: 1));
           }
           print("fixture_config.json not read within 30s, defaulting to BrowserStack address");
+          FixtureConfig.MAZE_HOST = Uri.parse('bs-local.com:9339');
           return 'bs-local.com:9339';
         }),
         builder: (_, mazerunnerUrl) {
