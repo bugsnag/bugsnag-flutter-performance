@@ -13,6 +13,8 @@ EXPORT_OPTIONS=features/fixture_resources/exportOptions.plist
 
 XCODE_PROJECT=features/fixtures/mazerunner/ios/Runner.xcodeproj/project.pbxproj
 
+ANDROID_MANIFEST=features/fixtures/mazerunner/android/app/src/main/AndroidManifest.xml
+
 DART_LOCATION=features/fixtures/mazerunner/lib
 
 DART_TEST_LOCATION=features/fixtures/test
@@ -40,6 +42,10 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" http
 echo "Add dev team to xcode project"
 
 sed -i '' "s/ENABLE_BITCODE = NO;/ENABLE_BITCODE = NO;\nDEVELOPMENT_TEAM = 7W9PZ27Y5F;\nCODE_SIGN_STYLE = Automatic;/g" "$XCODE_PROJECT"
+
+echo "Add android internet permission"
+
+sed -i '' "s/<\/application>/<\/application>\n<uses-permission android:name='android.permission.INTERNET'\/\>/g" "$ANDROID_MANIFEST"
 
 echo "copy over dart code"
 
