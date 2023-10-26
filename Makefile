@@ -19,9 +19,9 @@ aar:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) build aar --suppress-analytics
 
 examples/flutter:
-	cd $@ && $(FLUTTER_BIN) pub get
-	cd $@ && $(FLUTTER_BIN) build apk --suppress-analytics --no-tree-shake-icons
-	cd $@ && $(FLUTTER_BIN) build ios --no-codesign --suppress-analytics --no-tree-shake-icons
+	cd examples/bugsnag_performance_example && $(FLUTTER_BIN) pub get
+	cd examples/bugsnag_performance_example && $(FLUTTER_BIN) build apk --suppress-analytics --no-tree-shake-icons
+	cd examples/bugsnag_performance_example && $(FLUTTER_BIN) build ios --no-codesign --suppress-analytics --no-tree-shake-icons
 
 test:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) test -r expanded --suppress-analytics
