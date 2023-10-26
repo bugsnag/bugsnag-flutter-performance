@@ -8,8 +8,9 @@ class BugsnagClockImpl extends BindingBase implements BugsnagClock {
   static BugsnagClockImpl get instance => BindingBase.checkInstance(_instance);
   static BugsnagClockImpl? _instance;
 
-  final clock = Stopwatch();
-  final initTime = DateTime.now();
+  final _clock = Stopwatch()
+      ..start();
+  final _initTime = DateTime.now();
 
   BugsnagClockImpl() {
     clock.start();
