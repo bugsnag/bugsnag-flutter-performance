@@ -4,6 +4,7 @@ import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
+import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 
 import 'configuration.dart';
 import 'span.dart';
@@ -19,7 +20,15 @@ class BugsnagPerformanceClient implements BugsnagPerformance {
   BugsnagPerformanceConfiguration? configuration;
   Uploader? _uploader;
   SpanBatch? _currentBatch;
-  final PackageBuilder _packageBuilder = PackageBuilderImpl();
+  late final PackageBuilder _packageBuilder;
+  late final BugsnagClock _clock;
+
+  BugsnagPerformanceClient() {
+    BugsnagClockImpl.ensureInitialized();
+    _packageBuilder = PackageBuilderImpl();
+    _clock = BugsnagClockImpl.instance;
+  }
+
   @override
   Future<void> start({String? apiKey, Uri? endpoint}) async {
     configuration = BugsnagPerformanceConfiguration(
@@ -33,11 +42,12 @@ class BugsnagPerformanceClient implements BugsnagPerformance {
   BugsnagPerformanceSpan startSpan(String name, {DateTime? startTime}) {
     final span = BugsnagPerformanceSpanImpl(
       name: name,
-      startTime: startTime ?? DateTime.now(),
+      startTime: startTime ?? _clock.now(),
       onEnded: (endedSpan) {
         _currentBatch?.add(endedSpan);
       },
     );
+    span.clock = _clock;
     if (configuration != null) {
       _currentBatch ??= SpanBatchImpl();
       _currentBatch?.configure(configuration!);
@@ -53,6 +63,7 @@ class BugsnagPerformanceClient implements BugsnagPerformance {
         apiKey: configuration!.apiKey!,
         url: configuration!.endpoint!,
         client: UploaderClientImpl(httpClient: HttpClient()),
+        clock: _clock,
       );
     }
   }
