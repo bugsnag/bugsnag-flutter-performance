@@ -18,16 +18,16 @@ build: aar examples/bugsnag_performance_example
 aar:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) build aar --suppress-analytics
 
-examples/flutter:
-	cd examples/bugsnag_performance_example && $(FLUTTER_BIN) pub get
-	cd examples/bugsnag_performance_example && $(FLUTTER_BIN) build apk --suppress-analytics --no-tree-shake-icons
-	cd examples/bugsnag_performance_example && $(FLUTTER_BIN) build ios --no-codesign --suppress-analytics --no-tree-shake-icons
+examples/bugsnag_performance_example:
+	cd $@ && $(FLUTTER_BIN) pub get
+	cd $@ && $(FLUTTER_BIN) build apk --suppress-analytics
+	cd $@ && $(FLUTTER_BIN) build ios --no-codesign --suppress-analytics --no-tree-shake-icons
 
 test:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) test -r expanded --suppress-analytics
 
 format:
-	cd packages/bugsnag_flutter_performance && dart format .
+	$(FLUTTER_BIN) format packages/bugsnag_flutter_performance example features/fixtures/app
 
 lint:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) analyze --suppress-analytics
