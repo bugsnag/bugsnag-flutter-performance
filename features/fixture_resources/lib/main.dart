@@ -27,10 +27,11 @@ extension StringGet<K, V> on Map<K, V> {
     return value is String ? value : null;
   }
 }
-class FixtureConfig
-{
+
+class FixtureConfig {
   static Uri MAZE_HOST = Uri.parse("");
 }
+
 /// Represents a MazeRunner command
 class Command {
   final String action;
@@ -42,8 +43,6 @@ class Command {
     required this.scenarioName,
     required this.extraConfig,
   });
-
-
 
   factory Command.fromJsonString(String jsonString) {
     final map = json.decode(jsonString) as Map<String, dynamic>;
@@ -69,51 +68,59 @@ class MazeRunnerFlutterApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: const Color.fromARGB(255, 73, 73, 227),
       ),
-      home: FutureBuilder<String>(
-        future: Future(() async {
-          for (var i = 0; i < 30; i++) {
-            try {
-              final Directory directory = await appFilesDirectory();
-              final File file = File('${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
-              final text = await file.readAsString();
+      home: FutureBuilder<String>(future: Future(() async {
+        for (var i = 0; i < 30; i++) {
+          try {
+            final Directory directory = await appFilesDirectory();
+            final File file = File(
+                '${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
+            final text = await file.readAsString();
+            print("fixture_config.json found with contents: $text");
+            Map<String, dynamic> json = jsonDecode(text);
+            if (json.containsKey('maze_address')) {
               print("fixture_config.json found with contents: $text");
-              Map<String, dynamic> json = jsonDecode(text);
-              if (json.containsKey('maze_address')) {
-                print("fixture_config.json found with contents: $text");
-                FixtureConfig.MAZE_HOST = Uri.parse("http://" + json['maze_address']);
-                return json['maze_address'];
-              }
-            } catch (e) {
-              print("Couldn't read fixture_config.json: $e");
+              FixtureConfig.MAZE_HOST =
+                  Uri.parse("http://" + json['maze_address']);
+              return json['maze_address'];
             }
-            await Future.delayed(const Duration(seconds: 1));
+          } catch (e) {
+            print("Couldn't read fixture_config.json: $e");
           }
-          print("fixture_config.json not read within 30s, defaulting to BrowserStack address");
-          FixtureConfig.MAZE_HOST = Uri.parse('bs-local.com:9339');
-          return 'bs-local.com:9339';
-        }),
-        builder: (_, mazerunnerUrl) {
-          if (mazerunnerUrl.data != null) {
-            return MazeRunnerHomePage(mazerunnerUrl: mazerunnerUrl.data!,);
-          } else {
-            return Container(color: Colors.white, child: const Center(child: CircularProgressIndicator()));
-          }
+          await Future.delayed(const Duration(seconds: 1));
+        }
+        print(
+            "fixture_config.json not read within 30s, defaulting to BrowserStack address");
+        FixtureConfig.MAZE_HOST = Uri.parse('bs-local.com:9339');
+        return 'bs-local.com:9339';
+      }), builder: (_, mazerunnerUrl) {
+        if (mazerunnerUrl.data != null) {
+          return MazeRunnerHomePage(
+            mazerunnerUrl: mazerunnerUrl.data!,
+          );
+        } else {
+          return Container(
+              color: Colors.white,
+              child: const Center(child: CircularProgressIndicator()));
+        }
       }),
     );
   }
 
   Future<Directory> appFilesDirectory() async {
     if (Platform.isAndroid) {
-      return await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory();
+      return await getExternalStorageDirectory() ??
+          await getApplicationDocumentsDirectory();
     }
     return await getApplicationDocumentsDirectory();
   }
-
 }
 
 class MazeRunnerHomePage extends StatefulWidget {
   final String mazerunnerUrl;
-  const MazeRunnerHomePage({Key? key, required this.mazerunnerUrl,}) : super(key: key);
+  const MazeRunnerHomePage({
+    Key? key,
+    required this.mazerunnerUrl,
+  }) : super(key: key);
 
   @override
   State<MazeRunnerHomePage> createState() => _HomePageState();
@@ -160,8 +167,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
 
     final commandUrl = _commandEndpointController.value.text;
 
-    final response = await http
-        .get(Uri.parse(commandUrl));
+    final response = await http.get(Uri.parse(commandUrl));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -171,7 +177,8 @@ class _HomePageState extends State<MazeRunnerHomePage> {
       if (response.body.isEmpty) {
         log('Empty command, retrying...');
         if (retry) {
-          Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
+          Future.delayed(const Duration(seconds: 1))
+              .then((value) => _onRunCommand(context, retry: true));
         }
         return;
       }
@@ -179,26 +186,23 @@ class _HomePageState extends State<MazeRunnerHomePage> {
       _scenarioNameController.text = command.scenarioName;
       _extraConfigController.text = command.extraConfig;
 
-
       switch (command.action) {
         case 'run_scenario':
           _onRunScenario(context);
           break;
       }
-    }
-    else
-    {
+    } else {
       if (retry) {
-        Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
+        Future.delayed(const Duration(seconds: 1))
+            .then((value) => _onRunCommand(context, retry: true));
       }
     }
-
   }
 
   /// Starts Bugsnag
   Future<void> _onStartBugsnag() async {
     log('Starting Bugsnag');
-    // await BugsnagPerformance.start();
+    bugsnagPerformance.start(apiKey: '12312312312312312312312312312312');
   }
 
   /// Runs a scenario, starting bugsnag first
