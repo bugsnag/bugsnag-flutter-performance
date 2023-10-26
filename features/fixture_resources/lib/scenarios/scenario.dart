@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import '../channels.dart';
 
-static BugsnagPerformanceClient bugsnagPerformance = BugsnagPerformanceClient();
+BugsnagPerformanceClient bugsnagPerformance = BugsnagPerformanceClient();
 
 abstract class Scenario {
   String? extraConfig;
