@@ -38,7 +38,18 @@ class PackageBuilderImpl implements PackageBuilder {
     required List<BugsnagPerformanceSpan> spans,
   }) {
     final jsonList = spans.map((span) => span.toJson()).toList();
-    final json = jsonEncode(jsonList);
+    final jsonRequest = {
+      'resourceSpans': [
+        {
+          'scopeSpans': [
+            {
+              'spans': jsonList,
+            }
+          ]
+        }
+      ]
+    };
+    final json = jsonEncode(jsonRequest);
     return utf8.encode(json);
   }
 
