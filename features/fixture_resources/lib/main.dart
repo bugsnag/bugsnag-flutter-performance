@@ -201,8 +201,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
 
   /// Starts Bugsnag
   Future<void> _onStartBugsnag() async {
-    log('Starting Bugsnag');
-    bugsnagPerformance.start(apiKey: '12312312312312312312312312312312');
+
   }
 
   /// Runs a scenario, starting bugsnag first

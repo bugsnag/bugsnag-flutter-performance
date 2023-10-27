@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 class ManualSpanScenario extends Scenario {
   @override
   Future<void> run() async {
+    bugsnagPerformance.start(apiKey: '12312312312312312312312312312312', endpoint: FixtureConfig.MAZE_HOST);
     bugsnagPerformance.setBatchSize(1);
     final span = bugsnagPerformance.startSpan('ManualSpanScenario');
     span.end();
