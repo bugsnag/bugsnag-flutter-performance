@@ -68,6 +68,7 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
         if (endTime != null) 'endTimeUnixNano': endTime!.nanosecondsSinceEpoch,
         'traceId': _encodeTraceId(traceId),
         'spanId': _encodeSpanId(spanId),
+        'kind': '1',
         if (parentSpanId != null)
           'parentSpanId': _encodeSpanId(parentSpanId ?? BigInt.zero),
       };

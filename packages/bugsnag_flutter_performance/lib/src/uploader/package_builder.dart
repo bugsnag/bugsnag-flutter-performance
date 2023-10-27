@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/model/otlp_package.dart';
+import 'package:crypto/crypto.dart';
 
 const int _minSizeForGzip = 128;
 
@@ -69,6 +70,6 @@ class PackageBuilderImpl implements PackageBuilder {
   String _integrityDigestForData({
     required List<int> payload,
   }) {
-    return 'sha1 ${payload.map((e) => e.toRadixString(16)).join()}';
+    return 'sha1 ${sha1.convert(payload)}';
   }
 }
