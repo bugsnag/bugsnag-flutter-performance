@@ -46,6 +46,7 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
     }
 
     endTime = clock.now();
+    onEnded(this);
   }
 
   BugsnagPerformanceSpanImpl.fromJson(Map<String, dynamic> json,
