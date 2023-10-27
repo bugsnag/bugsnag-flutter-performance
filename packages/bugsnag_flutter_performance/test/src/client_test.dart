@@ -9,10 +9,10 @@ void main() {
   final endpoint = Uri.tryParse('https://bugsnag.com')!;
   BugsnagClockImpl.ensureInitialized();
   group('BugsnagPerformanceClient', () {
-    late BugsnagPerformanceClient client;
+    late BugsnagPerformanceClientImpl client;
 
     setUp(() {
-      client = BugsnagPerformanceClient();
+      client = BugsnagPerformanceClientImpl();
     });
     group('start', () {
       test('should set configuration with the provided parameters', () {
