@@ -1,11 +1,14 @@
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
+import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:bugsnag_flutter_performance/src/util/random.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const millisecondsSinceEpoch = 1640979000000;
+  BugsnagClockImpl.ensureInitialized();
+
   group('BugsnagPerformanceSpanImpl', () {
     test('should have the provided name, start time, traceId and spanId', () {
       final traceId = randomTraceId();
@@ -69,9 +72,10 @@ void main() {
             startTime: DateTime.fromMillisecondsSinceEpoch(
                 millisecondsSinceEpoch,
                 isUtc: true));
-        final timeBeforeEnd = DateTime.now();
+        span.clock = BugsnagClockImpl.instance;
+        final timeBeforeEnd = BugsnagClockImpl.instance.now();
         span.end();
-        final timeAfterEnd = DateTime.now();
+        final timeAfterEnd = BugsnagClockImpl.instance.now();
         expect(
             span.endTime!.nanosecondsSinceEpoch >=
                 timeBeforeEnd.nanosecondsSinceEpoch,
@@ -88,6 +92,7 @@ void main() {
             startTime: DateTime.fromMillisecondsSinceEpoch(
                 millisecondsSinceEpoch,
                 isUtc: true));
+        span.clock = BugsnagClockImpl.instance;
         span.end();
         final firstEndTime = span.endTime;
         await Future.delayed(const Duration(milliseconds: 10));
@@ -156,6 +161,7 @@ void main() {
           traceId: randomTraceId(),
           parentSpanId: randomSpanId(),
         );
+        span.clock = BugsnagClockImpl.instance;
         span.end();
         final json = span.toJson();
         expect(json['name'], equals(span.name));
