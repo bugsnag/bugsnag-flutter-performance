@@ -51,10 +51,10 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
 
   BugsnagPerformanceSpanImpl.fromJson(Map<String, dynamic> json,
       [void Function(BugsnagPerformanceSpan)? onEnded])
-      : startTime = (json['startTimeUnixNano'] as int).timeFromNanos,
+      : startTime = int.parse(json['startTimeUnixNano']).timeFromNanos,
         name = json['name'] as String,
         endTime = json['endTimeUnixNano'] != null
-            ? (json['endTimeUnixNano'] as int).timeFromNanos
+            ? int.parse(json['endTimeUnixNano']).timeFromNanos
             : null,
         traceId = _decodeTraceId(json['traceId'] as String?) ?? randomTraceId(),
         spanId = _decodeSpanId(json['spanId'] as String?) ?? randomSpanId(),
@@ -63,12 +63,13 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
 
   @override
   dynamic toJson() => {
-        'startTimeUnixNano': startTime.nanosecondsSinceEpoch,
+        'startTimeUnixNano': startTime.nanosecondsSinceEpoch.toString(),
         'name': name,
-        if (endTime != null) 'endTimeUnixNano': endTime!.nanosecondsSinceEpoch,
+        if (endTime != null)
+          'endTimeUnixNano': endTime!.nanosecondsSinceEpoch.toString(),
         'traceId': _encodeTraceId(traceId),
         'spanId': _encodeSpanId(spanId),
-        'kind': '1',
+        'kind': 1,
         if (parentSpanId != null)
           'parentSpanId': _encodeSpanId(parentSpanId ?? BigInt.zero),
       };

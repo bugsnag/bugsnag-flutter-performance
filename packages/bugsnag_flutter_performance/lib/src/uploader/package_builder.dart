@@ -19,14 +19,13 @@ class PackageBuilderImpl implements PackageBuilder {
   OtlpPackage build(List<BugsnagPerformanceSpan> spans) {
     var payload = _buildPayload(spans: spans);
     var isZipped = false;
-    final uncompressedDataLength = payload.length;
-    // if (payload.length >= _minSizeForGzip) {
-    //   payload = GZipCodec().encode(payload);
-    //   isZipped = true;
-    // }
+    final uncompressedData = payload;
+    if (payload.length >= _minSizeForGzip) {
+      payload = GZipCodec().encode(payload);
+      isZipped = true;
+    }
     final headers = _buildHeaders(
-      payload: payload,
-      uncompressedDataLength: uncompressedDataLength,
+      payload: uncompressedData,
       isZipped: isZipped,
     );
     return OtlpPackage(
@@ -56,13 +55,12 @@ class PackageBuilderImpl implements PackageBuilder {
 
   Map<String, String> _buildHeaders({
     required List<int> payload,
-    required int uncompressedDataLength,
     required bool isZipped,
   }) {
     return {
       'Content-Type': 'application/json',
       'Bugsnag-Integrity': _integrityDigestForData(payload: payload),
-      'Bugsnag-Uncompressed-Content-Length': uncompressedDataLength.toString(),
+      'Bugsnag-Uncompressed-Content-Length': payload.length.toString(),
       if (isZipped) 'Content-Encoding': 'gzip'
     };
   }
