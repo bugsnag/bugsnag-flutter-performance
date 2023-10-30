@@ -11,19 +11,19 @@ import 'span.dart';
 
 const _defaultEndpoint = 'https://otlp.bugsnag.com/v1/traces';
 
-abstract class BugsnagPerformance {
+abstract class BugsnagPerformanceClient {
   Future<void> start({String? apiKey, Uri? endpoint});
   BugsnagPerformanceSpan startSpan(String name, {DateTime? startTime});
 }
 
-class BugsnagPerformanceClient implements BugsnagPerformance {
+class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   BugsnagPerformanceConfiguration? configuration;
   Uploader? _uploader;
   SpanBatch? _currentBatch;
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
 
-  BugsnagPerformanceClient() {
+  BugsnagPerformanceClientImpl() {
     BugsnagClockImpl.ensureInitialized();
     _packageBuilder = PackageBuilderImpl();
     _clock = BugsnagClockImpl.instance;
