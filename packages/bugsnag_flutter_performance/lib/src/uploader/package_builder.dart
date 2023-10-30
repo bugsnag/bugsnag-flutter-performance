@@ -44,6 +44,9 @@ class PackageBuilderImpl implements PackageBuilder {
           'scopeSpans': [
             {
               'spans': jsonList,
+              'resource': {
+                'attributes': [],
+              },
             }
           ]
         }
