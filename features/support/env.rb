@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-Maze.config.enforce_bugsnag_integrity = false
-
 BeforeAll do
   $api_key = 'abc12312312312312312312312312312'
 end
