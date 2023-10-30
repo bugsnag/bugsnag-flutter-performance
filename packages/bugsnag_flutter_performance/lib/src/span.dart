@@ -72,6 +72,7 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
         'kind': 1,
         if (parentSpanId != null)
           'parentSpanId': _encodeSpanId(parentSpanId ?? BigInt.zero),
+        'attributes': [],
       };
 
   @override
