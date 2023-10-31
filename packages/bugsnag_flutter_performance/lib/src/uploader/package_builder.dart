@@ -45,7 +45,14 @@ class PackageBuilderImpl implements PackageBuilder {
             {
               'spans': jsonList,
               'resource': {
-                'attributes': [],
+                'attributes': [
+                  {
+                    "key": "device.id",
+                    "value": {
+                      "stringValue": "40a60c07f50e900efc2e25e5fde2722af3bbd9f4"
+                    }
+                  }
+                ],
               },
             }
           ]
