@@ -179,6 +179,7 @@ void main() {
         expect(int.parse(json['endTimeUnixNano']),
             equals(span.endTime!.nanosecondsSinceEpoch));
         expect(json['traceId'], equals(span.traceId.toRadixString(16)));
+        expect(json['traceId'].toString().length, equals(32));
         expect(json['spanId'], equals(span.spanId.toRadixString(16)));
         expect(
             json['parentSpanId'], equals(span.parentSpanId!.toRadixString(16)));
