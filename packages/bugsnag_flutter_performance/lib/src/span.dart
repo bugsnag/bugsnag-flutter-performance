@@ -73,7 +73,6 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
         if (parentSpanId != null)
           'parentSpanId': _encodeSpanId(parentSpanId ?? BigInt.zero),
         'attributes': [],
-        'resource': [],
       };
 
   @override
@@ -87,11 +86,11 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
 }
 
 String _encodeSpanId(SpanId spanId) {
-  return spanId.toRadixString(16);
+  return spanId.toRadixString(16).padLeft(16, '0');
 }
 
 String _encodeTraceId(TraceId traceId) {
-  return traceId.toRadixString(16);
+  return traceId.toRadixString(16).padLeft(32, '0');
 }
 
 TraceId? _decodeTraceId(String? traceIdString) {
