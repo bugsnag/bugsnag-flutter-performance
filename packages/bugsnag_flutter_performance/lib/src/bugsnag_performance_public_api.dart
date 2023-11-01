@@ -21,4 +21,8 @@ class BugsnagPerformance {
     //TODO implement
     // _client.runApp(runApp: runApp);
   }
+
+  static void setBatchSize(int batchSize) {
+    _client.setBatchSize(batchSize);
+  }
 }

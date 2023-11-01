@@ -46,14 +46,15 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
     }
 
     endTime = clock.now();
+    onEnded(this);
   }
 
   BugsnagPerformanceSpanImpl.fromJson(Map<String, dynamic> json,
       [void Function(BugsnagPerformanceSpan)? onEnded])
-      : startTime = (json['startTimeUnixNano'] as int).timeFromNanos,
+      : startTime = int.parse(json['startTimeUnixNano']).timeFromNanos,
         name = json['name'] as String,
         endTime = json['endTimeUnixNano'] != null
-            ? (json['endTimeUnixNano'] as int).timeFromNanos
+            ? int.parse(json['endTimeUnixNano']).timeFromNanos
             : null,
         traceId = _decodeTraceId(json['traceId'] as String?) ?? randomTraceId(),
         spanId = _decodeSpanId(json['spanId'] as String?) ?? randomSpanId(),
@@ -62,13 +63,16 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
 
   @override
   dynamic toJson() => {
-        'startTimeUnixNano': startTime.nanosecondsSinceEpoch,
+        'startTimeUnixNano': startTime.nanosecondsSinceEpoch.toString(),
         'name': name,
-        if (endTime != null) 'endTimeUnixNano': endTime!.nanosecondsSinceEpoch,
+        if (endTime != null)
+          'endTimeUnixNano': endTime!.nanosecondsSinceEpoch.toString(),
         'traceId': _encodeTraceId(traceId),
         'spanId': _encodeSpanId(spanId),
+        'kind': 1,
         if (parentSpanId != null)
           'parentSpanId': _encodeSpanId(parentSpanId ?? BigInt.zero),
+        'attributes': [],
       };
 
   @override
@@ -82,11 +86,11 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
 }
 
 String _encodeSpanId(SpanId spanId) {
-  return spanId.toRadixString(16);
+  return spanId.toRadixString(16).padLeft(16, '0');
 }
 
 String _encodeTraceId(TraceId traceId) {
-  return traceId.toRadixString(16);
+  return traceId.toRadixString(16).padLeft(32, '0');
 }
 
 TraceId? _decodeTraceId(String? traceIdString) {

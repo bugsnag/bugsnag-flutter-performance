@@ -52,7 +52,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _currentBatch ??= SpanBatchImpl();
       _currentBatch?.configure(configuration!);
       _currentBatch?.onBatchFull = _sendBatch;
-      _currentBatch?.add(span);
     }
     return span;
   }

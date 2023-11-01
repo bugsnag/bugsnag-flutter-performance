@@ -111,20 +111,26 @@ void main() {
           'startTimeUnixNano': DateTime.fromMillisecondsSinceEpoch(
                   millisecondsSinceEpoch,
                   isUtc: true)
-              .nanosecondsSinceEpoch,
+              .nanosecondsSinceEpoch
+              .toString(),
           'endTimeUnixNano':
               DateTime.fromMillisecondsSinceEpoch(endTime, isUtc: true)
-                  .nanosecondsSinceEpoch,
+                  .nanosecondsSinceEpoch
+                  .toString(),
           'traceId': 'ffa74cc50baa432515e9b28fc4abf2cb',
           'spanId': 'fa0e2d25f149f215',
           'parentSpanId': '6293f00f47da54de',
         };
         final span = BugsnagPerformanceSpanImpl.fromJson(json);
         expect(span.name, equals(name));
-        expect(span.startTime,
-            equals((json['startTimeUnixNano'] as int).timeFromNanos));
-        expect(span.endTime,
-            equals((json['endTimeUnixNano'] as int).timeFromNanos));
+        expect(
+            span.startTime,
+            equals((int.parse(json['startTimeUnixNano'] as String))
+                .timeFromNanos));
+        expect(
+            span.endTime,
+            equals(
+                (int.parse(json['endTimeUnixNano'] as String)).timeFromNanos));
         expect(span.traceId,
             equals(BigInt.tryParse(json['traceId'] as String, radix: 16)!));
         expect(span.spanId,
@@ -142,12 +148,15 @@ void main() {
           'startTimeUnixNano': DateTime.fromMillisecondsSinceEpoch(
                   millisecondsSinceEpoch,
                   isUtc: true)
-              .nanosecondsSinceEpoch,
+              .nanosecondsSinceEpoch
+              .toString(),
         };
         final span = BugsnagPerformanceSpanImpl.fromJson(json);
         expect(span.name, equals(name));
-        expect(span.startTime,
-            equals((json['startTimeUnixNano'] as int).timeFromNanos));
+        expect(
+            span.startTime,
+            equals(
+                int.parse(json['startTimeUnixNano'] as String).timeFromNanos));
         expect(span.endTime, isNull);
       });
     });
@@ -165,11 +174,12 @@ void main() {
         span.end();
         final json = span.toJson();
         expect(json['name'], equals(span.name));
-        expect(json['startTimeUnixNano'],
+        expect(int.parse(json['startTimeUnixNano']),
             equals(span.startTime.nanosecondsSinceEpoch));
-        expect(json['endTimeUnixNano'],
+        expect(int.parse(json['endTimeUnixNano']),
             equals(span.endTime!.nanosecondsSinceEpoch));
         expect(json['traceId'], equals(span.traceId.toRadixString(16)));
+        expect(json['traceId'].toString().length, equals(32));
         expect(json['spanId'], equals(span.spanId.toRadixString(16)));
         expect(
             json['parentSpanId'], equals(span.parentSpanId!.toRadixString(16)));
@@ -183,7 +193,7 @@ void main() {
                 isUtc: true));
         final json = span.toJson();
         expect(json['name'], equals(span.name));
-        expect(json['startTimeUnixNano'],
+        expect(int.parse(json['startTimeUnixNano']),
             equals(span.startTime.nanosecondsSinceEpoch));
         expect(json['endTimeUnixNano'], isNull);
       });

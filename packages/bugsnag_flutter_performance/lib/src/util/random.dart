@@ -9,9 +9,9 @@ BigInt randomTraceId() {
 }
 
 BigInt randomValue(int length) {
-  BigInt result = BigInt.zero;
   final random = Random.secure();
-  for (var i = 0; i < length; i++) {
+  BigInt result = BigInt.from(random.nextInt(256) & 0xff);
+  for (var i = 1; i < length; i++) {
     int byte = random.nextInt(256);
     result = (result << 8) | BigInt.from(byte & 0xff);
   }
