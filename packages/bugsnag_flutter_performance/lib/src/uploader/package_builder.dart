@@ -51,19 +51,19 @@ class PackageBuilderImpl implements PackageBuilder {
               {
                 'key': 'deployment.environment',
                 'value': {
-                  'stringValue': '40a60c07f50e900efc2e25e5fde2722af3bbd9f4',
+                  'stringValue': 'staging',
                 }
               },
               {
                 'key': 'telemetry.sdk.name',
                 'value': {
-                  'stringValue': '40a60c07f50e900efc2e25e5fde2722af3bbd9f4',
+                  'stringValue': 'bugsnag.performance.flutter',
                 }
               },
               {
                 'key': 'telemetry.sdk.version',
                 'value': {
-                  'stringValue': '40a60c07f50e900efc2e25e5fde2722af3bbd9f4',
+                  'stringValue': '0.0.1',
                 }
               }
             ],
