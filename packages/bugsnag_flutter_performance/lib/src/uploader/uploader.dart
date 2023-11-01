@@ -22,9 +22,12 @@ class UploaderImpl implements Uploader {
   Future<bool> upload({
     required OtlpPackage package,
   }) async {
+    final sentAtTime = clock.now().toUtc();
     var headers = {
       'Bugsnag-Api-Key': apiKey,
-      'Bugsnag-Sent-At': clock.now().toUtc().toIso8601String(),
+      'Bugsnag-Sent-At': sentAtTime
+          .subtract(Duration(microseconds: sentAtTime.microsecond))
+          .toIso8601String(),
       'Bugsnag-Span-Sampling': '1:1'
     };
     headers.addAll(package.headers);
