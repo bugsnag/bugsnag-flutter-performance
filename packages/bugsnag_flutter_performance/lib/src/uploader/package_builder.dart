@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/model/otlp_package.dart';
 import 'package:crypto/crypto.dart';
+import '../extensions/resource_attributes.dart';
 
 const int _minSizeForGzip = 128;
 
@@ -47,26 +46,7 @@ class PackageBuilderImpl implements PackageBuilder {
             }
           ],
           'resource': {
-            'attributes': [
-              {
-                'key': 'deployment.environment',
-                'value': {
-                  'stringValue': 'staging',
-                }
-              },
-              {
-                'key': 'telemetry.sdk.name',
-                'value': {
-                  'stringValue': 'bugsnag.performance.flutter',
-                }
-              },
-              {
-                'key': 'telemetry.sdk.version',
-                'value': {
-                  'stringValue': '0.0.1',
-                }
-              }
-            ],
+            'attributes': ResourceAttributes.resourceAttributes
           },
         }
       ]

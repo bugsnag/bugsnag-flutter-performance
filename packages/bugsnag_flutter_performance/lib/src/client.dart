@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
@@ -31,6 +32,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
   @override
   Future<void> start({String? apiKey, Uri? endpoint}) async {
+    await ResourceAttributes.initializeResourceAttributes();
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
