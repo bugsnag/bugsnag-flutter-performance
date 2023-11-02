@@ -1,19 +1,13 @@
-import 'package:flutter/foundation.dart';
-
 abstract class BugsnagClock {
   DateTime now();
 }
 
-class BugsnagClockImpl extends BindingBase implements BugsnagClock {
-  static BugsnagClockImpl get instance => BindingBase.checkInstance(_instance);
+class BugsnagClockImpl implements BugsnagClock {
+  static BugsnagClockImpl get instance => _instance!;
   static BugsnagClockImpl? _instance;
 
   final _clock = Stopwatch()..start();
   final _initTime = DateTime.now();
-
-  BugsnagClockImpl() {
-    _clock.start();
-  }
 
   @override
   DateTime now() {
@@ -21,15 +15,7 @@ class BugsnagClockImpl extends BindingBase implements BugsnagClock {
   }
 
   static BugsnagClock ensureInitialized() {
-    if (_instance == null) {
-      BugsnagClockImpl();
-    }
+    _instance = _instance ?? BugsnagClockImpl();
     return instance;
-  }
-
-  @override
-  void initInstances() {
-    super.initInstances();
-    _instance = this;
   }
 }
