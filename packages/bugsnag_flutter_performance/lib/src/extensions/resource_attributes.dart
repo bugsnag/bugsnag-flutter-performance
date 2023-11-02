@@ -2,9 +2,7 @@ import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:package_info/package_info.dart';
 
-
 class ResourceAttributes {
-
   static List<Map<String, Object>> resourceAttributes = [];
 
   static Future<void> initializeResourceAttributes() async {
@@ -67,7 +65,9 @@ class ResourceAttributes {
         }
       },
       {
-        "key": Platform.isAndroid ? "bugsnag.app.version_code" : "bugsnag.app.bundle_version",
+        "key": Platform.isAndroid
+            ? "bugsnag.app.version_code"
+            : "bugsnag.app.bundle_version",
         "value": {
           "stringValue": packageInfo.buildNumber,
         }
@@ -105,7 +105,8 @@ class ResourceAttributes {
     return "Unknown";
   }
 
-  static Future<String> getDeviceManufacturer(DeviceInfoPlugin deviceInfo) async {
+  static Future<String> getDeviceManufacturer(
+      DeviceInfoPlugin deviceInfo) async {
     if (Platform.isAndroid) {
       final androidInfo = await deviceInfo.androidInfo;
       return androidInfo.manufacturer;
@@ -115,7 +116,8 @@ class ResourceAttributes {
     return "Unknown";
   }
 
-  static Future<String> getDeviceArchitecture(DeviceInfoPlugin deviceInfo) async {
+  static Future<String> getDeviceArchitecture(
+      DeviceInfoPlugin deviceInfo) async {
     if (Platform.isAndroid) {
       final androidInfo = await deviceInfo.androidInfo;
       return androidInfo.supportedAbis[0];

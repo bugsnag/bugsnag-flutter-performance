@@ -46,9 +46,7 @@ class PackageBuilderImpl implements PackageBuilder {
               'spans': jsonList,
             }
           ],
-          'resource': {
-            'attributes': ResourceAttributes.resourceAttributes
-          },
+          'resource': {'attributes': ResourceAttributes.resourceAttributes},
         }
       ]
     };
