@@ -66,6 +66,12 @@ class ResourceAttributes {
           "stringValue": await getOSVersion(deviceInfo),
         }
       },
+      {
+        "key": Platform.isAndroid ? "bugsnag.app.version_code" : "bugsnag.app.bundle_version",
+        "value": {
+          "stringValue": packageInfo.buildNumber,
+        }
+      }
       // {
       //   "key": "device.id",
       //   "value": {
@@ -81,12 +87,6 @@ class ResourceAttributes {
         "key": "bugsnag.device.android_api_version",
         "value": {
           "stringValue": await getAndroidAPILevel(deviceInfo),
-        }
-      });
-      attributes.add({
-        "key": "bugsnag.app.version_code",
-        "value": {
-          "stringValue": packageInfo.buildNumber,
         }
       });
     }
