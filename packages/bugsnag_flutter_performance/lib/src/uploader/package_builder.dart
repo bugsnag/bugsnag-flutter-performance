@@ -9,15 +9,21 @@ import '../extensions/resource_attributes.dart';
 const int _minSizeForGzip = 128;
 
 abstract class PackageBuilder {
-  OtlpPackage build(
+  Future<OtlpPackage> build(
     List<BugsnagPerformanceSpan> spans,
   );
 }
 
 class PackageBuilderImpl implements PackageBuilder {
+  final ResourceAttributesProvider attributesProvider;
+
+  PackageBuilderImpl({
+    required this.attributesProvider,
+  });
+
   @override
-  OtlpPackage build(List<BugsnagPerformanceSpan> spans) {
-    var payload = _buildPayload(spans: spans);
+  Future<OtlpPackage> build(List<BugsnagPerformanceSpan> spans) async {
+    var payload = await _buildPayload(spans: spans);
     var isZipped = false;
     final uncompressedData = payload;
     if (payload.length >= _minSizeForGzip) {
@@ -34,9 +40,9 @@ class PackageBuilderImpl implements PackageBuilder {
     );
   }
 
-  List<int> _buildPayload({
+  Future<List<int>> _buildPayload({
     required List<BugsnagPerformanceSpan> spans,
-  }) {
+  }) async {
     final jsonList = spans.map((span) => span.toJson()).toList();
     final jsonRequest = {
       'resourceSpans': [
@@ -46,7 +52,9 @@ class PackageBuilderImpl implements PackageBuilder {
               'spans': jsonList,
             }
           ],
-          'resource': {'attributes': ResourceAttributes.resourceAttributes},
+          'resource': {
+            'attributes': await attributesProvider.resourceAttributes()
+          },
         }
       ]
     };

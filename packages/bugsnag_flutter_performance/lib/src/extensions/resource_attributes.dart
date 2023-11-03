@@ -2,10 +2,24 @@ import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:package_info/package_info.dart';
 
-class ResourceAttributes {
-  static List<Map<String, Object>> resourceAttributes = [];
+abstract class ResourceAttributesProvider {
+  Future<List<Map<String, Object>>> resourceAttributes();
+}
 
-  static Future<void> initializeResourceAttributes() async {
+class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
+  List<Map<String, Object>> _resourceAttributes = [];
+  bool _didInitializeAttributes = false;
+
+  @override
+  Future<List<Map<String, Object>>> resourceAttributes() async {
+    if (!_didInitializeAttributes) {
+      await _initializeResourceAttributes();
+      _didInitializeAttributes = true;
+    }
+    return _resourceAttributes;
+  }
+
+  Future<void> _initializeResourceAttributes() async {
     final deviceInfo = DeviceInfoPlugin();
     final packageInfo = await PackageInfo.fromPlatform();
 
@@ -91,7 +105,7 @@ class ResourceAttributes {
       });
     }
 
-    resourceAttributes = attributes;
+    _resourceAttributes = attributes;
   }
 
   static Future<String> getDeviceModel(DeviceInfoPlugin deviceInfo) async {

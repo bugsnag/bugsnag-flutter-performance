@@ -15,8 +15,8 @@ void main() {
       client = BugsnagPerformanceClientImpl();
     });
     group('start', () {
-      test('should set configuration with the provided parameters', () {
-        client.start(apiKey: apiKey, endpoint: endpoint);
+      test('should set configuration with the provided parameters', () async {
+        await client.start(apiKey: apiKey, endpoint: endpoint);
 
         expect(client.configuration!.apiKey, equals(apiKey));
         expect(client.configuration!.endpoint, equals(endpoint));

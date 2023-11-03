@@ -26,13 +26,14 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
   BugsnagPerformanceClientImpl() {
     BugsnagClockImpl.ensureInitialized();
-    _packageBuilder = PackageBuilderImpl();
+    _packageBuilder = PackageBuilderImpl(
+      attributesProvider: ResourceAttributesProviderImpl(),
+    );
     _clock = BugsnagClockImpl.instance;
   }
 
   @override
   Future<void> start({String? apiKey, Uri? endpoint}) async {
-    await ResourceAttributes.initializeResourceAttributes();
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
@@ -69,12 +70,12 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     }
   }
 
-  void _sendBatch(SpanBatch batch) {
+  void _sendBatch(SpanBatch batch) async {
     final spans = batch.drain();
     if (spans.isEmpty) {
       return;
     }
-    final package = _packageBuilder.build(spans);
+    final package = await _packageBuilder.build(spans);
     _uploader?.upload(package: package);
   }
 
