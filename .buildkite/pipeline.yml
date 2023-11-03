@@ -44,7 +44,7 @@ steps:
       queue: opensource
     plugins:
       artifacts#v1.5.0:
-        download: "features/fixtures/app/build/ios/ipa/app-3.10.0.ipa"
+        download: "features/fixtures/mazerunner/build/ios/ipa/mazerunner.ipa"
         upload: "maze_output/failed/**/*"
       docker-compose#v4.7.0:
         pull: maze-runner
