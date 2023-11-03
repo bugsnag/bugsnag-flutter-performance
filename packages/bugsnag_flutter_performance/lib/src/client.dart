@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
@@ -25,7 +26,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
   BugsnagPerformanceClientImpl() {
     BugsnagClockImpl.ensureInitialized();
-    _packageBuilder = PackageBuilderImpl();
+    _packageBuilder = PackageBuilderImpl(
+      attributesProvider: ResourceAttributesProviderImpl(),
+    );
     _clock = BugsnagClockImpl.instance;
   }
 
@@ -67,12 +70,12 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     }
   }
 
-  void _sendBatch(SpanBatch batch) {
+  void _sendBatch(SpanBatch batch) async {
     final spans = batch.drain();
     if (spans.isEmpty) {
       return;
     }
-    final package = _packageBuilder.build(spans);
+    final package = await _packageBuilder.build(spans);
     _uploader?.upload(package: package);
   }
 
