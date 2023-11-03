@@ -63,6 +63,7 @@ steps:
       artifacts#v1.5.0:
         download: "features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
         upload: "maze_output/failed/**/*"
+        upload: "maze_output/passed/**/*"
       docker-compose#v4.7.0:
         pull: maze-runner
         run: maze-runner
