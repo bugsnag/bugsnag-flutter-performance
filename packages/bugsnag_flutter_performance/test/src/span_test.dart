@@ -178,11 +178,13 @@ void main() {
             equals(span.startTime.nanosecondsSinceEpoch));
         expect(int.parse(json['endTimeUnixNano']),
             equals(span.endTime!.nanosecondsSinceEpoch));
-        expect(json['traceId'], equals(span.traceId.toRadixString(16)));
+        expect(json['traceId'],
+            equals(span.traceId.toRadixString(16).padLeft(32, '0')));
         expect(json['traceId'].toString().length, equals(32));
-        expect(json['spanId'], equals(span.spanId.toRadixString(16)));
-        expect(
-            json['parentSpanId'], equals(span.parentSpanId!.toRadixString(16)));
+        expect(json['spanId'],
+            equals(span.spanId.toRadixString(16).padLeft(16, '0')));
+        expect(json['parentSpanId'],
+            equals(span.parentSpanId!.toRadixString(16).padLeft(16, '0')));
       });
 
       test('should encode a running span', () {
