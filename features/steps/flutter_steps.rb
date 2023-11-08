@@ -53,3 +53,64 @@ Then(/^on (Android|iOS), (.+)/) do |platform, step_text|
   current_platform = Maze::Helper.get_current_platform
   step(step_text) if current_platform.casecmp(platform).zero?
 end
+
+Then('every span bool attribute {string} is false') do |attribute|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  spans.map { |span| Maze::check.false span['attributes'].find { |a| a['key'] == attribute }['value']['boolValue'] }
+end
+
+Then('every span bool attribute {string} does not exist') do |attribute|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  spans.map { |span| Maze.check.nil span['attributes'].find { |a| a['key'] == attribute } }
+end
+
+Then('every span string attribute {string} does not exist') do |attribute|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  spans.map { |span| Maze.check.nil span['attributes'].find { |a| a['key'] == attribute } }
+end
+
+Then('all span bool attribute {string} is true') do |attribute|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
+  selected_attributes.map { |a| Maze::check.true a['value']['boolValue'] }
+end
+
+Then('a span bool attribute {string} is true') do |attribute|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
+  selected_attributes = selected_attributes.map { |a| a['value']['boolValue'] == true }
+  Maze.check.false(selected_attributes.empty?)
+end
+
+Then('all span bool attribute {string} is false') do |attribute|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
+  selected_attributes.map { |a| Maze::check.false a['value']['boolValue'] }
+end
+
+Then('a span bool attribute {string} is false') do |attribute|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
+  selected_attributes = selected_attributes.map { |a| a['value']['boolValue'] == false }
+  Maze.check.false(selected_attributes.empty?)
+end
+
+Then('a span bool attribute {string} does not exist') do |attribute|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_keys = spans.map { |span| !span['attributes'].find { |a| a['key'] == attribute } }
+  Maze.check.false(selected_keys.empty?)
+end
+
+Then('a span string attribute {string} matches the regex {string}') do |attribute, pattern|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('stringValue') } }.compact
+  attribute_values = selected_attributes.map { |a| a['value']['stringValue'] }
+  attribute_values.map { |v| Maze.check.match pattern, v }
+end
+
+Then('a span integer attribute {string} is greater than {int}') do |attribute, expected|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('intValue') } }.compact
+  attribute_values = selected_attributes.map { |a| a['value']['intValue'].to_i > expected }
+  Maze.check.false(attribute_values.empty?)
+end
