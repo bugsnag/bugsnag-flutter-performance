@@ -10,3 +10,6 @@ Feature: Manual Spans
     * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
+    * every span bool attribute "bugsnag.span.first_class" is false
+    * every span string attribute "bugsnag.span.category" equals "custom"
+    * every span double attribute "bugsnag.sampling.p" equals 1.0
