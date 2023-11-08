@@ -12,4 +12,4 @@ Feature: Manual Spans
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * every span string attribute "bugsnag.span.category" equals "custom"
-    * every span double attribute "bugsnag.sampling.p" equals 1.0
+    * a span double attribute "bugsnag.sampling.p" equals 1.0
