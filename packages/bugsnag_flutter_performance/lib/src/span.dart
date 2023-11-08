@@ -1,5 +1,6 @@
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
+import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:bugsnag_flutter_performance/src/util/random.dart';
 
@@ -18,6 +19,7 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
   BugsnagPerformanceSpanImpl({
     required this.name,
     required this.startTime,
+    this.attributes = const BugsnagPerformanceSpanAttributes(),
     void Function(BugsnagPerformanceSpan)? onEnded,
     TraceId? traceId,
     SpanId? spanId,
@@ -35,6 +37,7 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
   @override
   SpanId? parentSpanId;
   final DateTime startTime;
+  final BugsnagPerformanceSpanAttributes attributes;
   DateTime? endTime;
   late final void Function(BugsnagPerformanceSpan) onEnded;
   late final BugsnagClock clock;
@@ -59,7 +62,9 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
         traceId = _decodeTraceId(json['traceId'] as String?) ?? randomTraceId(),
         spanId = _decodeSpanId(json['spanId'] as String?) ?? randomSpanId(),
         parentSpanId = _decodeSpanId(json['parentSpanId'] as String?),
-        onEnded = onEnded ?? _onEnded;
+        onEnded = onEnded ?? _onEnded,
+        attributes =
+            BugsnagPerformanceSpanAttributes.fromJson(json['attributes']);
 
   @override
   dynamic toJson() => {
@@ -72,7 +77,7 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
         'kind': 1,
         if (parentSpanId != null)
           'parentSpanId': _encodeSpanId(parentSpanId ?? BigInt.zero),
-        'attributes': [],
+        'attributes': attributes.toJson(),
       };
 
   @override
