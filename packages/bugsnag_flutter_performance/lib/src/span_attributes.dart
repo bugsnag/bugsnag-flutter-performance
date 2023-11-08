@@ -45,7 +45,7 @@ class BugsnagPerformanceSpanAttributes {
         {
           'key': 'bugsnag.sampling.p',
           'value': {
-            'stringValue': samplingProbability,
+            'doubleValue': samplingProbability,
           },
         },
       ];
