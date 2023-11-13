@@ -1,7 +1,7 @@
 import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:package_info/package_info.dart';
-
+import 'package:bugsnag_flutter_performance/src/device_id_manager.dart';
 abstract class ResourceAttributesProvider {
   Future<List<Map<String, Object>>> resourceAttributes();
 }
@@ -85,14 +85,13 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
         "value": {
           "stringValue": packageInfo.buildNumber,
         }
+      },
+      {
+        "key": "device.id",
+        "value": {
+          "stringValue": await DeviceIdManager.getDeviceId(),
+        }
       }
-      // {
-      //   "key": "device.id",
-      //   "value": {
-      //     "stringValue": GET FROM PERSISTENCE LAYER
-      //   }
-      // }
-      // TODO add device.id once persistence is added
     ];
 
     // Add Android-specific attributes
