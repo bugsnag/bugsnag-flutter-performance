@@ -19,6 +19,9 @@ class DeviceIdManager {
   static const String _androidDeviceIdFileName = "/device-id";
   static String _androidDeviceIdFilePath = "";
 
+  static const String _iosDeviceIdFileName = "/device-id";
+  static String _iosDeviceIdFilePath = "";
+
   static Future<String> getDeviceId() async {
     String deviceId = await readDeviceIdFile();
     if(deviceId.isEmpty) {
@@ -38,12 +41,21 @@ class DeviceIdManager {
     return _androidDeviceIdFilePath;
   }
 
+  static Future<String> getIosDeviceIdFilePath() async {
+    if (_iosDeviceIdFilePath.isNotEmpty) {
+      return _iosDeviceIdFilePath;
+    }
+
+    final directory = await getApplicationSupportDirectory();
+    _iosDeviceIdFilePath = directory.path + _iosDeviceIdFileName;
+    return _iosDeviceIdFilePath;
+  }
+
   static Future<String> getDeviceIdFilePath() async {
     if (Platform.isAndroid) {
       return await getAndroidDeviceIdFilePath();
     } else if (Platform.isIOS) {
-      // TODO: Implement iOS
-      return "";
+      return await getIosDeviceIdFilePath();
     }
     return "";
   }
