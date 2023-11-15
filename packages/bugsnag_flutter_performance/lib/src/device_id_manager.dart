@@ -1,16 +1,35 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:uuid/uuid.dart';
 
 import 'package:path_provider/path_provider.dart';
 
-class DeviceIdModel {
+class AndroidDeviceIdModel {
   String id;
+  AndroidDeviceIdModel({required this.id});
+  factory AndroidDeviceIdModel.fromJson(Map<String, dynamic> json) {
+    return AndroidDeviceIdModel(id: json['id']);
+  }
 
-  DeviceIdModel({required this.id});
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+    };
+  }
+}
 
-  factory DeviceIdModel.fromJson(Map<String, dynamic> json) {
-    return DeviceIdModel(id: json['id']);
+class IosDeviceIdModel {
+  String deviceID;
+  IosDeviceIdModel({required this.deviceID});
+  factory IosDeviceIdModel.fromJson(Map<String, dynamic> json) {
+    return IosDeviceIdModel(deviceID: json['deviceID']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'deviceID': deviceID,
+    };
   }
 }
 
@@ -19,7 +38,7 @@ class DeviceIdManager {
   static const String _androidDeviceIdFileName = "/device-id";
   static String _androidDeviceIdFilePath = "";
 
-  static const String _iosDeviceIdFileName = "/device-id";
+  static const String _iosDeviceIdFileName = "/device-id.json";
   static String _iosDeviceIdFilePath = "";
 
   static Future<String> getDeviceId() async {
@@ -80,14 +99,27 @@ class DeviceIdManager {
 
   static String getDeviceIdFromJson(String json) {
     Map<String, dynamic> jsonMap = jsonDecode(json);
-    return DeviceIdModel.fromJson(jsonMap).id;
+    if(Platform.isIOS) {
+      return IosDeviceIdModel.fromJson(jsonMap).deviceID;
+    }else if(Platform.isAndroid) {
+      return AndroidDeviceIdModel.fromJson(jsonMap).id;
+    }
+  return "";
+  }
+
+  static String generateNewDeviceId() {
+    return const Uuid().v4().replaceAll("-","");
   }
 
   static Future<void> createNewDeviceId() async {
-    final deviceId = Uuid().v4();
-    final deviceModel = DeviceIdModel(id: deviceId);
-    final json = jsonEncode(deviceModel);
-    await writeDeviceIdFile(json);
+    final deviceId = generateNewDeviceId();
+    final deviceModel = Platform.isAndroid ? AndroidDeviceIdModel(id: deviceId) : IosDeviceIdModel(deviceID: deviceId);
+    try {
+      final json = jsonEncode(deviceModel);
+      await writeDeviceIdFile(json);
+    } catch (e) {
+      print('Error encoding JSON: $e');
+    }
   }
 
   static Future<void> writeDeviceIdFile(String json) async {
