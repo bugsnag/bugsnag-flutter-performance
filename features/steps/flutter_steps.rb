@@ -121,3 +121,27 @@ Then('a span double attribute {string} equals {float}') do |attribute, value|
   selected_attributes = selected_attributes.map { |a| a['value']['doubleValue'] == value }
   Maze.check.false(selected_attributes.empty?)
 end
+
+When('every trace deviceid is valid and the same') do
+  list = Maze::Server.list_for 'trace'
+  resource_spans = Maze::Helper.read_key_path(list.current[:body], 'resourceSpans')
+
+  # Extract and validate device IDs
+  device_ids = resource_spans.map do |resource_span|
+    attributes = resource_span.dig('resource', 'attributes')
+    device_id_attribute = attributes.find { |a| a['key'] == 'device.id' }
+    device_id_value = device_id_attribute&.dig('value', 'stringValue')
+    
+    # Check device ID length and validity
+    valid_device_id = device_id_value.is_a?(String) && device_id_value.length == 32
+
+    # If device ID is not valid, you might want to handle it appropriately
+    raise "Invalid device ID: #{device_id_value}" unless valid_device_id
+
+    device_id_value
+  end
+
+  # Check if all device IDs are the same
+  Maze.check.true(device_ids.uniq.length == 1)
+end
+

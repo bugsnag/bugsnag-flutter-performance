@@ -2,6 +2,7 @@ import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:package_info/package_info.dart';
 import 'package:bugsnag_flutter_performance/src/device_id_manager.dart';
+
 abstract class ResourceAttributesProvider {
   Future<List<Map<String, Object>>> resourceAttributes();
 }

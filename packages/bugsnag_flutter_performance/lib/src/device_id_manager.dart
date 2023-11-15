@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
+import 'package:package_info/package_info.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -34,7 +34,6 @@ class IosDeviceIdModel {
 }
 
 class DeviceIdManager {
-
   static const String _androidDeviceIdFileName = "/device-id";
   static String _androidDeviceIdFilePath = "";
 
@@ -43,7 +42,7 @@ class DeviceIdManager {
 
   static Future<String> getDeviceId() async {
     String deviceId = await readDeviceIdFile();
-    if(deviceId.isEmpty) {
+    if (deviceId.isEmpty) {
       await createNewDeviceId();
       deviceId = await readDeviceIdFile();
     }
@@ -54,7 +53,6 @@ class DeviceIdManager {
     if (_androidDeviceIdFilePath.isNotEmpty) {
       return _androidDeviceIdFilePath;
     }
-
     final directory = await getApplicationSupportDirectory();
     _androidDeviceIdFilePath = directory.path + _androidDeviceIdFileName;
     return _androidDeviceIdFilePath;
@@ -64,9 +62,10 @@ class DeviceIdManager {
     if (_iosDeviceIdFilePath.isNotEmpty) {
       return _iosDeviceIdFilePath;
     }
-
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final directory = await getApplicationSupportDirectory();
-    _iosDeviceIdFilePath = directory.path + _iosDeviceIdFileName;
+    _iosDeviceIdFilePath =
+        "${directory.path}/bugsnag-shared-${packageInfo.packageName}$_iosDeviceIdFileName";
     return _iosDeviceIdFilePath;
   }
 
@@ -99,21 +98,23 @@ class DeviceIdManager {
 
   static String getDeviceIdFromJson(String json) {
     Map<String, dynamic> jsonMap = jsonDecode(json);
-    if(Platform.isIOS) {
+    if (Platform.isIOS) {
       return IosDeviceIdModel.fromJson(jsonMap).deviceID;
-    }else if(Platform.isAndroid) {
+    } else if (Platform.isAndroid) {
       return AndroidDeviceIdModel.fromJson(jsonMap).id;
     }
-  return "";
+    return "";
   }
 
   static String generateNewDeviceId() {
-    return const Uuid().v4().replaceAll("-","");
+    return const Uuid().v4().replaceAll("-", "");
   }
 
   static Future<void> createNewDeviceId() async {
     final deviceId = generateNewDeviceId();
-    final deviceModel = Platform.isAndroid ? AndroidDeviceIdModel(id: deviceId) : IosDeviceIdModel(deviceID: deviceId);
+    final deviceModel = Platform.isAndroid
+        ? AndroidDeviceIdModel(id: deviceId)
+        : IosDeviceIdModel(deviceID: deviceId);
     try {
       final json = jsonEncode(deviceModel);
       await writeDeviceIdFile(json);
@@ -127,5 +128,4 @@ class DeviceIdManager {
     final file = File(path);
     await file.writeAsString(json);
   }
-
 }
