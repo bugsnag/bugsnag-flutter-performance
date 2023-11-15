@@ -131,9 +131,17 @@ class DeviceIdManager {
     try {
       final path = await getDeviceIdFilePath();
       final file = File(path);
+
+      // Create directory if it doesn't exist
+      final directory = Directory(file.parent.path);
+      if (!directory.existsSync()) {
+        directory.createSync(recursive: true);
+      }
+
       await file.writeAsString(json);
     } catch (e) {
       print('Error writing device ID file: $e');
     }
   }
+
 }
