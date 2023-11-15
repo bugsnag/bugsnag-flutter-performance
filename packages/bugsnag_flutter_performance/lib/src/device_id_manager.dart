@@ -63,7 +63,7 @@ class DeviceIdManager {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final directory = await getApplicationSupportDirectory();
     _iosDeviceIdFilePath =
-    "${directory.path}/bugsnag-shared-${packageInfo.packageName}$_iosDeviceIdFileName";
+        "${directory.path}/bugsnag-shared-${packageInfo.packageName}$_iosDeviceIdFileName";
     return _iosDeviceIdFilePath;
   }
 
@@ -90,7 +90,7 @@ class DeviceIdManager {
 
       return fileContents.isEmpty ? "" : getDeviceIdFromJson(fileContents);
     } catch (e) {
-      print('Error reading device ID file: $e');
+      //print('Error reading device ID file: $e');
       return "";
     }
   }
@@ -105,7 +105,7 @@ class DeviceIdManager {
       }
       return "";
     } catch (e) {
-      print('Error decoding JSON: $e');
+      //print('Error decoding JSON: $e');
       return "";
     }
   }
@@ -123,7 +123,7 @@ class DeviceIdManager {
       final json = jsonEncode(deviceModel);
       await writeDeviceIdFile(json);
     } catch (e) {
-      print('Error encoding JSON: $e');
+      //print('Error encoding JSON: $e');
     }
   }
 
@@ -140,8 +140,7 @@ class DeviceIdManager {
 
       await file.writeAsString(json);
     } catch (e) {
-      print('Error writing device ID file: $e');
+      //print('Error writing device ID file: $e');
     }
   }
-
 }
