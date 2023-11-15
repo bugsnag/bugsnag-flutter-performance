@@ -2,42 +2,40 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:package_info/package_info.dart';
 import 'package:uuid/uuid.dart';
-
 import 'package:path_provider/path_provider.dart';
 
 class AndroidDeviceIdModel {
   String id;
+
   AndroidDeviceIdModel({required this.id});
+
   factory AndroidDeviceIdModel.fromJson(Map<String, dynamic> json) {
     return AndroidDeviceIdModel(id: json['id']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-    };
+    return {'id': id};
   }
 }
 
 class IosDeviceIdModel {
   String deviceID;
+
   IosDeviceIdModel({required this.deviceID});
+
   factory IosDeviceIdModel.fromJson(Map<String, dynamic> json) {
     return IosDeviceIdModel(deviceID: json['deviceID']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'deviceID': deviceID,
-    };
+    return {'deviceID': deviceID};
   }
 }
 
 class DeviceIdManager {
   static const String _androidDeviceIdFileName = "/device-id";
-  static String _androidDeviceIdFilePath = "";
-
   static const String _iosDeviceIdFileName = "/device-id.json";
+  static String _androidDeviceIdFilePath = "";
   static String _iosDeviceIdFilePath = "";
 
   static Future<String> getDeviceId() async {
@@ -65,7 +63,7 @@ class DeviceIdManager {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final directory = await getApplicationSupportDirectory();
     _iosDeviceIdFilePath =
-        "${directory.path}/bugsnag-shared-${packageInfo.packageName}$_iosDeviceIdFileName";
+    "${directory.path}/bugsnag-shared-${packageInfo.packageName}$_iosDeviceIdFileName";
     return _iosDeviceIdFilePath;
   }
 
@@ -92,18 +90,24 @@ class DeviceIdManager {
 
       return fileContents.isEmpty ? "" : getDeviceIdFromJson(fileContents);
     } catch (e) {
+      print('Error reading device ID file: $e');
       return "";
     }
   }
 
   static String getDeviceIdFromJson(String json) {
-    Map<String, dynamic> jsonMap = jsonDecode(json);
-    if (Platform.isIOS) {
-      return IosDeviceIdModel.fromJson(jsonMap).deviceID;
-    } else if (Platform.isAndroid) {
-      return AndroidDeviceIdModel.fromJson(jsonMap).id;
+    try {
+      Map<String, dynamic> jsonMap = jsonDecode(json);
+      if (Platform.isIOS) {
+        return IosDeviceIdModel.fromJson(jsonMap).deviceID;
+      } else if (Platform.isAndroid) {
+        return AndroidDeviceIdModel.fromJson(jsonMap).id;
+      }
+      return "";
+    } catch (e) {
+      print('Error decoding JSON: $e');
+      return "";
     }
-    return "";
   }
 
   static String generateNewDeviceId() {
@@ -124,8 +128,12 @@ class DeviceIdManager {
   }
 
   static Future<void> writeDeviceIdFile(String json) async {
-    final path = await getDeviceIdFilePath();
-    final file = File(path);
-    await file.writeAsString(json);
+    try {
+      final path = await getDeviceIdFilePath();
+      final file = File(path);
+      await file.writeAsString(json);
+    } catch (e) {
+      print('Error writing device ID file: $e');
+    }
   }
 }
