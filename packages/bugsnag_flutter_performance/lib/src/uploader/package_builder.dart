@@ -12,6 +12,10 @@ abstract class PackageBuilder {
   Future<OtlpPackage> build(
     List<BugsnagPerformanceSpan> spans,
   );
+  Future<OtlpPackage> buildFromCache(
+      Map<String, String> headers,
+      Uint8List body
+    );
 }
 
 class PackageBuilderImpl implements PackageBuilder {
@@ -78,5 +82,13 @@ class PackageBuilderImpl implements PackageBuilder {
     required List<int> payload,
   }) {
     return 'sha1 ${sha1.convert(payload)}';
+  }
+
+  @override
+  Future<OtlpPackage> buildFromCache(Map<String, String> headers, Uint8List body) async {
+      return OtlpPackage(
+        headers: headers,
+        payload: body,
+      );
   }
 }
