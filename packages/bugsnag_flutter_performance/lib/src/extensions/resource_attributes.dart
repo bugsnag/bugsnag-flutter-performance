@@ -10,6 +10,7 @@ abstract class ResourceAttributesProvider {
 class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
   List<Map<String, Object>> _resourceAttributes = [];
   bool _didInitializeAttributes = false;
+  final DeviceIdManager _deviceIdManager = DeviceIdManagerImp();
 
   @override
   Future<List<Map<String, Object>>> resourceAttributes() async {
@@ -90,7 +91,7 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
       {
         "key": "device.id",
         "value": {
-          "stringValue": await DeviceIdManager.getDeviceId(),
+          "stringValue": await _deviceIdManager.getDeviceId(),
         }
       }
     ];

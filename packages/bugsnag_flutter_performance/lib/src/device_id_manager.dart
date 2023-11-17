@@ -32,22 +32,36 @@ class IosDeviceIdModel {
   }
 }
 
-class DeviceIdManager {
-  static const String _androidDeviceIdFileName = "/device-id";
-  static const String _iosDeviceIdFileName = "/device-id.json";
-  static String _androidDeviceIdFilePath = "";
-  static String _iosDeviceIdFilePath = "";
+abstract class DeviceIdManager {
+  Future<String> getDeviceId();
+}
 
-  static Future<String> getDeviceId() async {
-    String deviceId = await readDeviceIdFile();
+class DeviceIdManagerImp extends DeviceIdManager {
+  final String _androidDeviceIdFileName = '/device-id';
+  final String _iosDeviceIdFileName = '/device-id.json';
+  String _androidDeviceIdFilePath = '';
+  String _iosDeviceIdFilePath = '';
+
+  @override
+  Future<String> getDeviceId() async {
+    String deviceId = await _readDeviceIdFile();
     if (deviceId.isEmpty) {
-      await createNewDeviceId();
-      deviceId = await readDeviceIdFile();
+      await _createNewDeviceId();
+      deviceId = await _readDeviceIdFile();
     }
     return deviceId;
   }
 
-  static Future<String> getAndroidDeviceIdFilePath() async {
+  Future<String> _getDeviceIdFilePath() async {
+    if (Platform.isAndroid) {
+      return await _getAndroidDeviceIdFilePath();
+    } else if (Platform.isIOS) {
+      return await _getIosDeviceIdFilePath();
+    }
+    return '';
+  }
+
+  Future<String> _getAndroidDeviceIdFilePath() async {
     if (_androidDeviceIdFilePath.isNotEmpty) {
       return _androidDeviceIdFilePath;
     }
@@ -56,46 +70,37 @@ class DeviceIdManager {
     return _androidDeviceIdFilePath;
   }
 
-  static Future<String> getIosDeviceIdFilePath() async {
+  Future<String> _getIosDeviceIdFilePath() async {
     if (_iosDeviceIdFilePath.isNotEmpty) {
       return _iosDeviceIdFilePath;
     }
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final directory = await getApplicationSupportDirectory();
     _iosDeviceIdFilePath =
-        "${directory.path}/bugsnag-shared-${packageInfo.packageName}$_iosDeviceIdFileName";
+        '${directory.path}/bugsnag-shared-${packageInfo.packageName}$_iosDeviceIdFileName';
     return _iosDeviceIdFilePath;
   }
 
-  static Future<String> getDeviceIdFilePath() async {
-    if (Platform.isAndroid) {
-      return await getAndroidDeviceIdFilePath();
-    } else if (Platform.isIOS) {
-      return await getIosDeviceIdFilePath();
-    }
-    return "";
-  }
-
-  static Future<String> readDeviceIdFile() async {
+  Future<String> _readDeviceIdFile() async {
     try {
-      final path = await getDeviceIdFilePath();
+      final path = await _getDeviceIdFilePath();
       final file = File(path);
       bool fileExists = await file.exists();
 
       if (!fileExists) {
-        return "";
+        return '';
       }
 
       final fileContents = await file.readAsString();
 
-      return fileContents.isEmpty ? "" : getDeviceIdFromJson(fileContents);
+      return fileContents.isEmpty ? '' : _getDeviceIdFromJson(fileContents);
     } catch (e) {
       //print('Error reading device ID file: $e');
-      return "";
+      return '';
     }
   }
 
-  static String getDeviceIdFromJson(String json) {
+  String _getDeviceIdFromJson(String json) {
     try {
       Map<String, dynamic> jsonMap = jsonDecode(json);
       if (Platform.isIOS) {
@@ -103,33 +108,33 @@ class DeviceIdManager {
       } else if (Platform.isAndroid) {
         return AndroidDeviceIdModel.fromJson(jsonMap).id;
       }
-      return "";
+      return '';
     } catch (e) {
       //print('Error decoding JSON: $e');
-      return "";
+      return '';
     }
   }
 
-  static String generateNewDeviceId() {
-    return const Uuid().v4().replaceAll("-", "");
+  String _generateNewDeviceId() {
+    return const Uuid().v4().replaceAll('-', '');
   }
 
-  static Future<void> createNewDeviceId() async {
-    final deviceId = generateNewDeviceId();
+  Future<void> _createNewDeviceId() async {
+    final deviceId = _generateNewDeviceId();
     final deviceModel = Platform.isAndroid
         ? AndroidDeviceIdModel(id: deviceId)
         : IosDeviceIdModel(deviceID: deviceId);
     try {
       final json = jsonEncode(deviceModel);
-      await writeDeviceIdFile(json);
+      await _writeDeviceIdFile(json);
     } catch (e) {
       //print('Error encoding JSON: $e');
     }
   }
 
-  static Future<void> writeDeviceIdFile(String json) async {
+  Future<void> _writeDeviceIdFile(String json) async {
     try {
-      final path = await getDeviceIdFilePath();
+      final path = await _getDeviceIdFilePath();
       final file = File(path);
 
       // Create directory if it doesn't exist

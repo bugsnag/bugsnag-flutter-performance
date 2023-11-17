@@ -18,7 +18,7 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: TextButton(onPressed: doSpan, child: Text('Hello World!'))
+          child: TextButton(onPressed: startTestsSpan, child: Text('send test spans'))
         ),
       ),
     );
@@ -27,9 +27,8 @@ class MainApp extends StatelessWidget {
 
 }
 
-void doSpan()
-{
-  BugsnagPerformance.start(apiKey: apiKey, endpoint: Uri.parse( "https://webhook.site/1ddfa7ad-5ce3-4faf-9d2c-9ee3bf4a3d47" ));
+void startTestsSpan() {
+  BugsnagPerformance.start(apiKey: apiKey);
   for(var i = 0; i < 200; i++) {
     BugsnagPerformance.startSpan("test " + i.toString()).end();
   }
