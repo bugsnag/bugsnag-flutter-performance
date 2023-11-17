@@ -1,6 +1,7 @@
 import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:package_info/package_info.dart';
+import 'package:bugsnag_flutter_performance/src/device_id_manager.dart';
 
 abstract class ResourceAttributesProvider {
   Future<List<Map<String, Object>>> resourceAttributes();
@@ -9,6 +10,7 @@ abstract class ResourceAttributesProvider {
 class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
   List<Map<String, Object>> _resourceAttributes = [];
   bool _didInitializeAttributes = false;
+  final DeviceIdManager _deviceIdManager = DeviceIdManagerImp();
 
   @override
   Future<List<Map<String, Object>>> resourceAttributes() async {
@@ -85,14 +87,13 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
         "value": {
           "stringValue": packageInfo.buildNumber,
         }
+      },
+      {
+        "key": "device.id",
+        "value": {
+          "stringValue": await _deviceIdManager.getDeviceId(),
+        }
       }
-      // {
-      //   "key": "device.id",
-      //   "value": {
-      //     "stringValue": GET FROM PERSISTENCE LAYER
-      //   }
-      // }
-      // TODO add device.id once persistence is added
     ];
 
     // Add Android-specific attributes
