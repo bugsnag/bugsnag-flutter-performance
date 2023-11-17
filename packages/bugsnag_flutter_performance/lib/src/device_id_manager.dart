@@ -37,8 +37,8 @@ abstract class DeviceIdManager {
 }
 
 class DeviceIdManagerImp extends DeviceIdManager {
-  final String _androidDeviceIdFileName = '/device-id';
-  final String _iosDeviceIdFileName = '/device-id.json';
+  final _androidDeviceIdFileName = '/device-id';
+  final _iosDeviceIdFileName = '/device-id.json';
   String _androidDeviceIdFilePath = '';
   String _iosDeviceIdFilePath = '';
 
