@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:path_provider/path_provider.dart';
 
+import 'model/otlp_package.dart';
+
 abstract class RetryQueue {
-  Future<void> savePayload({required Map<String, String> headers, required String body});
-  Future<void> deletePayloadById(String id);
+  Future<void> enqueue({required Map<String, String> headers, required Uint8List body});
   Future<void> flush();
 }
 
@@ -15,23 +17,16 @@ class FileRetryQueue implements RetryQueue {
   static const String _cacheDirectoryName = '/bugsnag-performance/v1/batches';
   static const Duration _maxAge = Duration(hours: 24);
   final Uuid _uuid = const Uuid();
+  final Uploader? _uploader;
+
+  FileRetryQueue(Uploader uploader) : _uploader = uploader;
 
   @override
-  Future<void> savePayload({required Map<String, String> headers, required String body}) async {
+  Future<void> enqueue({required Map<String, String> headers, required Uint8List body}) async {
     final id = _uuid.v4();
     final payload = _encodePayload(id, headers, body);
     final fileName = _generateFileName(id);
     await _writeToFile(fileName, payload);
-  }
-
-  @override
-  Future<void> deletePayloadById(String id) async {
-    final cacheDirectory = await _getCacheDirectory();
-    final fileName = _generateFileName(id);
-    final file = File('${cacheDirectory.path}/$fileName');
-    if (file.existsSync()) {
-      file.deleteSync();
-    }
   }
 
   @override
@@ -55,11 +50,11 @@ class FileRetryQueue implements RetryQueue {
     }
   }
 
-  String _encodePayload(String id, Map<String, String> headers, String body) {
+  String _encodePayload(String id, Map<String, String> headers, Uint8List body) {
     final payload = {
       'id': id,
       'headers': headers,
-      'body': base64Encode(Uint8List.fromList(utf8.encode(body))),
+      'body': base64Encode(body),
     };
 
     return jsonEncode(payload);
@@ -86,14 +81,23 @@ class FileRetryQueue implements RetryQueue {
     final bodyBase64 = decodedPayload['body'] as String;
     final bodyBytes = base64Decode(bodyBase64);
 
+    final package = OtlpPackage(
+      headers: headers,
+      payload: bodyBytes,
+    );
+    final success = await _uploader?.upload(package: package);
+    if (success == true) {
+      await _deletePayloadById(id);
+    }
+  }
 
-    // @ROBERT here is where i'm unsure on how to procced
-    // What i would like is to have a method that tries to send the payload
-    // if it works then it can delete the payload from cache by using the payload id
-    // My question is, should i have my own instances of the package builder and uploader
-    // or should i use the ones that are already created in the client?
-    // notice how i have already added the method "buildFromCache" for a package built from a cached payload
-    // Please let me know how i should move forward
+  Future<void> _deletePayloadById(String id) async {
+    final cacheDirectory = await _getCacheDirectory();
+    final fileName = _generateFileName(id);
+    final file = File('${cacheDirectory.path}/$fileName');
+    if (file.existsSync()) {
+      file.deleteSync();
+    }
   }
 
   Future<Directory> _getCacheDirectory() async {
