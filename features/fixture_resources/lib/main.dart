@@ -204,6 +204,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
 
   Future<void> _clearPersistentData() async
   {
+      print("Should clear the cache");
       final appCacheDir = await getApplicationSupportDirectory();
       try {
         await Directory('${appCacheDir.path}/bugsnag-performance').delete(recursive: true);
