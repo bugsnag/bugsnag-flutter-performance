@@ -80,8 +80,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       return;
     }
     final package = await _packageBuilder.build(spans);
-    final success = await _uploader?.upload(package: package);
-    if (success != null && !success) {
+    final result = await _uploader?.upload(package: package);
+    if (result == RequestResult.retriableFailure) {
       _retryQueue?.enqueue(headers: package.headers, body: package.payload);
     }
   }
