@@ -185,10 +185,11 @@ class _HomePageState extends State<MazeRunnerHomePage> {
       final command = Command.fromJsonString(response.body);
       _scenarioNameController.text = command.scenarioName;
       _extraConfigController.text = command.extraConfig;
+      print("Doing Action: ${command.action}");
 
       switch (command.action) {
         case 'clear_cache':
-          _clearPersistentData();
+          await _clearPersistentData();
           break;
         case 'run_scenario':
           _onRunScenario(context);
