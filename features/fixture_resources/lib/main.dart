@@ -213,7 +213,6 @@ class _HomePageState extends State<MazeRunnerHomePage> {
       } catch (e) {
         print("Couldn't delete bugsnag-performance directory: $e");
       }
-      exit(0);
   }
 
   /// Starts Bugsnag
