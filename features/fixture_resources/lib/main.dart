@@ -187,6 +187,9 @@ class _HomePageState extends State<MazeRunnerHomePage> {
       _extraConfigController.text = command.extraConfig;
 
       switch (command.action) {
+        case 'clear_cache':
+          _clearPersistentData();
+          break;
         case 'run_scenario':
           _onRunScenario(context);
           break;
@@ -197,6 +200,18 @@ class _HomePageState extends State<MazeRunnerHomePage> {
             .then((value) => _onRunCommand(context, retry: true));
       }
     }
+  }
+
+  Future<void> _clearPersistentData() async
+  {
+      final appCacheDir = await getApplicationSupportDirectory();
+      try {
+        await Directory('${appCacheDir.path}/bugsnag-performance').delete(recursive: true);
+        print("Clear cache complete");
+      } catch (e) {
+        print("Couldn't delete bugsnag-performance directory: $e");
+      }
+      exit(0);
   }
 
   /// Starts Bugsnag
@@ -210,8 +225,6 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     if (scenario == null) {
       return;
     }
-    //TODO: Clear persistent data
-    // await scenario.clearPersistentData();
 
     scenario.extraConfig = _extraConfigController.value.text;
 
