@@ -79,5 +79,4 @@ class PackageBuilderImpl implements PackageBuilder {
   }) {
     return 'sha1 ${sha1.convert(payload)}';
   }
-
 }

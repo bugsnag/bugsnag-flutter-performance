@@ -7,12 +7,13 @@ import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 abstract class Uploader {
   Future<RequestResult> upload({required OtlpPackage package});
 }
-enum RequestResult
-{
+
+enum RequestResult {
   success,
   retriableFailure,
   permanentFailure,
 }
+
 class UploaderImpl implements Uploader {
   final String apiKey;
   final Uri url;
@@ -62,8 +63,9 @@ class UploaderImpl implements Uploader {
       case 429:
         return RequestResult.retriableFailure;
       default:
-        return statusCode >= 500 ? RequestResult.retriableFailure : RequestResult.permanentFailure;
+        return statusCode >= 500
+            ? RequestResult.retriableFailure
+            : RequestResult.permanentFailure;
     }
   }
-
 }

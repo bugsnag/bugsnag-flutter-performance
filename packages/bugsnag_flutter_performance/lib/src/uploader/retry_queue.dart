@@ -14,8 +14,8 @@ class CachedPayloadModel {
 
   factory CachedPayloadModel.fromJson(Map<String, dynamic> json) {
     dynamic headersJson = json['headers'];
-    Map<String, String> headers = Map<String, String>.from(
-        headersJson.map((key, value) => MapEntry<String, String>(key, value.toString())));
+    Map<String, String> headers = Map<String, String>.from(headersJson
+        .map((key, value) => MapEntry<String, String>(key, value.toString())));
 
     return CachedPayloadModel(
       headers: headers,
@@ -50,7 +50,8 @@ class FileRetryQueue implements RetryQueue {
     required Map<String, String> headers,
     required Uint8List body,
   }) async {
-    final payload = jsonEncode(CachedPayloadModel(headers: headers, body: body));
+    final payload =
+        jsonEncode(CachedPayloadModel(headers: headers, body: body));
     final fileName = _generateFileName();
     await _writeToFile(fileName, payload);
   }
@@ -71,7 +72,8 @@ class FileRetryQueue implements RetryQueue {
         file.deleteSync();
       } else {
         final payload = await file.readAsString();
-        final cachedPayloadModel = CachedPayloadModel.fromJson(jsonDecode(payload));
+        final cachedPayloadModel =
+            CachedPayloadModel.fromJson(jsonDecode(payload));
         final success = await _sendPayload(cachedPayloadModel);
         if (success) {
           file.deleteSync();
