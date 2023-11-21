@@ -1,5 +1,5 @@
 class BugsnagPerformanceSpanAttributes {
-  const BugsnagPerformanceSpanAttributes({
+  BugsnagPerformanceSpanAttributes({
     this.category = 'custom',
     this.isFirstClass,
     this.samplingProbability = 1.0,
@@ -7,7 +7,7 @@ class BugsnagPerformanceSpanAttributes {
 
   final String category;
   final bool? isFirstClass;
-  final double samplingProbability;
+  double samplingProbability;
 
   BugsnagPerformanceSpanAttributes.fromJson(dynamic json)
       : category = _value(

@@ -1,3 +1,4 @@
+import 'package:bugsnag_flutter_performance/src/uploader/sampler.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/model/otlp_package.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
@@ -11,11 +12,13 @@ class UploaderImpl implements Uploader {
   final Uri url;
   final UploaderClient client;
   final BugsnagClock clock;
+  final Sampler sampler;
   UploaderImpl({
     required this.apiKey,
     required this.url,
     required this.client,
     required this.clock,
+    required this.sampler,
   });
 
   @override

@@ -69,7 +69,7 @@ test:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) test -r expanded --suppress-analytics
 
 format:
-	dart format packages/bugsnag_flutter_performance example features/fixtures/app
+	dart format packages/bugsnag_flutter_performance examples features/fixture_resources/lib
 
 lint:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) analyze --suppress-analytics

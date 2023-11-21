@@ -200,9 +200,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
   }
 
   /// Starts Bugsnag
-  Future<void> _onStartBugsnag() async {
-
-  }
+  Future<void> _onStartBugsnag() async {}
 
   /// Runs a scenario, starting bugsnag first
   void _onRunScenario(BuildContext context) async {
