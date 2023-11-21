@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
+import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
+import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/sampler.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
@@ -20,13 +22,16 @@ abstract class BugsnagPerformanceClient {
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   BugsnagPerformanceConfiguration? configuration;
+  late RetryQueueBuilder retryQueueBuilder;
   Uploader? _uploader;
   SpanBatch? _currentBatch;
+  RetryQueue? _retryQueue;
   Sampler? _sampler;
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
 
   BugsnagPerformanceClientImpl() {
+    retryQueueBuilder = RetryQueueBuilderImpl();
     BugsnagClockImpl.ensureInitialized();
     _packageBuilder = PackageBuilderImpl(
       attributesProvider: ResourceAttributesProviderImpl(),
@@ -41,6 +46,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
     );
     _setup();
+    await _retryQueue?.flush();
   }
 
   @override
@@ -73,6 +79,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         clock: _clock,
         sampler: _sampler!,
       );
+      _retryQueue = retryQueueBuilder.build(_uploader!);
     }
   }
 
@@ -85,7 +92,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       return;
     }
     final package = await _packageBuilder.build(spans);
-    _uploader?.upload(package: package);
+    final result = await _uploader?.upload(package: package);
+    if (result == RequestResult.retriableFailure) {
+      _retryQueue?.enqueue(headers: package.headers, body: package.payload);
+    }
   }
 
   void setBatchSize(int batchSize) {

@@ -1,10 +1,17 @@
+import 'dart:io';
 import 'package:bugsnag_flutter_performance/src/uploader/sampler.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/model/otlp_package.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 
 abstract class Uploader {
-  Future<bool> upload({required OtlpPackage package});
+  Future<RequestResult> upload({required OtlpPackage package});
+}
+
+enum RequestResult {
+  success,
+  retriableFailure,
+  permanentFailure,
 }
 
 class UploaderImpl implements Uploader {
@@ -22,7 +29,7 @@ class UploaderImpl implements Uploader {
   });
 
   @override
-  Future<bool> upload({
+  Future<RequestResult> upload({
     required OtlpPackage package,
   }) async {
     final sentAtTime = clock.now().toUtc();
@@ -34,10 +41,32 @@ class UploaderImpl implements Uploader {
       'Bugsnag-Span-Sampling': '1:1'
     };
     headers.addAll(package.headers);
-    final request = await client.post(url: url);
-    request.setHeaders(headers);
-    request.setBody(package.payload);
-    final response = await request.send();
-    return response.statusCode / 100 == 2;
+    try {
+      final request = await client.post(url: url);
+      request.setHeaders(headers);
+      request.setBody(package.payload);
+      final response = await request.send();
+      return _getResult(response.statusCode);
+    } on SocketException catch (_) {
+      return RequestResult.retriableFailure;
+    } catch (_) {
+      return RequestResult.permanentFailure;
+    }
+  }
+
+  RequestResult _getResult(int statusCode) {
+    switch (statusCode) {
+      case 200:
+      case 202:
+        return RequestResult.success;
+      case 0:
+      case 408:
+      case 429:
+        return RequestResult.retriableFailure;
+      default:
+        return statusCode >= 500
+            ? RequestResult.retriableFailure
+            : RequestResult.permanentFailure;
+    }
   }
 }

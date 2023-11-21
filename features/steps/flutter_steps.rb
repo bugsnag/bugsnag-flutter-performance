@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+When('I clear the Bugsnag cache') do
+  execute_command "clear_cache",""
+end
+
+When('I wait for requests to persist') do
+  sleep 2
+end
+
 When('I run {string}') do |scenario_name|
   execute_command :run_scenario, scenario_name
 end

@@ -1,11 +1,9 @@
-import 'package:bugsnag_flutter/bugsnag_flutter.dart';
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:flutter/material.dart';
 
 const apiKey = 'add_your_api_key_here';
 
 Future<void> main() async {
-  await bugsnag.start(apiKey: '227df1042bc7772c321dbde3b31a03c2');
   runApp(const MainApp());
 }
 
