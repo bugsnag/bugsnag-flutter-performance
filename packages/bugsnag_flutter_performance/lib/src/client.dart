@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
+import 'package:bugsnag_flutter_performance/src/uploader/sampler.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
@@ -23,6 +24,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   Uploader? _uploader;
   SpanBatch? _currentBatch;
   RetryQueue? _retryQueue;
+  Sampler? _sampler;
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
 
@@ -50,7 +52,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       name: name,
       startTime: startTime ?? _clock.now(),
       onEnded: (endedSpan) {
-        _currentBatch?.add(endedSpan);
+        if (_sampler?.sample(endedSpan) ?? true) {
+          _currentBatch?.add(endedSpan);
+        }
       },
     );
     span.clock = _clock;
@@ -63,19 +67,24 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   void _setup() {
+    _sampler = SamplerImpl();
     if (configuration?.endpoint != null && configuration?.apiKey != null) {
       _uploader = UploaderImpl(
         apiKey: configuration!.apiKey!,
         url: configuration!.endpoint!,
         client: UploaderClientImpl(httpClient: HttpClient()),
         clock: _clock,
+        sampler: _sampler!,
       );
       _retryQueue = FileRetryQueue(_uploader!);
     }
   }
 
   void _sendBatch(SpanBatch batch) async {
-    final spans = batch.drain();
+    var spans = batch.drain();
+    if (_sampler != null) {
+      spans = _sampler!.sampled(spans);
+    }
     if (spans.isEmpty) {
       return;
     }

@@ -19,15 +19,16 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
   BugsnagPerformanceSpanImpl({
     required this.name,
     required this.startTime,
-    this.attributes = const BugsnagPerformanceSpanAttributes(),
     void Function(BugsnagPerformanceSpan)? onEnded,
     TraceId? traceId,
     SpanId? spanId,
+    BugsnagPerformanceSpanAttributes? attributes,
     this.parentSpanId,
   }) {
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
+    this.attributes = attributes ?? BugsnagPerformanceSpanAttributes();
   }
   final String name;
   @override
@@ -37,7 +38,7 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
   @override
   SpanId? parentSpanId;
   final DateTime startTime;
-  final BugsnagPerformanceSpanAttributes attributes;
+  late final BugsnagPerformanceSpanAttributes attributes;
   DateTime? endTime;
   late final void Function(BugsnagPerformanceSpan) onEnded;
   late final BugsnagClock clock;
@@ -88,6 +89,12 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
 
   @override
   int get hashCode => toJson().hashCode;
+
+  void updateSamplingProbability(double samplingProbability) {
+    if (samplingProbability < attributes.samplingProbability) {
+      attributes.samplingProbability = samplingProbability;
+    }
+  }
 }
 
 String _encodeSpanId(SpanId spanId) {

@@ -203,22 +203,20 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     }
   }
 
-  Future<void> _clearPersistentData() async
-  {
-      print("Should clear the cache");
-      final appCacheDir = await getApplicationSupportDirectory();
-      try {
-        await Directory('${appCacheDir.path}/bugsnag-performance').delete(recursive: true);
-        print("Clear cache complete");
-      } catch (e) {
-        print("Couldn't delete bugsnag-performance directory: $e");
-      }
+  Future<void> _clearPersistentData() async {
+    print("Should clear the cache");
+    final appCacheDir = await getApplicationSupportDirectory();
+    try {
+      await Directory('${appCacheDir.path}/bugsnag-performance')
+          .delete(recursive: true);
+      print("Clear cache complete");
+    } catch (e) {
+      print("Couldn't delete bugsnag-performance directory: $e");
+    }
   }
 
   /// Starts Bugsnag
-  Future<void> _onStartBugsnag() async {
-
-  }
+  Future<void> _onStartBugsnag() async {}
 
   /// Runs a scenario, starting bugsnag first
   void _onRunScenario(BuildContext context) async {
