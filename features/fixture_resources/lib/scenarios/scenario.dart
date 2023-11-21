@@ -12,8 +12,6 @@ abstract class Scenario {
     await MazeRunnerChannels.clearPersistentData();
   }
 
-  // Future<void> startBugsnag() => null;
-
   Widget? createWidget() => null;
 
   Future<void> run();
