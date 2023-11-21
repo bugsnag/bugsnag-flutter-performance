@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 
+import '../util/clock.dart';
 import 'model/otlp_package.dart';
 
 class CachedPayloadModel {
@@ -66,7 +67,7 @@ class FileRetryQueue implements RetryQueue {
     final files = cacheDirectory.listSync().cast<File>()
       ..sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
 
-    final now = DateTime.now();
+    final now = BugsnagClockImpl.instance.now();
     for (var file in files) {
       if (now.difference(file.lastModifiedSync()) > _maxAge) {
         file.deleteSync();
@@ -102,7 +103,7 @@ class FileRetryQueue implements RetryQueue {
   }
 
   String _generateFileName() {
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final timestamp = BugsnagClockImpl.instance.now().millisecondsSinceEpoch;
     return 'payload_$timestamp.json';
   }
 
