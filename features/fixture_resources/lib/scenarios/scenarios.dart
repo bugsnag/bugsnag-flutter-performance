@@ -10,5 +10,6 @@ class ScenarioInfo<T extends Scenario> {
 
 // Flutter obfuscation *requires* that we specify the name as a raw String in order to match the runtime class
 final List<ScenarioInfo<Scenario>> scenarios = [
-  ScenarioInfo('ManualSpanScenario', () => ManualSpanScenario())
+  ScenarioInfo('ManualSpanScenario', () => ManualSpanScenario()),
+  ScenarioInfo('StartSdkDefault', () => StartSdkDefault())
 ];
