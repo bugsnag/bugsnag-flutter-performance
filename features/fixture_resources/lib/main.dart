@@ -141,13 +141,13 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     _scenarioNameController = TextEditingController();
     _extraConfigController = TextEditingController();
     _commandEndpointController = TextEditingController(
-      text: 'http://${widget.mazerunnerUrl}/command',
+      text: '${widget.mazerunnerUrl}/command',
     );
     _notifyEndpointController = TextEditingController(
-      text: 'http://${widget.mazerunnerUrl}/notify',
+      text: '${widget.mazerunnerUrl}/notify',
     );
     _sessionEndpointController = TextEditingController(
-      text: 'http://${widget.mazerunnerUrl}/sessions',
+      text: '${widget.mazerunnerUrl}/sessions',
     );
     _onRunCommand(context, retry: true);
   }
