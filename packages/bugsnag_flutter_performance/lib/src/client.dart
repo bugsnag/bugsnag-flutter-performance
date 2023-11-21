@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
+import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/sampler.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
@@ -21,6 +22,7 @@ abstract class BugsnagPerformanceClient {
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   BugsnagPerformanceConfiguration? configuration;
+  late RetryQueueBuilder retryQueueBuilder;
   Uploader? _uploader;
   SpanBatch? _currentBatch;
   RetryQueue? _retryQueue;
@@ -29,6 +31,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final BugsnagClock _clock;
 
   BugsnagPerformanceClientImpl() {
+    retryQueueBuilder = RetryQueueBuilderImpl();
     BugsnagClockImpl.ensureInitialized();
     _packageBuilder = PackageBuilderImpl(
       attributesProvider: ResourceAttributesProviderImpl(),
@@ -76,7 +79,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         clock: _clock,
         sampler: _sampler!,
       );
-      _retryQueue = FileRetryQueue(_uploader!);
+      _retryQueue = retryQueueBuilder.build(_uploader!);
     }
   }
 
