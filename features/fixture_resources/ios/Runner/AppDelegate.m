@@ -1,9 +1,5 @@
-#import <Bugsnag/Bugsnag.h>
-#import <bugsnag_flutter/BugsnagFlutterConfiguration.h>
-
 #import "AppDelegate.h"
 #import "GeneratedPluginRegistrant.h"
-#import "Scenarios/Scenario.h"
 
 @implementation AppDelegate
 
@@ -31,59 +27,8 @@
     
     if([@"getCommand" isEqualToString:call.method]) {
         result([self getCommandWithUrl:call.arguments[@"commandUrl"]]);
-    } else if([@"runScenario" isEqualToString:call.method]) {
-        NSString *scenarioName = call.arguments[@"scenarioName"];
-        Scenario *targetScenario = [Scenario createScenarioNamed:scenarioName];
-        
-        if(targetScenario == nil) {
-            result([FlutterError errorWithCode:@"NoSuchScenario"
-                                       message:scenarioName
-                                       details:nil]);
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [targetScenario runWithArguments:call.arguments];
-                result(nil);
-            });
-        }
-    } else if([@"startBugsnag" isEqualToString:call.method]) {
-        BugsnagConfiguration *config = [BugsnagConfiguration loadConfig];
-        config.apiKey = @"abc12312312312312312312312312312";
-        
-        NSString *notifyEndpoint = call.arguments[@"notifyEndpoint"];
-        NSString *sessionEndpoint = call.arguments[@"sessionEndpoint"];
-        NSString *extraConfig = call.arguments[@"extraConfig"];
-        
-        if(notifyEndpoint != nil && sessionEndpoint != nil) {
-            config.endpoints = [[BugsnagEndpointConfiguration alloc] initWithNotify:notifyEndpoint
-                                                                           sessions:sessionEndpoint];
-        }
-        
-        [Bugsnag startWithConfiguration:config];
-        
-        if ([extraConfig containsString:@"disableDartErrors"]) {
-            BugsnagFlutterConfiguration.enabledErrorTypes.dartErrors = NO;
-        }
-        
-        result(nil);
-    } else if ([@"clearPersistentData" isEqual:call.method]) {
-        [NSUserDefaults.standardUserDefaults removePersistentDomainForName:NSBundle.mainBundle.bundleIdentifier];
-        NSString *appSupportDir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES)[0];
-        NSString *bugsnagDir = [appSupportDir stringByAppendingPathComponent:@"com.bugsnag.Bugsnag"];
-        NSError *error = nil;
-        if (![NSFileManager.defaultManager removeItemAtPath:bugsnagDir error:&error]) {
-            if (![error.domain isEqualToString:NSCocoaErrorDomain] && error.code != NSFileNoSuchFileError) {
-                NSLog(@"%@", error);
-            }
-        }
-        result(nil);
-    } else if ([@"appHang" isEqualToString:call.method]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            sleep(3);
-            result(nil);
-        });
     }
 }
-
 
 -(NSString *)getCommandWithUrl:(NSString *)urlString {
     NSURL *url = [NSURL URLWithString:urlString];

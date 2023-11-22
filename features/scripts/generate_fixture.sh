@@ -8,19 +8,16 @@ fi
 # Common environment
 FIXTURE_LOCATION=features/fixtures/mazerunner
 PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance"
-SRC_DART_LOCATION=features/fixtures/mazerunner/lib
-DEST_DART_LOCATION=features/fixture_resources/lib
+SRC_DART_LOCATION=features/fixture_resources/lib
 
 # Android environment
 ANDROID_MANIFEST=features/fixtures/mazerunner/android/app/src/main/AndroidManifest.xml
-SRC_ANDROID_LOCATION=features/fixtures/mazerunner/android
-DEST_ANDROID_LOCATION=features/fixture_resources/android
+SRC_ANDROID_LOCATION=features/fixture_resources/android
 
 # iOS environment
 EXPORT_OPTIONS=features/fixture_resources/exportOptions.plist
 XCODE_PROJECT=features/fixtures/mazerunner/ios/Runner.xcodeproj/project.pbxproj
-SRC_IOS_LOCATION=features/fixtures/mazerunner/ios
-DEST_IOS_LOCATION=features/fixture_resources/ios
+SRC_IOS_LOCATION=features/fixture_resources/ios
 
 echo "Remove old fixture"
 rm -rf $FIXTURE_LOCATION
@@ -40,4 +37,6 @@ echo "Add Android internet permission"
 sed -i '' "s/<\/application>/<\/application>\n<uses-permission android:name='android.permission.INTERNET'\/\>/g" "$ANDROID_MANIFEST"
 
 echo "Copy test fixture code"
-cp -r $BS_DART_LOCATION $FIXTURE_LOCATION
+cp -r $SRC_DART_LOCATION $FIXTURE_LOCATION
+cp -r $SRC_ANDROID_LOCATION $FIXTURE_LOCATION
+cp -r $SRC_IOS_LOCATION $FIXTURE_LOCATION
