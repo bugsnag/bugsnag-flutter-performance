@@ -1,4 +1,4 @@
-package com.bugsnag.flutter.test.app;
+package com.bugsnag.mazerunner;
 
 import android.content.Context;
 import android.os.Handler;
