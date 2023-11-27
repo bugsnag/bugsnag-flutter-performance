@@ -29,6 +29,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   Sampler? _sampler;
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
+  final Map<String, dynamic> _initialExtraConfig = {};
 
   BugsnagPerformanceClientImpl() {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -45,6 +46,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       apiKey: apiKey,
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
     );
+    _initialExtraConfig.forEach((key, value) {
+      setExtraConfig(key, value);
+    });
     _setup();
     await _retryQueue?.flush();
   }
@@ -98,7 +102,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     }
   }
 
-  void setBatchSize(int batchSize) {
-    configuration?.autoTriggerExportOnBatchSize = batchSize;
+  void setExtraConfig(String key, dynamic value) {
+    if (configuration == null) {
+      _initialExtraConfig[key] = value;
+    } else {
+      configuration?.applyExtraConfig(key, value);
+    }
   }
 }

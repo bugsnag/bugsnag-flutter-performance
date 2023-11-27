@@ -18,11 +18,11 @@ class BugsnagPerformance {
   static void runApp({
     FutureOr<void> Function()? runApp,
   }) {
-    //TODO implement
+    //TODO implement this during auto instrumentation
     // _client.runApp(runApp: runApp);
   }
 
-  static void setBatchSize(int batchSize) {
-    _client.setBatchSize(batchSize);
+  static void setExtraConfig(String key, dynamic value) {
+    _client.setExtraConfig(key, value);
   }
 }
