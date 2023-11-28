@@ -21,11 +21,9 @@ abstract class Scenario {
     BugsnagPerformance.setExtraConfig("autoTriggerExportOnBatchSize", size);
   }
 
-  Future<void> startBugsnag() async
-  {
+  Future<void> startBugsnag() async {
     await BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
   }
-
 }

@@ -88,7 +88,8 @@ class MazeRunnerFlutterApp extends StatelessWidget {
     for (var i = 0; i < 30; i++) {
       try {
         final Directory directory = await appFilesDirectory();
-        final File file = File('${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
+        final File file = File(
+            '${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
         final text = await file.readAsString();
         log("fixture_config.json found with contents: $text");
         Map<String, dynamic> json = jsonDecode(text);
@@ -110,7 +111,8 @@ class MazeRunnerFlutterApp extends StatelessWidget {
   Future<Directory> appFilesDirectory() async {
     log('Fetching app files directory');
     return Platform.isAndroid
-        ? await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory()
+        ? await getExternalStorageDirectory() ??
+            await getApplicationDocumentsDirectory()
         : await getApplicationDocumentsDirectory();
   }
 }
@@ -176,7 +178,8 @@ class _HomePageState extends State<MazeRunnerHomePage> {
       if (response.body.isEmpty) {
         log('Empty command, retrying...');
         if (retry) {
-          Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
+          Future.delayed(const Duration(seconds: 1))
+              .then((value) => _onRunCommand(context, retry: true));
         }
         return;
       }
@@ -197,7 +200,8 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     } else {
       log('Received response with status code ${response.statusCode}.');
       if (retry) {
-        Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
+        Future.delayed(const Duration(seconds: 1))
+            .then((value) => _onRunCommand(context, retry: true));
       }
     }
   }
@@ -206,7 +210,8 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     log("Clearing the cache");
     final appCacheDir = await getApplicationSupportDirectory();
     try {
-      await Directory('${appCacheDir.path}/bugsnag-performance').delete(recursive: true);
+      await Directory('${appCacheDir.path}/bugsnag-performance')
+          .delete(recursive: true);
       log("Cache cleared successfully");
     } catch (e) {
       log("Couldn't delete bugsnag-performance directory: $e");
@@ -242,7 +247,8 @@ class _HomePageState extends State<MazeRunnerHomePage> {
   Scenario? _initScenario(BuildContext context) {
     final name = _scenarioNameController.value.text;
     log('Initializing scenario: $name');
-    final scenarioIndex = scenarios.indexWhere((element) => element.name == name);
+    final scenarioIndex =
+        scenarios.indexWhere((element) => element.name == name);
 
     if (scenarioIndex == -1) {
       log('Cannot find Scenario $name. Has it been added to scenarios.dart?');
