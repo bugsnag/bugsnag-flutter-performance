@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:native_flutter_proxy/custom_proxy.dart';
+import 'package:native_flutter_proxy/native_proxy_reader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,9 +17,32 @@ void log(String message) {
   print('[MazeRunner] $message');
 }
 
-void main() {
+void main() async {
+  await setupProxy();
   runApp(const MazeRunnerFlutterApp());
 }
+
+Future<void> setupProxy() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  bool enabled = false;
+  String? host;
+  int? port;
+  try {
+    ProxySetting settings = await NativeProxyReader.proxySetting;
+    enabled = settings.enabled;
+    host = settings.host;
+    port = settings.port;
+  } catch (e) {
+    print(e);
+  }
+  if (enabled && host != null) {
+    final proxy = CustomProxy(ipAddress: host, port: port);
+    proxy.enable();
+    print("proxy enabled");
+  }
+}
+
 
 extension StringGet<K, V> on Map<K, V> {
   String? string(K key) {
@@ -88,8 +113,7 @@ class MazeRunnerFlutterApp extends StatelessWidget {
     for (var i = 0; i < 30; i++) {
       try {
         final Directory directory = await appFilesDirectory();
-        final File file = File(
-            '${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
+        final File file = File('${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
         final text = await file.readAsString();
         log("fixture_config.json found with contents: $text");
         Map<String, dynamic> json = jsonDecode(text);
@@ -111,8 +135,7 @@ class MazeRunnerFlutterApp extends StatelessWidget {
   Future<Directory> appFilesDirectory() async {
     log('Fetching app files directory');
     return Platform.isAndroid
-        ? await getExternalStorageDirectory() ??
-            await getApplicationDocumentsDirectory()
+        ? await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory()
         : await getApplicationDocumentsDirectory();
   }
 }
@@ -178,8 +201,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
       if (response.body.isEmpty) {
         log('Empty command, retrying...');
         if (retry) {
-          Future.delayed(const Duration(seconds: 1))
-              .then((value) => _onRunCommand(context, retry: true));
+          Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
         }
         return;
       }
@@ -200,8 +222,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     } else {
       log('Received response with status code ${response.statusCode}.');
       if (retry) {
-        Future.delayed(const Duration(seconds: 1))
-            .then((value) => _onRunCommand(context, retry: true));
+        Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
       }
     }
   }
@@ -210,8 +231,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     log("Clearing the cache");
     final appCacheDir = await getApplicationSupportDirectory();
     try {
-      await Directory('${appCacheDir.path}/bugsnag-performance')
-          .delete(recursive: true);
+      await Directory('${appCacheDir.path}/bugsnag-performance').delete(recursive: true);
       log("Cache cleared successfully");
     } catch (e) {
       log("Couldn't delete bugsnag-performance directory: $e");
@@ -247,8 +267,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
   Scenario? _initScenario(BuildContext context) {
     final name = _scenarioNameController.value.text;
     log('Initializing scenario: $name');
-    final scenarioIndex =
-        scenarios.indexWhere((element) => element.name == name);
+    final scenarioIndex = scenarios.indexWhere((element) => element.name == name);
 
     if (scenarioIndex == -1) {
       log('Cannot find Scenario $name. Has it been added to scenarios.dart?');
