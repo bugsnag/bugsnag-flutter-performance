@@ -39,6 +39,8 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" path_provider
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" http
 
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" native_flutter_proxy
+
 echo "Add dev team to Xcode project"
 
 sed -i '' "s/ENABLE_BITCODE = NO;/ENABLE_BITCODE = NO;\nDEVELOPMENT_TEAM = 7W9PZ27Y5F;\nCODE_SIGN_STYLE = Automatic;/g" "$XCODE_PROJECT"
