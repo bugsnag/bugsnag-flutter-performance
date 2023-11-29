@@ -43,7 +43,6 @@ Future<void> setupProxy() async {
   }
 }
 
-
 extension StringGet<K, V> on Map<K, V> {
   String? string(K key) {
     final value = this[key];
@@ -113,7 +112,8 @@ class MazeRunnerFlutterApp extends StatelessWidget {
     for (var i = 0; i < 30; i++) {
       try {
         final Directory directory = await appFilesDirectory();
-        final File file = File('${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
+        final File file = File(
+            '${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
         final text = await file.readAsString();
         log("fixture_config.json found with contents: $text");
         Map<String, dynamic> json = jsonDecode(text);
@@ -135,7 +135,8 @@ class MazeRunnerFlutterApp extends StatelessWidget {
   Future<Directory> appFilesDirectory() async {
     log('Fetching app files directory');
     return Platform.isAndroid
-        ? await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory()
+        ? await getExternalStorageDirectory() ??
+            await getApplicationDocumentsDirectory()
         : await getApplicationDocumentsDirectory();
   }
 }
@@ -190,40 +191,48 @@ class _HomePageState extends State<MazeRunnerHomePage> {
 
   void _onRunCommand(BuildContext context, {bool retry = false}) async {
     log('Fetching the next command');
-
     final commandUrl = _commandEndpointController.value.text;
+    try {
+      final response = await http.get(Uri.parse(commandUrl));
+      if (response.statusCode == 200) {
+        log('Received response with status code 200. Body: ${response.body}');
 
-    final response = await http.get(Uri.parse(commandUrl));
-
-    if (response.statusCode == 200) {
-      log('Received response with status code 200. Body: ${response.body}');
-
-      if (response.body.isEmpty) {
-        log('Empty command, retrying...');
-        if (retry) {
-          Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
+        if (response.body.isEmpty) {
+          log('Empty command, retrying...');
+          if (retry) {
+            Future.delayed(const Duration(seconds: 1))
+                .then((value) => _onRunCommand(context, retry: true));
+          }
+          return;
         }
-        return;
-      }
 
-      final command = Command.fromJsonString(response.body);
-      _scenarioNameController.text = command.scenarioName;
-      _extraConfigController.text = command.extraConfig;
-      log("Received command: Action - ${command.action}, Scenario Name - ${command.scenarioName}, Extra Config - ${command.extraConfig}");
+        final command = Command.fromJsonString(response.body);
+        _scenarioNameController.text = command.scenarioName;
+        _extraConfigController.text = command.extraConfig;
+        log("Received command: Action - ${command.action}, Scenario Name - ${command.scenarioName}, Extra Config - ${command.extraConfig}");
 
-      switch (command.action) {
-        case 'clear_cache':
-          await _clearPersistentData();
-          break;
-        case 'run_scenario':
-          _onRunScenario(context);
-          break;
+        switch (command.action) {
+          case 'clear_cache':
+            await _clearPersistentData();
+            break;
+          case 'run_scenario':
+            _onRunScenario(context);
+            break;
+        }
+      } else {
+        log('Received response with status code ${response.statusCode}.');
+        if (retry) {
+          Future.delayed(const Duration(seconds: 1))
+              .then((value) => _onRunCommand(context, retry: true));
+        }
       }
-    } else {
-      log('Received response with status code ${response.statusCode}.');
+    } catch (e) {
+      log('Error fetching command: $e \nRetrying...');
       if (retry) {
-        Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
+        Future.delayed(const Duration(seconds: 1))
+            .then((value) => _onRunCommand(context, retry: true));
       }
+      return;
     }
   }
 
@@ -231,7 +240,8 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     log("Clearing the cache");
     final appCacheDir = await getApplicationSupportDirectory();
     try {
-      await Directory('${appCacheDir.path}/bugsnag-performance').delete(recursive: true);
+      await Directory('${appCacheDir.path}/bugsnag-performance')
+          .delete(recursive: true);
       log("Cache cleared successfully");
     } catch (e) {
       log("Couldn't delete bugsnag-performance directory: $e");
@@ -267,7 +277,8 @@ class _HomePageState extends State<MazeRunnerHomePage> {
   Scenario? _initScenario(BuildContext context) {
     final name = _scenarioNameController.value.text;
     log('Initializing scenario: $name');
-    final scenarioIndex = scenarios.indexWhere((element) => element.name == name);
+    final scenarioIndex =
+        scenarios.indexWhere((element) => element.name == name);
 
     if (scenarioIndex == -1) {
       log('Cannot find Scenario $name. Has it been added to scenarios.dart?');
