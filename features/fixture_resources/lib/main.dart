@@ -4,22 +4,45 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:mazerunner/channels.dart';
-import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:flutter/material.dart';
+import 'package:native_flutter_proxy/custom_proxy.dart';
+import 'package:native_flutter_proxy/native_proxy_reader.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 
 import 'scenarios/scenario.dart';
 import 'scenarios/scenarios.dart';
-import 'package:http/http.dart' as http;
 
 void log(String message) {
   print('[MazeRunner] $message');
 }
 
-void main() {
+void main() async {
+  await setupProxy();
   runApp(const MazeRunnerFlutterApp());
 }
+
+Future<void> setupProxy() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  bool enabled = false;
+  String? host;
+  int? port;
+  try {
+    ProxySetting settings = await NativeProxyReader.proxySetting;
+    enabled = settings.enabled;
+    host = settings.host;
+    port = settings.port;
+  } catch (e) {
+    print(e);
+  }
+  if (enabled && host != null) {
+    final proxy = CustomProxy(ipAddress: host, port: port);
+    proxy.enable();
+    print("proxy enabled");
+  }
+}
+
 
 extension StringGet<K, V> on Map<K, V> {
   String? string(K key) {
@@ -32,7 +55,6 @@ class FixtureConfig {
   static Uri MAZE_HOST = Uri.parse("");
 }
 
-/// Represents a MazeRunner command
 class Command {
   final String action;
   final String scenarioName;
@@ -60,63 +82,67 @@ class Command {
 class MazeRunnerFlutterApp extends StatelessWidget {
   const MazeRunnerFlutterApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    log('Building MazeRunnerFlutterApp');
     return MaterialApp(
       title: 'Bugsnag Test',
       theme: ThemeData(
         primaryColor: const Color.fromARGB(255, 73, 73, 227),
       ),
-      home: FutureBuilder<String>(future: Future(() async {
-        for (var i = 0; i < 30; i++) {
-          try {
-            final Directory directory = await appFilesDirectory();
-            final File file = File(
-                '${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
-            final text = await file.readAsString();
-            print("fixture_config.json found with contents: $text");
-            Map<String, dynamic> json = jsonDecode(text);
-            if (json.containsKey('maze_address')) {
-              print("fixture_config.json found with contents: $text");
-              FixtureConfig.MAZE_HOST =
-                  Uri.parse("http://" + json['maze_address']);
-              return json['maze_address'];
-            }
-          } catch (e) {
-            print("Couldn't read fixture_config.json: $e");
-          }
-          await Future.delayed(const Duration(seconds: 1));
-        }
-        print(
-            "fixture_config.json not read within 30s, defaulting to BrowserStack address");
-        FixtureConfig.MAZE_HOST = Uri.parse('bs-local.com:9339');
-        return 'bs-local.com:9339';
-      }), builder: (_, mazerunnerUrl) {
-        if (mazerunnerUrl.data != null) {
-          return MazeRunnerHomePage(
-            mazerunnerUrl: mazerunnerUrl.data!,
-          );
-        } else {
-          return Container(
+      home: FutureBuilder<String>(
+        future: _getMazeRunnerUrl(),
+        builder: (_, mazerunnerUrl) {
+          if (mazerunnerUrl.data != null) {
+            return MazeRunnerHomePage(
+              mazerunnerUrl: mazerunnerUrl.data!,
+            );
+          } else {
+            return Container(
               color: Colors.white,
-              child: const Center(child: CircularProgressIndicator()));
-        }
-      }),
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
+      ),
     );
   }
 
-  Future<Directory> appFilesDirectory() async {
-    if (Platform.isAndroid) {
-      return await getExternalStorageDirectory() ??
-          await getApplicationDocumentsDirectory();
+  Future<String> _getMazeRunnerUrl() async {
+    log('Fetching MazeRunner URL');
+    for (var i = 0; i < 30; i++) {
+      try {
+        final Directory directory = await appFilesDirectory();
+        final File file = File('${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
+        final text = await file.readAsString();
+        log("fixture_config.json found with contents: $text");
+        Map<String, dynamic> json = jsonDecode(text);
+        if (json.containsKey('maze_address')) {
+          FixtureConfig.MAZE_HOST = Uri.parse('http://${json['maze_address']}');
+          return FixtureConfig.MAZE_HOST.toString();
+        }
+      } catch (e) {
+        log("Couldn't read fixture_config.json: $e");
+      }
+      await Future.delayed(const Duration(seconds: 1));
     }
-    return await getApplicationDocumentsDirectory();
+    log("fixture_config.json not read within 30s, defaulting to BrowserStack address");
+    FixtureConfig.MAZE_HOST = Uri.parse('http://bs-local.com:9339');
+    log('using ${FixtureConfig.MAZE_HOST} as the MazeRunner URL');
+    return FixtureConfig.MAZE_HOST.toString();
+  }
+
+  Future<Directory> appFilesDirectory() async {
+    log('Fetching app files directory');
+    return Platform.isAndroid
+        ? await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory()
+        : await getApplicationDocumentsDirectory();
   }
 }
 
 class MazeRunnerHomePage extends StatefulWidget {
   final String mazerunnerUrl;
+
   const MazeRunnerHomePage({
     Key? key,
     required this.mazerunnerUrl,
@@ -136,32 +162,32 @@ class _HomePageState extends State<MazeRunnerHomePage> {
   @override
   void initState() {
     super.initState();
+    log('Initializing _HomePageState');
     _scenarioNameController = TextEditingController();
     _extraConfigController = TextEditingController();
     _commandEndpointController = TextEditingController(
-      text: 'http://${widget.mazerunnerUrl}/command',
+      text: '${widget.mazerunnerUrl}/command',
     );
     _notifyEndpointController = TextEditingController(
-      text: 'http://${widget.mazerunnerUrl}/notify',
+      text: '${widget.mazerunnerUrl}/notify',
     );
     _sessionEndpointController = TextEditingController(
-      text: 'http://${widget.mazerunnerUrl}/sessions',
+      text: '${widget.mazerunnerUrl}/sessions',
     );
     _onRunCommand(context, retry: true);
   }
 
   @override
   void dispose() {
+    log('Disposing _HomePageState');
     _scenarioNameController.dispose();
     _extraConfigController.dispose();
     _commandEndpointController.dispose();
     _notifyEndpointController.dispose();
     _sessionEndpointController.dispose();
-
     super.dispose();
   }
 
-  /// Fetches the next command
   void _onRunCommand(BuildContext context, {bool retry = false}) async {
     log('Fetching the next command');
 
@@ -170,22 +196,20 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     final response = await http.get(Uri.parse(commandUrl));
 
     if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      log('The body is:${response.body}');
+      log('Received response with status code 200. Body: ${response.body}');
 
       if (response.body.isEmpty) {
         log('Empty command, retrying...');
         if (retry) {
-          Future.delayed(const Duration(seconds: 1))
-              .then((value) => _onRunCommand(context, retry: true));
+          Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
         }
         return;
       }
+
       final command = Command.fromJsonString(response.body);
       _scenarioNameController.text = command.scenarioName;
       _extraConfigController.text = command.extraConfig;
-      print("Doing Action: ${command.action}");
+      log("Received command: Action - ${command.action}, Scenario Name - ${command.scenarioName}, Extra Config - ${command.extraConfig}");
 
       switch (command.action) {
         case 'clear_cache':
@@ -196,29 +220,30 @@ class _HomePageState extends State<MazeRunnerHomePage> {
           break;
       }
     } else {
+      log('Received response with status code ${response.statusCode}.');
       if (retry) {
-        Future.delayed(const Duration(seconds: 1))
-            .then((value) => _onRunCommand(context, retry: true));
+        Future.delayed(const Duration(seconds: 1)).then((value) => _onRunCommand(context, retry: true));
       }
     }
   }
 
   Future<void> _clearPersistentData() async {
-    print("Should clear the cache");
+    log("Clearing the cache");
     final appCacheDir = await getApplicationSupportDirectory();
     try {
-      await Directory('${appCacheDir.path}/bugsnag-performance')
-          .delete(recursive: true);
-      print("Clear cache complete");
+      await Directory('${appCacheDir.path}/bugsnag-performance').delete(recursive: true);
+      log("Cache cleared successfully");
     } catch (e) {
-      print("Couldn't delete bugsnag-performance directory: $e");
+      log("Couldn't delete bugsnag-performance directory: $e");
     }
   }
 
-  /// Starts Bugsnag
-  Future<void> _onStartBugsnag() async {}
+  Future<void> _onStartBugsnag() async {
+    log("Starting Bugsnag");
+    // Implementation goes here
+    log("Bugsnag started successfully");
+  }
 
-  /// Runs a scenario, starting bugsnag first
   void _onRunScenario(BuildContext context) async {
     final scenario = _initScenario(context);
     if (scenario == null) {
@@ -239,12 +264,10 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     await scenario.run();
   }
 
-  /// Initializes a scenario
   Scenario? _initScenario(BuildContext context) {
     final name = _scenarioNameController.value.text;
     log('Initializing scenario: $name');
-    final scenarioIndex =
-        scenarios.indexWhere((element) => element.name == name);
+    final scenarioIndex = scenarios.indexWhere((element) => element.name == name);
 
     if (scenarioIndex == -1) {
       log('Cannot find Scenario $name. Has it been added to scenarios.dart?');
@@ -255,7 +278,6 @@ class _HomePageState extends State<MazeRunnerHomePage> {
           ),
         ),
       );
-
       return null;
     }
 
@@ -264,6 +286,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    log('Building _HomePageState');
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -272,13 +295,14 @@ class _HomePageState extends State<MazeRunnerHomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               SizedBox(
-                  height: 400.0,
-                  width: double.infinity,
-                  child: TextButton(
-                    child: const Text("Run Command"),
-                    onPressed: () => _onRunCommand(context),
-                    key: const Key("runCommand"),
-                  )),
+                height: 400.0,
+                width: double.infinity,
+                child: TextButton(
+                  child: const Text("Run Command"),
+                  onPressed: () => _onRunCommand(context),
+                  key: const Key("runCommand"),
+                ),
+              ),
               TextField(
                 controller: _scenarioNameController,
                 key: const Key("scenarioName"),

@@ -3,6 +3,7 @@ import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:flutter/widgets.dart';
 
 import '../channels.dart';
+import '../main.dart';
 
 abstract class Scenario {
   String? extraConfig;
@@ -12,15 +13,19 @@ abstract class Scenario {
     await MazeRunnerChannels.clearPersistentData();
   }
 
-  // Future<void> startBugsnag() => null;
-
   Widget? createWidget() => null;
 
   Future<void> run();
-}
 
-void expect(dynamic actual, dynamic expected) {
-  if (actual != expected) {
-    throw AssertionError('Expected \'$expected\' but got \'$actual\'');
+  void setBatchSize(int size) {
+    BugsnagPerformance.setExtraConfig("autoTriggerExportOnBatchSize", size);
   }
+
+  Future<void> startBugsnag() async
+  {
+    await BugsnagPerformance.start(
+        apiKey: '12312312312312312312312312312312',
+        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
+  }
+
 }
