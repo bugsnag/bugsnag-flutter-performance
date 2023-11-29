@@ -32,3 +32,4 @@ maze_output/
 
 # ignored as fixtures are generated
 features/fixtures
+bb.ready
