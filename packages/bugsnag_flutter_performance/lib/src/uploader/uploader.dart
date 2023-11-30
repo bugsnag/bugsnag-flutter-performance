@@ -38,7 +38,6 @@ class UploaderImpl implements Uploader {
       'Bugsnag-Sent-At': sentAtTime
           .subtract(Duration(microseconds: sentAtTime.microsecond))
           .toIso8601String(),
-      'Bugsnag-Span-Sampling': '1:1'
     };
     headers.addAll(package.headers);
     try {
@@ -46,6 +45,7 @@ class UploaderImpl implements Uploader {
       request.setHeaders(headers);
       request.setBody(package.payload);
       final response = await request.send();
+      sampler.handleResponseHeaders(response.headers);
       return _getResult(response.statusCode);
     } on SocketException catch (_) {
       return RequestResult.retriableFailure;

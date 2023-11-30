@@ -153,3 +153,16 @@ When('every trace deviceid is valid and the same') do
   Maze.check.true(device_ids.uniq.length == 1)
 end
 
+When('I invoke {string}') do |method_name|
+  Maze::Server.commands.add({ action: "invoke_method", args: [method_name] })
+  # Ensure fixture has read the command
+  touch_action = Appium::TouchAction.new
+  touch_action.tap({:x => 200, :y => 200})
+  touch_action.perform
+
+  $extra_config = ''
+  # Ensure fixture has read the command
+  count = 100
+  sleep 0.1 until Maze::Server.commands.remaining.empty? || (count -= 1) < 1
+  raise 'Test fixture did not GET /command' unless Maze::Server.commands.remaining.empty?
+end
