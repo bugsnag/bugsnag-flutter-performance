@@ -9,8 +9,8 @@ import 'package:http/http.dart' as http;
 class InitialPScenario extends Scenario {
   @override
   Future<void> run() async {
-    BugsnagPerformance.setExtraConfig("probabilityRequestsPause", 100);
-    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 100);
+    BugsnagPerformance.setExtraConfig("probabilityRequestsPause", 2000);
+    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 2000);
     BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
