@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
+import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';
@@ -30,6 +32,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
   final Map<String, dynamic> _initialExtraConfig = {};
+  final Map<int, BugsnagPerformanceSpanContextStack> _zoneContextStacks = {};
 
   BugsnagPerformanceClientImpl() {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -54,22 +57,35 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   @override
-  BugsnagPerformanceSpan startSpan(String name, {DateTime? startTime}) {
+  BugsnagPerformanceSpan startSpan(String name,
+      {DateTime? startTime,
+      BugsnagPerformanceSpanContext? parentContext,
+      bool? makeCurrentContext = true}) {
+    if (parentContext != null) {
+      _addContext(parentContext);
+    }
+    final parent = parentContext ?? _getCurrentContext();
+
     final span = BugsnagPerformanceSpanImpl(
-      name: name,
-      startTime: startTime ?? _clock.now(),
-      onEnded: (endedSpan) {
-        if (_sampler?.sample(endedSpan) ?? true) {
-          _currentBatch?.add(endedSpan);
-        }
-      },
-    );
+        name: name,
+        startTime: startTime ?? _clock.now(),
+        onEnded: (endedSpan) {
+          if (_sampler?.sample(endedSpan) ?? true) {
+            _currentBatch?.add(endedSpan);
+          }
+        },
+        parentSpanId: parent?.spanId);
     span.clock = _clock;
     if (configuration != null) {
       _currentBatch ??= SpanBatchImpl();
       _currentBatch?.configure(configuration!);
       _currentBatch?.onBatchFull = _sendBatch;
     }
+
+    if (makeCurrentContext == true) {
+      _addContext(span);
+    }
+
     return span;
   }
 
@@ -108,5 +124,26 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     } else {
       configuration?.applyExtraConfig(key, value);
     }
+  }
+
+  BugsnagPerformanceSpanContextStack? _getContextStack() {
+    if (_zoneContextStacks.containsKey(Zone.current.hashCode)) {
+      return _zoneContextStacks[Zone.current.hashCode];
+    } else {
+      _zoneContextStacks[Zone.current.hashCode] =
+          BugsnagPerformanceSpanContextStackImpl();
+      return _zoneContextStacks[Zone.current.hashCode];
+    }
+  }
+
+  void _addContext(BugsnagPerformanceSpanContext newContext) {
+    var stack = _getContextStack();
+    if (stack?.getCurrentContext() != newContext) {
+      _getContextStack()?.pushContext(newContext);
+    }
+  }
+
+  BugsnagPerformanceSpanContext? _getCurrentContext() {
+    return _getContextStack()?.getCurrentContext();
   }
 }

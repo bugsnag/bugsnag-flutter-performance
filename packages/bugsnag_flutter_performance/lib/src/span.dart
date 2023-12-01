@@ -1,34 +1,38 @@
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
+import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:bugsnag_flutter_performance/src/util/random.dart';
 
 typedef TraceId = BigInt;
 typedef SpanId = BigInt;
 
-abstract class BugsnagPerformanceSpan {
+abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
+  @override
   TraceId get traceId;
+  @override
   SpanId get spanId;
   SpanId? parentSpanId;
   void end();
   dynamic toJson();
 }
 
-class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
-  BugsnagPerformanceSpanImpl({
-    required this.name,
-    required this.startTime,
-    void Function(BugsnagPerformanceSpan)? onEnded,
-    TraceId? traceId,
-    SpanId? spanId,
-    BugsnagPerformanceSpanAttributes? attributes,
-    this.parentSpanId,
-  }) {
+class BugsnagPerformanceSpanImpl
+    implements BugsnagPerformanceSpan, BugsnagPerformanceSpanContext {
+  BugsnagPerformanceSpanImpl(
+      {required this.name,
+      required this.startTime,
+      void Function(BugsnagPerformanceSpan)? onEnded,
+      TraceId? traceId,
+      SpanId? spanId,
+      SpanId? parentSpanId,
+      BugsnagPerformanceSpanAttributes? attributes}) {
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
     this.attributes = attributes ?? BugsnagPerformanceSpanAttributes();
+    this.parentSpanId = parentSpanId ?? null;
   }
   final String name;
   @override
@@ -94,6 +98,11 @@ class BugsnagPerformanceSpanImpl implements BugsnagPerformanceSpan {
     if (samplingProbability < attributes.samplingProbability) {
       attributes.samplingProbability = samplingProbability;
     }
+  }
+
+  @override
+  bool isOpen() {
+    return endTime == null;
   }
 }
 
