@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
@@ -5,6 +6,7 @@ import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/sampler.dart';
+import 'package:bugsnag_flutter_performance/src/uploader/sampling_probability_store.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
@@ -27,9 +29,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   SpanBatch? _currentBatch;
   RetryQueue? _retryQueue;
   Sampler? _sampler;
+  DateTime? _lastSamplingProbabilityRefreshDate;
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
   final Map<String, dynamic> _initialExtraConfig = {};
+  late final SamplingProbabilityStore _probabilityStore;
 
   BugsnagPerformanceClientImpl() {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -38,6 +42,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       attributesProvider: ResourceAttributesProviderImpl(),
     );
     _clock = BugsnagClockImpl.instance;
+    _probabilityStore = SamplingProbabilityStoreImpl(_clock);
   }
 
   @override
@@ -58,8 +63,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     final span = BugsnagPerformanceSpanImpl(
       name: name,
       startTime: startTime ?? _clock.now(),
-      onEnded: (endedSpan) {
-        if (_sampler?.sample(endedSpan) ?? true) {
+      onEnded: (endedSpan) async {
+        await _updateSamplingProbabilityIfNeeded();
+        if (await _sampler?.sample(endedSpan) ?? true) {
           _currentBatch?.add(endedSpan);
         }
       },
@@ -74,7 +80,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   void _setup() {
-    _sampler = SamplerImpl();
+    _sampler = SamplerImpl(
+      configuration: configuration!,
+      probabilityStore: _probabilityStore,
+      clock: _clock,
+    );
     if (configuration?.endpoint != null && configuration?.apiKey != null) {
       _uploader = UploaderImpl(
         apiKey: configuration!.apiKey!,
@@ -85,12 +95,18 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       );
       _retryQueue = retryQueueBuilder.build(_uploader!);
     }
+    Timer.periodic(
+        Duration(milliseconds: configuration!.probabilityRequestsPause),
+        (timer) {
+      _updateSamplingProbabilityIfNeeded(force: true);
+    });
   }
 
   void _sendBatch(SpanBatch batch) async {
+    await _updateSamplingProbabilityIfNeeded();
     var spans = batch.drain();
     if (_sampler != null) {
-      spans = _sampler!.sampled(spans);
+      spans = await _sampler!.sampled(spans);
     }
     if (spans.isEmpty) {
       return;
@@ -100,6 +116,38 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     if (result == RequestResult.retriableFailure) {
       _retryQueue?.enqueue(headers: package.headers, body: package.payload);
     }
+  }
+
+  Future<void> _updateSamplingProbabilityIfNeeded({
+    bool force = false,
+  }) async {
+    if (await _sampler?.hasValidSamplingProbabilityValue() ?? true) {
+      return;
+    }
+    if (!_canSendSamplingProbabilityRequest() && !force) {
+      return;
+    }
+    await _sendSamplingProbabilityRequest();
+  }
+
+  bool _canSendSamplingProbabilityRequest() {
+    if (_lastSamplingProbabilityRefreshDate == null) {
+      return true;
+    }
+    if (configuration == null) {
+      return false;
+    }
+    return configuration!.probabilityRequestsPause >=
+        _clock
+            .now()
+            .difference(_lastSamplingProbabilityRefreshDate!)
+            .inMilliseconds;
+  }
+
+  Future<void> _sendSamplingProbabilityRequest() async {
+    _lastSamplingProbabilityRefreshDate = _clock.now();
+    final package = await _packageBuilder.buildEmptyPackage();
+    await _uploader?.upload(package: package);
   }
 
   void setExtraConfig(String key, dynamic value) {
