@@ -12,6 +12,7 @@ abstract class PackageBuilder {
   Future<OtlpPackage> build(
     List<BugsnagPerformanceSpan> spans,
   );
+  Future<OtlpPackage> buildEmptyPackage();
 }
 
 class PackageBuilderImpl implements PackageBuilder {
@@ -35,6 +36,20 @@ class PackageBuilderImpl implements PackageBuilder {
       payload: uncompressedData,
       isZipped: isZipped,
     );
+    return OtlpPackage(
+      headers: headers,
+      payload: Uint8List.fromList(payload),
+    );
+  }
+
+  @override
+  Future<OtlpPackage> buildEmptyPackage() async {
+    final payload = utf8.encode(jsonEncode({'resourceSpans': []}));
+    final headers = {
+      'Content-Type': 'application/json',
+      'Bugsnag-Integrity': _integrityDigestForData(payload: payload),
+      'Bugsnag-Span-Sampling': '1:0',
+    };
     return OtlpPackage(
       headers: headers,
       payload: Uint8List.fromList(payload),

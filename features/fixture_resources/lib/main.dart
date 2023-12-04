@@ -58,11 +58,13 @@ class Command {
   final String action;
   final String scenarioName;
   final String extraConfig;
+  final List<dynamic> args;
 
   const Command({
     required this.action,
     required this.scenarioName,
     required this.extraConfig,
+    required this.args,
   });
 
   factory Command.fromJsonString(String jsonString) {
@@ -74,6 +76,7 @@ class Command {
       action: map.string('action')!,
       scenarioName: map.string('scenario_name') ?? '',
       extraConfig: map.string('extra_config') ?? '',
+      args: map['args'] ?? [],
     );
   }
 }
@@ -159,6 +162,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
   late TextEditingController _commandEndpointController;
   late TextEditingController _notifyEndpointController;
   late TextEditingController _sessionEndpointController;
+  Scenario? _currentScenario;
 
   @override
   void initState() {
@@ -218,6 +222,9 @@ class _HomePageState extends State<MazeRunnerHomePage> {
           case 'run_scenario':
             _onRunScenario(context);
             break;
+          case 'invoke_method':
+            _onInvokeMethod(command.args[0]);
+            break;
         }
       } else {
         log('Received response with status code ${response.statusCode}.');
@@ -271,6 +278,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     }
 
     log('Running scenario');
+    _currentScenario = scenario;
     await scenario.run();
   }
 
@@ -293,6 +301,10 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     }
 
     return scenarios[scenarioIndex].init();
+  }
+
+  void _onInvokeMethod(String name) {
+    _currentScenario?.invokeMethod(name);
   }
 
   @override

@@ -26,4 +26,6 @@ abstract class Scenario {
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
   }
+
+  void invokeMethod(String name) {}
 }
