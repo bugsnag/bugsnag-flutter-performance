@@ -33,3 +33,15 @@ Feature: Nested Spans
 
     * the span named "span1" is the parent of the span named "span2"    
     * the span named "span1" is the parent of the span named "span3"
+
+ Scenario: Make Current Context False
+    When I run "MakeCurrentContextScenario"
+    * I wait for 3 spans
+    * the span named "span1" exists
+    * the span named "span2" exists
+    * the span named "span3" exists
+
+    * the span named "span1" has no parent
+
+    * the span named "span1" is the parent of the span named "span2"    
+    * the span named "span1" is the parent of the span named "span3"

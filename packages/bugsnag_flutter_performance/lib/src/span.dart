@@ -26,13 +26,12 @@ class BugsnagPerformanceSpanImpl
       void Function(BugsnagPerformanceSpan)? onEnded,
       TraceId? traceId,
       SpanId? spanId,
-      SpanId? parentSpanId,
+      this.parentSpanId,
       BugsnagPerformanceSpanAttributes? attributes}) {
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
     this.attributes = attributes ?? BugsnagPerformanceSpanAttributes();
-    this.parentSpanId = parentSpanId ?? null;
   }
   final String name;
   @override

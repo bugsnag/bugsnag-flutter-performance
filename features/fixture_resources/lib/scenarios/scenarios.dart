@@ -3,6 +3,7 @@ import 'start_sdk_default.dart';
 import 'simple_nested_span_scenario.dart';
 import 'new_zone_new_context_scenario.dart';
 import 'pass_context_scenario.dart';
+import 'make_current_context.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -18,5 +19,6 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('SimpleNestedSpanScenario', () => SimpleNestedSpanScenario()),
   ScenarioInfo('NewZoneNewContextScenario', () => NewZoneNewContextScenario()),
   ScenarioInfo(
-      'PassContextToNewZoneScenario', () => PassContextToNewZoneScenario())
+      'PassContextToNewZoneScenario', () => PassContextToNewZoneScenario()),
+  ScenarioInfo('MakeCurrentContextScenario', () => MakeCurrentContextScenario())
 ];
