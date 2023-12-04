@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bugsnag_flutter_performance/src/span_context.dart';
+
 import '../bugsnag_flutter_performance.dart';
 import 'client.dart';
 
@@ -11,8 +13,16 @@ class BugsnagPerformance {
     return _client.start(apiKey: apiKey, endpoint: endpoint);
   }
 
-  static BugsnagPerformanceSpan startSpan(String name) {
-    return _client.startSpan(name);
+  static BugsnagPerformanceSpan startSpan(String name,
+      {DateTime? startTime,
+      BugsnagPerformanceSpanContext? parentContext,
+      bool? makeCurrentContext = true}) {
+    return _client.startSpan(
+      name,
+      startTime: startTime,
+      parentContext: parentContext,
+      makeCurrentContext: makeCurrentContext,
+    );
   }
 
   static void runApp({

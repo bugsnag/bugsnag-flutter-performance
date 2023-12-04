@@ -2,6 +2,10 @@ import 'initial_p_scenario.dart';
 import 'manual_span_scenario.dart';
 import 'probability_expiry_scenario.dart';
 import 'start_sdk_default.dart';
+import 'simple_nested_span_scenario.dart';
+import 'new_zone_new_context_scenario.dart';
+import 'pass_context_scenario.dart';
+import 'make_current_context.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -16,4 +20,9 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('StartSdkDefault', () => StartSdkDefault()),
   ScenarioInfo('InitialPScenario', () => InitialPScenario()),
   ScenarioInfo('ProbabilityExpiryScenario', () => ProbabilityExpiryScenario()),
+  ScenarioInfo('SimpleNestedSpanScenario', () => SimpleNestedSpanScenario()),
+  ScenarioInfo('NewZoneNewContextScenario', () => NewZoneNewContextScenario()),
+  ScenarioInfo(
+      'PassContextToNewZoneScenario', () => PassContextToNewZoneScenario()),
+  ScenarioInfo('MakeCurrentContextScenario', () => MakeCurrentContextScenario())
 ];
