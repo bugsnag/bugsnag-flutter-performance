@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/app_start_instrumentation.dart';
+import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
@@ -20,7 +22,14 @@ const _defaultEndpoint = 'https://otlp.bugsnag.com/v1/traces';
 
 abstract class BugsnagPerformanceClient {
   Future<void> start({String? apiKey, Uri? endpoint});
-  BugsnagPerformanceSpan startSpan(String name, {DateTime? startTime});
+  Future<void> measureRunApp(FutureOr<void> Function() runApp);
+  BugsnagPerformanceSpan startSpan(
+    String name, {
+    DateTime? startTime,
+    BugsnagPerformanceSpanContext? parentContext,
+    bool? makeCurrentContext = true,
+    BugsnagPerformanceSpanAttributes? attributes,
+  });
 }
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
@@ -35,6 +44,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final BugsnagClock _clock;
   final Map<String, dynamic> _initialExtraConfig = {};
   late final SamplingProbabilityStore _probabilityStore;
+  late final AppStartInstrumentation _appStartInstrumentation;
   final Map<int, BugsnagPerformanceSpanContextStack> _zoneContextStacks = {};
 
   BugsnagPerformanceClientImpl() {
@@ -45,6 +55,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     );
     _clock = BugsnagClockImpl.instance;
     _probabilityStore = SamplingProbabilityStoreImpl(_clock);
+    _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
   }
 
   @override
@@ -57,14 +68,20 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       setExtraConfig(key, value);
     });
     _setup();
+    if (configuration?.instrumentAppStart ?? false) {
+      _appStartInstrumentation.didStartBugsnagPerformance();
+    }
     await _retryQueue?.flush();
   }
 
   @override
-  BugsnagPerformanceSpan startSpan(String name,
-      {DateTime? startTime,
-      BugsnagPerformanceSpanContext? parentContext,
-      bool? makeCurrentContext = true}) {
+  BugsnagPerformanceSpan startSpan(
+    String name, {
+    DateTime? startTime,
+    BugsnagPerformanceSpanContext? parentContext,
+    bool? makeCurrentContext = true,
+    BugsnagPerformanceSpanAttributes? attributes,
+  }) {
     if (parentContext != null) {
       _addContext(parentContext);
     }
@@ -72,15 +89,17 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     final parent = parentContext ?? _getCurrentContext();
 
     final span = BugsnagPerformanceSpanImpl(
-        name: name,
-        startTime: startTime ?? _clock.now(),
-        onEnded: (endedSpan) async {
-          await _updateSamplingProbabilityIfNeeded();
-          if (await _sampler?.sample(endedSpan) ?? true) {
-            _currentBatch?.add(endedSpan);
-          }
-        },
-        parentSpanId: parent?.spanId);
+      name: name,
+      startTime: startTime ?? _clock.now(),
+      onEnded: (endedSpan) async {
+        await _updateSamplingProbabilityIfNeeded();
+        if (await _sampler?.sample(endedSpan) ?? true) {
+          _currentBatch?.add(endedSpan);
+        }
+      },
+      parentSpanId: parent?.spanId,
+      attributes: attributes,
+    );
     span.clock = _clock;
     if (configuration != null) {
       _currentBatch ??= SpanBatchImpl();
@@ -93,6 +112,20 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     }
 
     return span;
+  }
+
+  @override
+  Future<void> measureRunApp(FutureOr<void> Function() runApp) async {
+    if (configuration?.instrumentAppStart ?? false) {
+      _appStartInstrumentation.willExecuteRunApp();
+    }
+    try {
+      await runApp();
+    } finally {
+      if (configuration?.instrumentAppStart ?? false) {
+        _appStartInstrumentation.didExecuteRunApp();
+      }
+    }
   }
 
   void _setup() {

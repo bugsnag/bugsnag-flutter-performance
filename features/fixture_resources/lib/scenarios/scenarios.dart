@@ -1,3 +1,4 @@
+import 'auto_instrument_app_starts_scenario.dart';
 import 'initial_p_scenario.dart';
 import 'manual_span_scenario.dart';
 import 'probability_expiry_scenario.dart';
@@ -24,5 +25,8 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('NewZoneNewContextScenario', () => NewZoneNewContextScenario()),
   ScenarioInfo(
       'PassContextToNewZoneScenario', () => PassContextToNewZoneScenario()),
-  ScenarioInfo('MakeCurrentContextScenario', () => MakeCurrentContextScenario())
+  ScenarioInfo(
+      'MakeCurrentContextScenario', () => MakeCurrentContextScenario()),
+  ScenarioInfo('AutoInstrumentAppStartsScenario',
+      () => AutoInstrumentAppStartsScenario())
 ];
