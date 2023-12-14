@@ -7,6 +7,7 @@ abstract class AppStartInstrumentation {
   void didStartBugsnagPerformance();
   void willExecuteRunApp();
   void didExecuteRunApp();
+  void setEnabled(bool enabled);
 }
 
 class AppStartInstrumentationImpl implements AppStartInstrumentation {
@@ -16,11 +17,15 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
   BugsnagPerformanceSpan? preRunAppPhaseSpan;
   BugsnagPerformanceSpan? runAppPhaseSpan;
   BugsnagPerformanceSpan? uiInitPhaseSpan;
+  var enabled = true;
 
   AppStartInstrumentationImpl({required this.client});
 
   @override
   void didStartBugsnagPerformance() {
+    if (!enabled) {
+      return;
+    }
     if (flutterInitSpan != null) {
       return;
     }
@@ -40,6 +45,9 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
 
   @override
   void willExecuteRunApp() {
+    if (!enabled) {
+      return;
+    }
     if (flutterInitSpan == null) {
       return;
     }
@@ -56,6 +64,9 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
 
   @override
   void didExecuteRunApp() {
+    if (!enabled) {
+      return;
+    }
     if (flutterInitSpan == null) {
       return;
     }
@@ -72,5 +83,16 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
       uiInitPhaseSpan?.end();
       flutterInitSpan?.end();
     });
+  }
+
+  @override
+  void setEnabled(bool enabled) {
+    this.enabled = enabled;
+    if (!enabled) {
+      flutterInitSpan = null;
+      preRunAppPhaseSpan = null;
+      runAppPhaseSpan = null;
+      uiInitPhaseSpan = null;
+    }
   }
 }

@@ -67,10 +67,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _initialExtraConfig.forEach((key, value) {
       setExtraConfig(key, value);
     });
+    _appStartInstrumentation
+        .setEnabled(configuration?.instrumentAppStart ?? false);
     _setup();
-    if (configuration?.instrumentAppStart ?? false) {
-      _appStartInstrumentation.didStartBugsnagPerformance();
-    }
+    _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
   }
 
@@ -116,15 +116,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
   @override
   Future<void> measureRunApp(FutureOr<void> Function() runApp) async {
-    if (configuration?.instrumentAppStart ?? false) {
-      _appStartInstrumentation.willExecuteRunApp();
-    }
+    _appStartInstrumentation.willExecuteRunApp();
     try {
       await runApp();
     } finally {
-      if (configuration?.instrumentAppStart ?? false) {
-        _appStartInstrumentation.didExecuteRunApp();
-      }
+      _appStartInstrumentation.didExecuteRunApp();
     }
   }
 
