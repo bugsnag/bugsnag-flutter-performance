@@ -1,0 +1,3 @@
+[submodule "packages/bugsnag-flutter-http-client"]
+	path = packages/bugsnag-flutter-http-client
+	url = git@github.com:bugsnag/bugsnag-flutter-http-client.git
