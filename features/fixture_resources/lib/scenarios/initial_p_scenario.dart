@@ -10,7 +10,7 @@ class InitialPScenario extends Scenario {
   @override
   Future<void> run() async {
     BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
-    BugsnagPerformance.setExtraConfig("probabilityRequestsPause", 2000);
+    BugsnagPerformance.setExtraConfig("probabilityRequestsPause", 3000);
     BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 2000);
     BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
