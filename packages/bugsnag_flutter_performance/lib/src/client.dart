@@ -21,6 +21,7 @@ const _defaultEndpoint = 'https://otlp.bugsnag.com/v1/traces';
 abstract class BugsnagPerformanceClient {
   Future<void> start({String? apiKey, Uri? endpoint});
   BugsnagPerformanceSpan startSpan(String name, {DateTime? startTime});
+  dynamic networkInstrumentation(dynamic);
 }
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
@@ -193,5 +194,14 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
   BugsnagPerformanceSpanContext? _getCurrentContext() {
     return _getContextStack()?.getCurrentContext();
+  }
+
+  @override
+  dynamic networkInstrumentation(dynamic data) {
+    if (data is! Map<String, dynamic>) {
+      print("GOT request status: " + data["status"]);
+    }
+
+    return true;
   }
 }

@@ -35,4 +35,8 @@ class BugsnagPerformance {
   static void setExtraConfig(String key, dynamic value) {
     _client.setExtraConfig(key, value);
   }
+
+  static dynamic networkInstrumentation(dynamic data){
+    return _client.networkInstrumentation(data);
+  }
 }
