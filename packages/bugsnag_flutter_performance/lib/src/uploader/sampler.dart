@@ -93,7 +93,7 @@ class SamplerImpl implements Sampler {
         duration = durationFromHeader;
       }
     }
-    probabilityStore.store(probability,
+    await probabilityStore.store(probability,
         clock.now().add(Duration(milliseconds: (duration * 1000).toInt())));
   }
 }

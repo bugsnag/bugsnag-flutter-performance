@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 abstract class SamplingProbabilityStore {
   Future<double?> get samplingProbability;
-  void store(
+  Future<void> store(
     double samplingProbability,
     DateTime expireDate,
   );
@@ -34,7 +34,7 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
   }
 
   @override
-  void store(
+  Future<void> store(
     double samplingProbability,
     DateTime expireDate,
   ) async {
