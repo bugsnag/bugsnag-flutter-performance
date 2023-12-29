@@ -10,8 +10,8 @@ class InitialPScenario extends Scenario {
   @override
   Future<void> run() async {
     BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
-    BugsnagPerformance.setExtraConfig("probabilityRequestsPause", 3000);
-    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 5000);
+    BugsnagPerformance.setExtraConfig("probabilityRequestsPause", 1000);
+    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 25000);
     BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
