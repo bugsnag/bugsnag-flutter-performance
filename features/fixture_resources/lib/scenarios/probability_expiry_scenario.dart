@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 class ProbabilityExpiryScenario extends Scenario {
   @override
   Future<void> run() async {
+    BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
     BugsnagPerformance.setExtraConfig("probabilityRequestsPause", 100);
     BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 100);
     BugsnagPerformance.start(
