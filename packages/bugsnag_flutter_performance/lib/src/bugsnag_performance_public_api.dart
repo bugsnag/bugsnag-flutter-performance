@@ -25,11 +25,10 @@ class BugsnagPerformance {
     );
   }
 
-  static void runApp({
-    FutureOr<void> Function()? runApp,
-  }) {
-    //TODO implement this during auto instrumentation
-    // _client.runApp(runApp: runApp);
+  static Future<void> measureRunApp(
+    FutureOr<void> Function() runApp,
+  ) async {
+    await _client.measureRunApp(runApp);
   }
 
   static void setExtraConfig(String key, dynamic value) {

@@ -22,6 +22,7 @@ abstract class Scenario {
   }
 
   Future<void> startBugsnag() async {
+    BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
     await BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));

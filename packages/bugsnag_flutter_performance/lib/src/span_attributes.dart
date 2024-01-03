@@ -3,11 +3,13 @@ class BugsnagPerformanceSpanAttributes {
     this.category = 'custom',
     this.isFirstClass,
     this.samplingProbability = 1.0,
+    this.phase,
   });
 
   final String category;
   final bool? isFirstClass;
   double samplingProbability;
+  final String? phase;
 
   BugsnagPerformanceSpanAttributes.fromJson(dynamic json)
       : category = _value(
@@ -26,7 +28,12 @@ class BugsnagPerformanceSpanAttributes {
               key: 'bugsnag.sampling.p',
               type: _ParameterType.double,
             ) as double? ??
-            1.0;
+            1.0,
+        phase = _value(
+          json: json,
+          key: 'bugsnag.phase',
+          type: _ParameterType.string,
+        ) as String?;
 
   dynamic toJson() => [
         {
@@ -48,6 +55,13 @@ class BugsnagPerformanceSpanAttributes {
             'doubleValue': samplingProbability,
           },
         },
+        if (phase != null)
+          {
+            'key': 'bugsnag.phase',
+            'value': {
+              'stringValue': phase,
+            }
+          }
       ];
 }
 
