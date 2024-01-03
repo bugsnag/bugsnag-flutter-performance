@@ -16,8 +16,7 @@ dependencies:
   package_info: ^2.0.2
   path_provider: ^2.0.2
   uuid: ^4.0.0
-  bugsnag_http_client:
-    path: ../bugsnag-flutter-http-client
+
 
 dev_dependencies:
   flutter_test:

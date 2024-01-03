@@ -196,12 +196,33 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     return _getContextStack()?.getCurrentContext();
   }
 
+
+
+  Map<String, BugsnagPerformanceSpan> _networkSpans = {};
+
   @override
   dynamic networkInstrumentation(dynamic data) {
-    if (data is! Map<String, dynamic>) {
-      print("GOT request status: " + data["status"]);
-    }
 
+    if (data is Map<String, dynamic>) {
+
+      String status = data["status"];
+
+      if (status == "start") {
+
+        var span = startSpan(data["name"]);
+        _networkSpans[data["id"]] = span;
+
+      } else if (status == "end") {
+
+        var span = _networkSpans[data["id"]];
+        if (span != null) {
+          span.end();
+        }
+
+      }else{
+        // TODO cancel span
+      }
+    }
     return true;
   }
 }
