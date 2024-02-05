@@ -14,7 +14,6 @@ import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'configuration.dart';
 import 'span.dart';
 
@@ -48,7 +47,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
   final Map<int, BugsnagPerformanceSpanContextStack> _zoneContextStacks = {};
-  String? currentConnectionType;
 
   BugsnagPerformanceClientImpl() {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -59,29 +57,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _clock = BugsnagClockImpl.instance;
     _probabilityStore = SamplingProbabilityStoreImpl(_clock);
     _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
-    checkInitialConnectivity();
-    listenForConnectivityChanges();
-  }
-
-  void checkInitialConnectivity() async
-  {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    handleConnectivityResult(connectivityResult);
-  }
-
-  void listenForConnectivityChanges() {
-    Connectivity().onConnectivityChanged.listen(handleConnectivityResult);
-  }
-
-  void handleConnectivityResult(ConnectivityResult result)
-  {
-    if (result == ConnectivityResult.mobile) {
-      currentConnectionType = 'cell';
-    } else if (result == ConnectivityResult.wifi) {
-      currentConnectionType = 'wifi';
-    } else {
-      currentConnectionType = 'unavailable';
-    }
   }
 
   @override
@@ -263,18 +238,19 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
       String status = data["status"];
 
-      if (status == "start") {
-
-        var span = startSpan(data["name"]);
-        _networkSpans[data["id"]] = span;
-
+      if (status == "started") {
+        var span = startSpan("HTTP/" + data["http_method"], attributes: BugsnagPerformanceSpanAttributes(category: "network"));
+        _networkSpans[data["request_id"]] = span;
+        print("saving span with id: ${data["request_id"]}");
       } else if (status == "complete") {
 
-        var span = _networkSpans[data["id"]];
+        var span = _networkSpans[data["request_id"]];
         if (span != null) {
-          span.end( connectionType: currentConnectionType,
+          print("found span, should end");
+
+          span.end(
             url: data["url"],
-            httpMethod: data["method"],
+            httpMethod: data["http_method"],
             httpStatusCode: data["status_code"],
             requestContentLength: data["response_content_length"],
             responseContentLength: data["request_content_length"]);

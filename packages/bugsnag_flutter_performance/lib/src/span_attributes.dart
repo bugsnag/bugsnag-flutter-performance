@@ -4,24 +4,22 @@ class BugsnagPerformanceSpanAttributes {
     this.isFirstClass,
     this.samplingProbability = 1.0,
     this.phase,
-    this.connectionType,
     this.url,
     this.httpMethod,
     this.httpStatusCode,
-    this.request_content_length,
-    this.response_content_length
+    this.requestContentLength,
+    this.responseContentLength
   });
 
   final String category;
   final bool? isFirstClass;
   double samplingProbability;
   final String? phase;
-  late final String? connectionType;
-  late final String? url;
-  late final String? httpMethod;
-  late final int? httpStatusCode;
-  late final int? request_content_length;
-  late final int? response_content_length;
+  String? url;
+  String? httpMethod;
+  int? httpStatusCode;
+  int? requestContentLength;
+  int? responseContentLength;
 
   BugsnagPerformanceSpanAttributes.fromJson(dynamic json)
       : category = _value(
@@ -46,11 +44,6 @@ class BugsnagPerformanceSpanAttributes {
           key: 'bugsnag.phase',
           type: _ParameterType.string,
         ) as String?,
-    connectionType = _value(
-          json: json,
-          key: 'net.host.connection.type',
-          type: _ParameterType.string,
-        ) as String?,
     url = _value(
           json: json,
           key: 'http.url',
@@ -66,12 +59,12 @@ class BugsnagPerformanceSpanAttributes {
           key: 'http.status_code',
           type: _ParameterType.double,
         ) as int?,
-    request_content_length = _value(
+    requestContentLength = _value(
           json: json,
           key: 'http.request_content_length',
           type: _ParameterType.double,
         ) as int?,
-    response_content_length = _value(
+    responseContentLength = _value(
           json: json,
           key: 'http.response_content_length',
           type: _ParameterType.double,
@@ -104,13 +97,6 @@ class BugsnagPerformanceSpanAttributes {
               'stringValue': phase,
             }
           },
-        if (connectionType != null)
-          {
-            'key': 'net.host.connection.type',
-            'value': {
-              'stringValue': connectionType,
-            }
-          },
         if (url != null)
           {
             'key': 'http.url',
@@ -129,21 +115,21 @@ class BugsnagPerformanceSpanAttributes {
           {
             'key': 'http.status_code',
             'value': {
-              'doubleValue': httpStatusCode,
+              'integerValue': httpStatusCode.toString(), //integerValue should be a string
             }
           },
-        if (request_content_length != null)
+        if (requestContentLength != null && requestContentLength != 0)
           {
             'key': 'http.request_content_length',
             'value': {
-              'doubleValue': request_content_length,
+              'integerValue': requestContentLength.toString(), //integerValue should be a string
             }
           },
-        if (response_content_length != null)
+        if (responseContentLength != null && responseContentLength != 0)
           {
             'key': 'http.response_content_length',
             'value': {
-              'doubleValue': response_content_length,
+              'integerValue': responseContentLength.toString(), //integerValue should be a string
             }
           }
       ];
