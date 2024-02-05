@@ -14,7 +14,14 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
   @override
   SpanId get spanId;
   SpanId? parentSpanId;
-  void end();
+  void end({
+    String? connectionType,
+    String? url,
+    String? httpMethod,
+    int? httpStatusCode,
+    int? requestContentLength,
+    int? responseContentLength,
+  });
   dynamic toJson();
 }
 
@@ -47,12 +54,27 @@ class BugsnagPerformanceSpanImpl
   late final BugsnagClock clock;
 
   @override
-  void end() {
+  void end({
+    String? connectionType,
+    String? url,
+    String? httpMethod,
+    int? httpStatusCode,
+    int? requestContentLength,
+    int? responseContentLength,
+  }) {
     if (endTime != null) {
       return;
     }
-
     endTime = clock.now();
+
+    // Update span attributes with network information if provided
+    if (connectionType != null) this.attributes.connectionType = connectionType;
+    if (url != null) this.attributes.url = url;
+    if (httpMethod != null) this.attributes.httpMethod = httpMethod;
+    if (httpStatusCode != null) this.attributes.httpStatusCode = httpStatusCode;
+    if (requestContentLength != null) this.attributes.request_content_length = requestContentLength;
+    if (responseContentLength != null) this.attributes.response_content_length = responseContentLength;
+
     onEnded(this);
   }
 

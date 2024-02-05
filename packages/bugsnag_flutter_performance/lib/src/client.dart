@@ -14,7 +14,7 @@ import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'configuration.dart';
 import 'span.dart';
 
@@ -48,6 +48,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
   final Map<int, BugsnagPerformanceSpanContextStack> _zoneContextStacks = {};
+  String? currentConnectionType;
 
   BugsnagPerformanceClientImpl() {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -58,6 +59,29 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _clock = BugsnagClockImpl.instance;
     _probabilityStore = SamplingProbabilityStoreImpl(_clock);
     _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
+    checkInitialConnectivity();
+    listenForConnectivityChanges();
+  }
+
+  void checkInitialConnectivity() async
+  {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    handleConnectivityResult(connectivityResult);
+  }
+
+  void listenForConnectivityChanges() {
+    Connectivity().onConnectivityChanged.listen(handleConnectivityResult);
+  }
+
+  void handleConnectivityResult(ConnectivityResult result)
+  {
+    if (result == ConnectivityResult.mobile) {
+      currentConnectionType = 'cell';
+    } else if (result == ConnectivityResult.wifi) {
+      currentConnectionType = 'wifi';
+    } else {
+      currentConnectionType = 'unavailable';
+    }
   }
 
   @override
@@ -233,6 +257,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   @override
   dynamic networkInstrumentation(dynamic data) {
 
+    print("networkInstrumentation: $data");
+
     if (data is Map<String, dynamic>) {
 
       String status = data["status"];
@@ -242,15 +268,20 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         var span = startSpan(data["name"]);
         _networkSpans[data["id"]] = span;
 
-      } else if (status == "end") {
+      } else if (status == "complete") {
 
         var span = _networkSpans[data["id"]];
         if (span != null) {
-          span.end();
+          span.end( connectionType: currentConnectionType,
+            url: data["url"],
+            httpMethod: data["method"],
+            httpStatusCode: data["status_code"],
+            requestContentLength: data["response_content_length"],
+            responseContentLength: data["request_content_length"]);
         }
-
       }else{
         // TODO cancel span
+
       }
     }
     return true;

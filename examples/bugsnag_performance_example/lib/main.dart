@@ -1,4 +1,5 @@
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
+import 'package:bugsnag_http_client/bugsnag_http_client.dart';
 import 'package:flutter/material.dart';
 
 const apiKey = 'add_your_api_key_here';
@@ -23,8 +24,7 @@ class MainApp extends StatelessWidget {
 }
 
 void startTestsSpan() {
-  BugsnagPerformance.start(apiKey: apiKey);
-  for (var i = 0; i < 200; i++) {
-    BugsnagPerformance.startSpan("test " + i.toString()).end();
-  }
+  BugsnagPerformance.start(apiKey: "227df1042bc7772c321dbde3b31a03c2");
+  BugSnagHttpClient().withSubscriber(BugsnagPerformance.networkInstrumentation).get(Uri.parse("https://www.google.com"));
+
 }

@@ -4,12 +4,24 @@ class BugsnagPerformanceSpanAttributes {
     this.isFirstClass,
     this.samplingProbability = 1.0,
     this.phase,
+    this.connectionType,
+    this.url,
+    this.httpMethod,
+    this.httpStatusCode,
+    this.request_content_length,
+    this.response_content_length
   });
 
   final String category;
   final bool? isFirstClass;
   double samplingProbability;
   final String? phase;
+  late final String? connectionType;
+  late final String? url;
+  late final String? httpMethod;
+  late final int? httpStatusCode;
+  late final int? request_content_length;
+  late final int? response_content_length;
 
   BugsnagPerformanceSpanAttributes.fromJson(dynamic json)
       : category = _value(
@@ -33,7 +45,37 @@ class BugsnagPerformanceSpanAttributes {
           json: json,
           key: 'bugsnag.phase',
           type: _ParameterType.string,
-        ) as String?;
+        ) as String?,
+    connectionType = _value(
+          json: json,
+          key: 'net.host.connection.type',
+          type: _ParameterType.string,
+        ) as String?,
+    url = _value(
+          json: json,
+          key: 'http.url',
+          type: _ParameterType.string,
+        ) as String?,
+    httpMethod = _value(
+          json: json,
+          key: 'http.method',
+          type: _ParameterType.string,
+        ) as String?,
+    httpStatusCode = _value(
+          json: json,
+          key: 'http.status_code',
+          type: _ParameterType.double,
+        ) as int?,
+    request_content_length = _value(
+          json: json,
+          key: 'http.request_content_length',
+          type: _ParameterType.double,
+        ) as int?,
+    response_content_length = _value(
+          json: json,
+          key: 'http.response_content_length',
+          type: _ParameterType.double,
+        ) as int?;
 
   dynamic toJson() => [
         {
@@ -60,6 +102,48 @@ class BugsnagPerformanceSpanAttributes {
             'key': 'bugsnag.phase',
             'value': {
               'stringValue': phase,
+            }
+          },
+        if (connectionType != null)
+          {
+            'key': 'net.host.connection.type',
+            'value': {
+              'stringValue': connectionType,
+            }
+          },
+        if (url != null)
+          {
+            'key': 'http.url',
+            'value': {
+              'stringValue': url,
+            }
+          },
+        if (httpMethod != null)
+          {
+            'key': 'http.method',
+            'value': {
+              'stringValue': httpMethod,
+            }
+          },
+        if (httpStatusCode != null)
+          {
+            'key': 'http.status_code',
+            'value': {
+              'doubleValue': httpStatusCode,
+            }
+          },
+        if (request_content_length != null)
+          {
+            'key': 'http.request_content_length',
+            'value': {
+              'doubleValue': request_content_length,
+            }
+          },
+        if (response_content_length != null)
+          {
+            'key': 'http.response_content_length',
+            'value': {
+              'doubleValue': response_content_length,
             }
           }
       ];
