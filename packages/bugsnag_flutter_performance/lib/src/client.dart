@@ -252,8 +252,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
             url: data["url"],
             httpMethod: data["http_method"],
             httpStatusCode: data["status_code"],
-            requestContentLength: data["response_content_length"],
-            responseContentLength: data["request_content_length"]);
+            requestContentLength: data["request_content_length"],
+            responseContentLength: data["response_content_length"]);
         }
       }else{
         // TODO cancel span
