@@ -232,27 +232,31 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
   @override
   dynamic networkInstrumentation(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      String status = data["status"];
-      if (status == "started") {
-        var span = startNetworkSpan(data['http_method']);
-        _networkSpans[data["request_id"]] = span;
-      } else if (status == "complete") {
-        var span = _networkSpans[data["request_id"]];
-        if (span != null) {
-          span.end(
-              url: data["url"],
-              httpStatusCode: data["status_code"],
-              requestContentLength: data["request_content_length"],
-              responseContentLength: data["response_content_length"]);
-        }
-          _networkSpans.remove(data["request_id"]);
-      } else {
-        if (_networkSpans.containsKey(data["request_id"])) {
-          _networkSpans.remove(data["request_id"]);
-        }
+
+    if (data is! Map<String, dynamic>) return true;
+    String status = data["status"];
+    String requestId = data["request_id"];
+
+    if (status == "started") {
+      var span = startNetworkSpan(data['http_method']);
+      _networkSpans[requestId] = span;
+    }
+    else if (status == "complete") {
+      var span = _networkSpans[requestId];
+      if (span != null) {
+        span.end(
+          url: data["url"],
+          httpStatusCode: data["status_code"],
+          requestContentLength: data["request_content_length"],
+          responseContentLength: data["response_content_length"],
+        );
+        _networkSpans.remove(requestId);
       }
+    }
+    else {
+      _networkSpans.remove(requestId);
     }
     return true;
   }
+
 }
