@@ -47,6 +47,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
   final Map<int, BugsnagPerformanceSpanContextStack> _zoneContextStacks = {};
+  final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
 
   BugsnagPerformanceClientImpl() {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -225,29 +226,16 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     return _getContextStack()?.getCurrentContext();
   }
 
-
-
-  Map<String, BugsnagPerformanceSpan> _networkSpans = {};
-
   @override
   dynamic networkInstrumentation(dynamic data) {
-
-    print("networkInstrumentation: $data");
-
     if (data is Map<String, dynamic>) {
-
       String status = data["status"];
-
       if (status == "started") {
         var span = startSpan("HTTP/" + data["http_method"], attributes: BugsnagPerformanceSpanAttributes(category: "network"));
         _networkSpans[data["request_id"]] = span;
-        print("saving span with id: ${data["request_id"]}");
       } else if (status == "complete") {
-
         var span = _networkSpans[data["request_id"]];
         if (span != null) {
-          print("found span, should end");
-
           span.end(
             url: data["url"],
             httpMethod: data["http_method"],
@@ -256,8 +244,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
             responseContentLength: data["response_content_length"]);
         }
       }else{
-        // TODO cancel span
-
+        if(_networkSpans.containsKey(data["request_id"])){
+          _networkSpans.remove(data["request_id"]);
+        }
       }
     }
     return true;
