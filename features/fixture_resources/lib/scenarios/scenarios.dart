@@ -8,6 +8,7 @@ import 'new_zone_new_context_scenario.dart';
 import 'pass_context_scenario.dart';
 import 'make_current_context.dart';
 import 'http_get_scenario.dart';
+import 'http_post_scenario.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -30,6 +31,6 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       'MakeCurrentContextScenario', () => MakeCurrentContextScenario()),
   ScenarioInfo('AutoInstrumentAppStartsScenario',
       () => AutoInstrumentAppStartsScenario()),
-  ScenarioInfo('HttpGetScenario', () => HttpGetScenario())
-
+  ScenarioInfo('HttpGetScenario', () => HttpGetScenario()),
+  ScenarioInfo('HttpPostScenario', () => HttpPostScenario())
 ];
