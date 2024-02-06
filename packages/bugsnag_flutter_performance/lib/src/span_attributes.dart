@@ -115,21 +115,21 @@ class BugsnagPerformanceSpanAttributes {
           {
             'key': 'http.status_code',
             'value': {
-              'integerValue': httpStatusCode.toString(), //integerValue should be a string
+              'intValue': httpStatusCode.toString(), //integerValue should be a string
             }
           },
         if (requestContentLength != null && requestContentLength != 0)
           {
             'key': 'http.request_content_length',
             'value': {
-              'integerValue': requestContentLength.toString(), //integerValue should be a string
+              'intValue': requestContentLength.toString(), //integerValue should be a string
             }
           },
         if (responseContentLength != null && responseContentLength != 0)
           {
             'key': 'http.response_content_length',
             'value': {
-              'integerValue': responseContentLength.toString(), //integerValue should be a string
+              'intValue': responseContentLength.toString(), //integerValue should be a string
             }
           }
       ];
