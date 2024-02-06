@@ -24,10 +24,7 @@ class MainApp extends StatelessWidget {
 }
 
 void startTestsSpan() {
-  BugsnagPerformance.start(apiKey: "227df1042bc7772c321dbde3b31a03c2", endpoint: Uri.parse("https://webhook.site/cf9cf376-d495-491a-8dd4-3493800a1a29"));
-  BugsnagPerformance.setExtraConfig("autoTriggerExportOnBatchSize", 1);
-
-  BugSnagHttpClient().withSubscriber(BugsnagPerformance.networkInstrumentation).get(Uri.parse("https://www.google.com"));
-  // BugsnagPerformance.startSpan("name").end();
-  print("hello world");
+  BugsnagPerformance.start(
+      apiKey: apiKey);
+  BugsnagPerformance.startSpan("name").end();
 }

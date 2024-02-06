@@ -1,15 +1,14 @@
 class BugsnagPerformanceSpanAttributes {
-  BugsnagPerformanceSpanAttributes({
-    this.category = 'custom',
-    this.isFirstClass,
-    this.samplingProbability = 1.0,
-    this.phase,
-    this.url,
-    this.httpMethod,
-    this.httpStatusCode,
-    this.requestContentLength,
-    this.responseContentLength
-  });
+  BugsnagPerformanceSpanAttributes(
+      {this.category = 'custom',
+      this.isFirstClass,
+      this.samplingProbability = 1.0,
+      this.phase,
+      this.url,
+      this.httpMethod,
+      this.httpStatusCode,
+      this.requestContentLength,
+      this.responseContentLength});
 
   final String category;
   final bool? isFirstClass;
@@ -44,27 +43,27 @@ class BugsnagPerformanceSpanAttributes {
           key: 'bugsnag.phase',
           type: _ParameterType.string,
         ) as String?,
-    url = _value(
+        url = _value(
           json: json,
           key: 'http.url',
           type: _ParameterType.string,
         ) as String?,
-    httpMethod = _value(
+        httpMethod = _value(
           json: json,
           key: 'http.method',
           type: _ParameterType.string,
         ) as String?,
-    httpStatusCode = _value(
+        httpStatusCode = _value(
           json: json,
           key: 'http.status_code',
           type: _ParameterType.double,
         ) as int?,
-    requestContentLength = _value(
+        requestContentLength = _value(
           json: json,
           key: 'http.request_content_length',
           type: _ParameterType.double,
         ) as int?,
-    responseContentLength = _value(
+        responseContentLength = _value(
           json: json,
           key: 'http.response_content_length',
           type: _ParameterType.double,
@@ -115,21 +114,24 @@ class BugsnagPerformanceSpanAttributes {
           {
             'key': 'http.status_code',
             'value': {
-              'intValue': httpStatusCode.toString(), //integerValue should be a string
+              'intValue':
+                  httpStatusCode.toString(), //integerValue should be a string
             }
           },
         if (requestContentLength != null && requestContentLength != 0)
           {
             'key': 'http.request_content_length',
             'value': {
-              'intValue': requestContentLength.toString(), //integerValue should be a string
+              'intValue': requestContentLength
+                  .toString(), //integerValue should be a string
             }
           },
         if (responseContentLength != null && responseContentLength != 0)
           {
             'key': 'http.response_content_length',
             'value': {
-              'intValue': responseContentLength.toString(), //integerValue should be a string
+              'intValue': responseContentLength
+                  .toString(), //integerValue should be a string
             }
           }
       ];

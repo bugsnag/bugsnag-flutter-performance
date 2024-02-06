@@ -35,7 +35,7 @@ class BugsnagPerformance {
     _client.setExtraConfig(key, value);
   }
 
-  static dynamic networkInstrumentation(dynamic data){
+  static dynamic networkInstrumentation(dynamic data) {
     return _client.networkInstrumentation(data);
   }
 }

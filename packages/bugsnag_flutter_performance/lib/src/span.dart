@@ -69,10 +69,12 @@ class BugsnagPerformanceSpanImpl
     if (url != null) attributes.url = url;
     if (httpMethod != null) attributes.httpMethod = httpMethod;
     if (httpStatusCode != null) attributes.httpStatusCode = httpStatusCode;
-    if (requestContentLength != null && requestContentLength > 0) attributes.requestContentLength = requestContentLength;
-    if (responseContentLength != null && responseContentLength > 0) attributes.responseContentLength = responseContentLength;
-
-    print("SPAN SHOULD END");
+    if (requestContentLength != null && requestContentLength > 0) {
+      attributes.requestContentLength = requestContentLength;
+    }
+    if (responseContentLength != null && responseContentLength > 0) {
+      attributes.responseContentLength = responseContentLength;
+    }
     onEnded(this);
   }
 
