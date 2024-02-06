@@ -16,7 +16,6 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
   SpanId? parentSpanId;
   void end({
     String? url,
-    String? httpMethod,
     int? httpStatusCode,
     int? requestContentLength,
     int? responseContentLength,
@@ -55,7 +54,6 @@ class BugsnagPerformanceSpanImpl
   @override
   void end({
     String? url,
-    String? httpMethod,
     int? httpStatusCode,
     int? requestContentLength,
     int? responseContentLength,
@@ -67,7 +65,6 @@ class BugsnagPerformanceSpanImpl
 
     // Update span attributes with network information if provided
     if (url != null) attributes.url = url;
-    if (httpMethod != null) attributes.httpMethod = httpMethod;
     if (httpStatusCode != null) attributes.httpStatusCode = httpStatusCode;
     if (requestContentLength != null && requestContentLength > 0) {
       attributes.requestContentLength = requestContentLength;

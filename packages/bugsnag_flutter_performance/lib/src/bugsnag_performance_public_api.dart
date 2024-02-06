@@ -25,6 +25,10 @@ class BugsnagPerformance {
     );
   }
 
+  static BugsnagPerformanceSpan startNetworkSpan(String httpMethod) {
+    return _client.startNetworkSpan(httpMethod.toUpperCase());
+  }
+
   static Future<void> measureRunApp(
     FutureOr<void> Function() runApp,
   ) async {

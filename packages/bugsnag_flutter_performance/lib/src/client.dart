@@ -226,24 +226,27 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     return _getContextStack()?.getCurrentContext();
   }
 
+  BugsnagPerformanceSpan startNetworkSpan(String httpMethod) {
+    return startSpan("HTTP/$httpMethod", makeCurrentContext: false, attributes: BugsnagPerformanceSpanAttributes(category: "network", httpMethod: httpMethod));
+  }
+
   @override
   dynamic networkInstrumentation(dynamic data) {
     if (data is Map<String, dynamic>) {
       String status = data["status"];
       if (status == "started") {
-        var span = startSpan("HTTP/${data['http_method']}",
-            attributes: BugsnagPerformanceSpanAttributes(category: "network"));
+        var span = startNetworkSpan(data['http_method']);
         _networkSpans[data["request_id"]] = span;
       } else if (status == "complete") {
         var span = _networkSpans[data["request_id"]];
         if (span != null) {
           span.end(
               url: data["url"],
-              httpMethod: data["http_method"],
               httpStatusCode: data["status_code"],
               requestContentLength: data["request_content_length"],
               responseContentLength: data["response_content_length"]);
         }
+          _networkSpans.remove(data["request_id"]);
       } else {
         if (_networkSpans.containsKey(data["request_id"])) {
           _networkSpans.remove(data["request_id"]);
