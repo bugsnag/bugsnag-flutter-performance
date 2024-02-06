@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:bugsnag_flutter_performance/src/span.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/model/otlp_package.dart';
