@@ -10,6 +10,7 @@ import 'make_current_context.dart';
 import 'http_get_scenario.dart';
 import 'http_post_scenario.dart';
 import 'http_callback_edit_scenario.dart';
+import 'http_callback_cancel_span.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -34,5 +35,6 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => AutoInstrumentAppStartsScenario()),
   ScenarioInfo('HttpGetScenario', () => HttpGetScenario()),
   ScenarioInfo('HttpPostScenario', () => HttpPostScenario()),
-  ScenarioInfo('HttpCallbackEditScenario', () => HttpCallbackEditScenario())
+  ScenarioInfo('HttpCallbackEditScenario', () => HttpCallbackEditScenario()),
+  ScenarioInfo('HttpCallbackCancelSpan', () => HttpCallbackCancelSpanScenario())
 ];

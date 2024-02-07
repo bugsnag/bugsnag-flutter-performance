@@ -8,8 +8,9 @@ class HttpGetScenario extends Scenario {
   Future<void> run() async {
     await startBugsnag();
     setBatchSize(1);
-    BugSnagHttpClient()
-        .withSubscriber(BugsnagPerformance.networkInstrumentation)
-        .get(FixtureConfig.MAZE_HOST);
+    BugSnagHttpClient().withSubscriber(BugsnagPerformance.networkInstrumentation).get(FixtureConfig.MAZE_HOST);
   }
 }
+
+
+
