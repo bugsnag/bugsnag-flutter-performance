@@ -14,13 +14,18 @@ import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
+import 'bugsnag_network_request_info.dart';
 import 'configuration.dart';
 import 'span.dart';
 
 const _defaultEndpoint = 'https://otlp.bugsnag.com/v1/traces';
 
 abstract class BugsnagPerformanceClient {
-  Future<void> start({String? apiKey, Uri? endpoint});
+  Future<void> start(
+      {String? apiKey,
+      Uri? endpoint,
+      BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
+          networkRequestCallback});
 
   Future<void> measureRunApp(FutureOr<void> Function() runApp);
   BugsnagPerformanceSpan startSpan(
@@ -30,6 +35,7 @@ abstract class BugsnagPerformanceClient {
     bool? makeCurrentContext = true,
     BugsnagPerformanceSpanAttributes? attributes,
   });
+  BugsnagPerformanceSpan startNetworkSpan(String url, String httpMethod);
   dynamic networkInstrumentation(dynamic);
 }
 
@@ -48,6 +54,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final AppStartInstrumentation _appStartInstrumentation;
   final Map<int, BugsnagPerformanceSpanContextStack> _zoneContextStacks = {};
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
+  BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
+      _networkRequestCallback;
 
   BugsnagPerformanceClientImpl() {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -61,7 +69,12 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   @override
-  Future<void> start({String? apiKey, Uri? endpoint}) async {
+  Future<void> start(
+      {String? apiKey,
+      Uri? endpoint,
+      BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
+          networkRequestCallback}) async {
+    _networkRequestCallback = networkRequestCallback;
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
@@ -226,37 +239,48 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     return _getContextStack()?.getCurrentContext();
   }
 
-  BugsnagPerformanceSpan startNetworkSpan(String httpMethod) {
-    return startSpan("HTTP/$httpMethod", makeCurrentContext: false, attributes: BugsnagPerformanceSpanAttributes(category: "network", httpMethod: httpMethod));
+  @override
+  BugsnagPerformanceSpan startNetworkSpan(String url, String httpMethod) {
+    return startSpan("HTTP/$httpMethod",
+        makeCurrentContext: false,
+        attributes: BugsnagPerformanceSpanAttributes(
+            category: "network", httpMethod: httpMethod, url: url));
   }
 
   @override
   dynamic networkInstrumentation(dynamic data) {
-
     if (data is! Map<String, dynamic>) return true;
     String status = data["status"];
     String requestId = data["request_id"];
 
     if (status == "started") {
-      var span = startNetworkSpan(data['http_method']);
+      String url = data["url"];
+      if (_networkRequestCallback != null) {
+        BugsnagNetworkRequestInfo requestInfo =
+            BugsnagNetworkRequestInfo(url: url);
+        BugsnagNetworkRequestInfo? modifiedRequestInfo =
+            _networkRequestCallback!(requestInfo);
+        if (modifiedRequestInfo?.url == null ||
+            modifiedRequestInfo!.url!.isEmpty) {
+          return false;
+        }
+        url = modifiedRequestInfo.url!;
+      }
+      var span = startNetworkSpan(url, data['http_method']);
       _networkSpans[requestId] = span;
-    }
-    else if (status == "complete") {
+    } else if (status == "complete") {
       var span = _networkSpans[requestId];
       if (span != null) {
         span.end(
-          url: data["url"],
           httpStatusCode: data["status_code"],
           requestContentLength: data["request_content_length"],
           responseContentLength: data["response_content_length"],
         );
         _networkSpans.remove(requestId);
       }
-    }
-    else {
+    } else {
       _networkSpans.remove(requestId);
     }
     return true;
   }
-
 }
