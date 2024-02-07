@@ -17,14 +17,26 @@ class MainApp extends StatelessWidget {
       home: Scaffold(
         body: Center(
             child: TextButton(
-                onPressed: startTestsSpan, child: Text('send test spans'))),
+                onPressed: sendTestSpan, child: Text('send test span'))),
       ),
     );
   }
 }
 
-void startTestsSpan() {
+void sendTestSpan() {
   BugsnagPerformance.start(
       apiKey: apiKey);
-  BugsnagPerformance.startSpan("name").end();
+  BugsnagPerformance.startSpan('test').end();
+}
+
+void sendNetworkSpan() {
+  BugsnagPerformance.start(
+      apiKey: apiKey,
+      networkRequestCallback: (info) {
+        info.url = "sanitised_url";
+        return info;
+      });
+  BugSnagHttpClient()
+      .withSubscriber(BugsnagPerformance.networkInstrumentation)
+      .get(Uri.parse("https://www.google.com"));
 }
