@@ -9,6 +9,9 @@ FIXTURE_LOCATION=features/fixtures/mazerunner
 
 PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance" 
 
+HTTP_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-http-client" 
+
+
 EXPORT_OPTIONS=features/fixture_resources/exportOptions.plist
 
 XCODE_PROJECT=features/fixtures/mazerunner/ios/Runner.xcodeproj/project.pbxproj
@@ -42,6 +45,8 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" path_provider
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" http
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" native_flutter_proxy
+
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_http_client:{'path':'$HTTP_WRAPPER_PACKAGE_PATH'}"
 
 echo "Add dev team to Xcode project"
 

@@ -1,15 +1,24 @@
 class BugsnagPerformanceSpanAttributes {
-  BugsnagPerformanceSpanAttributes({
-    this.category = 'custom',
-    this.isFirstClass,
-    this.samplingProbability = 1.0,
-    this.phase,
-  });
+  BugsnagPerformanceSpanAttributes(
+      {this.category = 'custom',
+      this.isFirstClass,
+      this.samplingProbability = 1.0,
+      this.phase,
+      this.url,
+      this.httpMethod,
+      this.httpStatusCode,
+      this.requestContentLength,
+      this.responseContentLength});
 
   final String category;
   final bool? isFirstClass;
   double samplingProbability;
   final String? phase;
+  String? url;
+  String? httpMethod;
+  int? httpStatusCode;
+  int? requestContentLength;
+  int? responseContentLength;
 
   BugsnagPerformanceSpanAttributes.fromJson(dynamic json)
       : category = _value(
@@ -33,7 +42,32 @@ class BugsnagPerformanceSpanAttributes {
           json: json,
           key: 'bugsnag.phase',
           type: _ParameterType.string,
-        ) as String?;
+        ) as String?,
+        url = _value(
+          json: json,
+          key: 'http.url',
+          type: _ParameterType.string,
+        ) as String?,
+        httpMethod = _value(
+          json: json,
+          key: 'http.method',
+          type: _ParameterType.string,
+        ) as String?,
+        httpStatusCode = _value(
+          json: json,
+          key: 'http.status_code',
+          type: _ParameterType.double,
+        ) as int?,
+        requestContentLength = _value(
+          json: json,
+          key: 'http.request_content_length',
+          type: _ParameterType.double,
+        ) as int?,
+        responseContentLength = _value(
+          json: json,
+          key: 'http.response_content_length',
+          type: _ParameterType.double,
+        ) as int?;
 
   dynamic toJson() => [
         {
@@ -60,6 +94,44 @@ class BugsnagPerformanceSpanAttributes {
             'key': 'bugsnag.phase',
             'value': {
               'stringValue': phase,
+            }
+          },
+        if (url != null)
+          {
+            'key': 'http.url',
+            'value': {
+              'stringValue': url,
+            }
+          },
+        if (httpMethod != null)
+          {
+            'key': 'http.method',
+            'value': {
+              'stringValue': httpMethod,
+            }
+          },
+        if (httpStatusCode != null)
+          {
+            'key': 'http.status_code',
+            'value': {
+              'intValue':
+                  httpStatusCode.toString(), //integerValue should be a string
+            }
+          },
+        if (requestContentLength != null && requestContentLength != 0)
+          {
+            'key': 'http.request_content_length',
+            'value': {
+              'intValue': requestContentLength
+                  .toString(), //integerValue should be a string
+            }
+          },
+        if (responseContentLength != null && responseContentLength != 0)
+          {
+            'key': 'http.response_content_length',
+            'value': {
+              'intValue': responseContentLength
+                  .toString(), //integerValue should be a string
             }
           }
       ];
