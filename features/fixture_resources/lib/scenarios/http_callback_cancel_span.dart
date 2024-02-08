@@ -10,15 +10,14 @@ class HttpCallbackCancelSpanScenario extends Scenario {
     await BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
-        networkRequestCallback: (info){
+        networkRequestCallback: (info) {
           return null;
         });
     setBatchSize(1);
-    BugSnagHttpClient().withSubscriber(BugsnagPerformance.networkInstrumentation).get(FixtureConfig.MAZE_HOST);
+    BugSnagHttpClient()
+        .withSubscriber(BugsnagPerformance.networkInstrumentation)
+        .get(FixtureConfig.MAZE_HOST);
     await Future.delayed(const Duration(seconds: 10));
     BugsnagPerformance.startSpan('HttpCallbackCancelSpanScenario').end();
   }
 }
-
-
-

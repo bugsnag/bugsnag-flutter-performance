@@ -10,14 +10,13 @@ class HttpCallbackEditScenario extends Scenario {
     await BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
-    networkRequestCallback: (info){
+        networkRequestCallback: (info) {
           info.url = "edited";
           return info;
-    });
+        });
     setBatchSize(1);
-    BugSnagHttpClient().withSubscriber(BugsnagPerformance.networkInstrumentation).get(FixtureConfig.MAZE_HOST);
+    BugSnagHttpClient()
+        .withSubscriber(BugsnagPerformance.networkInstrumentation)
+        .get(FixtureConfig.MAZE_HOST);
   }
 }
-
-
-

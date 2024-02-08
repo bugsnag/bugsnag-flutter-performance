@@ -266,10 +266,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         }
         url = modifiedRequestInfo.url!;
       }
-      var span = startNetworkSpan(url, data['http_method']);
+      final span = startNetworkSpan(url, data['http_method']);
       _networkSpans[requestId] = span;
     } else if (status == "complete") {
-      var span = _networkSpans[requestId];
+      final span = _networkSpans[requestId];
       if (span != null) {
         span.end(
           httpStatusCode: data["status_code"],

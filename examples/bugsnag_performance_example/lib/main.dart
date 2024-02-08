@@ -24,8 +24,7 @@ class MainApp extends StatelessWidget {
 }
 
 void sendTestSpan() {
-  BugsnagPerformance.start(
-      apiKey: apiKey);
+  BugsnagPerformance.start(apiKey: apiKey);
   BugsnagPerformance.startSpan('test').end();
 }
 
