@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 
 import '../bugsnag_flutter_performance.dart';
@@ -30,6 +31,7 @@ class BugsnagPerformance {
       startTime: startTime,
       parentContext: parentContext,
       makeCurrentContext: makeCurrentContext,
+      attributes: BugsnagPerformanceSpanAttributes(isFirstClass: true)
     );
   }
 
