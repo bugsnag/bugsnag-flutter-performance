@@ -1,4 +1,6 @@
 import 'auto_instrument_app_starts_scenario.dart';
+import 'dio_callback_cancel_span.dart';
+import 'dio_callback_edit_scenario.dart';
 import 'initial_p_scenario.dart';
 import 'manual_span_scenario.dart';
 import 'probability_expiry_scenario.dart';
@@ -11,6 +13,8 @@ import 'http_get_scenario.dart';
 import 'http_post_scenario.dart';
 import 'http_callback_edit_scenario.dart';
 import 'http_callback_cancel_span.dart';
+import 'dio_get_scenario.dart';
+import 'dio_post_scenario.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -36,5 +40,10 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('HttpGetScenario', () => HttpGetScenario()),
   ScenarioInfo('HttpPostScenario', () => HttpPostScenario()),
   ScenarioInfo('HttpCallbackEditScenario', () => HttpCallbackEditScenario()),
-  ScenarioInfo('HttpCallbackCancelSpan', () => HttpCallbackCancelSpanScenario())
+  ScenarioInfo(
+      'HttpCallbackCancelSpan', () => HttpCallbackCancelSpanScenario()),
+  ScenarioInfo('DIOGetScenario', () => DIOGetScenario()),
+  ScenarioInfo('DIOPostScenario', () => DIOPostScenario()),
+  ScenarioInfo('DIOCallbackCancelSpan', () => DIOCallbackCancelSpanScenario()),
+  ScenarioInfo('DIOCallbackEditScenario', () => DIOCallbackEditScenario()),
 ];
