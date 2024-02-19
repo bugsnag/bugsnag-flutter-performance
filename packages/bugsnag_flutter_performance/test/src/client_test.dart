@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bugsnag_flutter_performance/src/client.dart';
+import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
@@ -24,6 +25,11 @@ class MockRetryQueueBuilder implements RetryQueueBuilder {
   }
 }
 
+class MockLifecycleListener implements BugsnagLifecycleListener {
+  @override
+  void startObserving(void Function() onAppBackgrounded) {}
+}
+
 void main() {
   const apiKey = 'TestApiKey';
   final endpoint = Uri.tryParse('https://bugsnag.com')!;
@@ -34,6 +40,7 @@ void main() {
     setUp(() {
       client = BugsnagPerformanceClientImpl();
       client.retryQueueBuilder = MockRetryQueueBuilder();
+      client.lifecycleListener = MockLifecycleListener();
     });
     group('start', () {
       test('should set configuration with the provided parameters', () async {

@@ -1,3 +1,4 @@
+import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const millisecondsSinceEpoch = 1640979000000;
   BugsnagClockImpl.ensureInitialized();
+  BugsnagLifecycleListenerImpl.ensureInitialized();
 
   group('BugsnagPerformanceSpanImpl', () {
     test('should have the provided name, start time, traceId and spanId', () {

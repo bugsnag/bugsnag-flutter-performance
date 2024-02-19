@@ -50,6 +50,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   DateTime? _lastSamplingProbabilityRefreshDate;
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
+  BugsnagLifecycleListener? lifecycleListener;
   final Map<String, dynamic> _initialExtraConfig = {};
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
@@ -68,6 +69,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _clock = BugsnagClockImpl.instance;
     _probabilityStore = SamplingProbabilityStoreImpl(_clock);
     _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
+    BugsnagLifecycleListenerImpl.ensureInitialized();
+    lifecycleListener = BugsnagLifecycleListenerImpl.instance;
   }
 
   @override
@@ -89,7 +92,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _setup();
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
-    BugsnagLifecycleListener().startObserving(_onAppBackgrounded);
+    lifecycleListener?.startObserving(_onAppBackgrounded);
   }
 
   @override
