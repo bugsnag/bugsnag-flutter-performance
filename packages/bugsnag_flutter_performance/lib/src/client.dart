@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/app_start_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
@@ -56,6 +57,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
   BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
       _networkRequestCallback;
+  final List<BugsnagPerformanceSpan> _potentiallyOpenSpans = [];
 
   BugsnagPerformanceClientImpl() {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -87,6 +89,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _setup();
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
+    BugsnagLifecycleListener().startObserving(_onAppBackgrounded);
   }
 
   @override
@@ -125,7 +128,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     if (makeCurrentContext == true) {
       _addContext(span);
     }
-
+    _potentiallyOpenSpans.add(span);
     return span;
   }
 
@@ -282,5 +285,12 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _networkSpans.remove(requestId);
     }
     return true;
+  }
+
+  void _onAppBackgrounded() {
+    for (var span in _potentiallyOpenSpans) {
+      span.end(cancelled: true);
+    }
+    _potentiallyOpenSpans.clear();
   }
 }

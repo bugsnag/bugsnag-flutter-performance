@@ -18,6 +18,7 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
     int? httpStatusCode,
     int? requestContentLength,
     int? responseContentLength,
+    bool cancelled = false,
   });
   dynamic toJson();
 }
@@ -49,18 +50,23 @@ class BugsnagPerformanceSpanImpl
   DateTime? endTime;
   late final void Function(BugsnagPerformanceSpan) onEnded;
   late final BugsnagClock clock;
+  bool wasCancelled = false;
 
   @override
   void end({
     int? httpStatusCode,
     int? requestContentLength,
     int? responseContentLength,
+    bool cancelled = false,
   }) {
-    if (endTime != null) {
+    if (!isOpen()) {
       return;
     }
     endTime = clock.now();
-
+    if (cancelled) {
+      wasCancelled = true;
+      return;
+    }
     // Update span attributes with network information if provided
     if (httpStatusCode != null) attributes.httpStatusCode = httpStatusCode;
     if (requestContentLength != null && requestContentLength > 0) {
