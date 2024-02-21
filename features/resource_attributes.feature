@@ -19,6 +19,8 @@ Feature: Resource Attributes
     * the trace payload field "resourceSpans.0.resource" string attribute "device.manufacturer" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "host.arch" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "os.version" exists
+    * the trace payload field "resourceSpans.0.resource" string attribute "net.host.connection.type" exists
+
 
   @android_only
   Scenario: Android Attributes
@@ -35,6 +37,8 @@ Feature: Resource Attributes
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.platform" equals "android"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.version_code" equals "1"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.device.android_api_version" exists
+    * the trace payload field "resourceSpans.0.resource" string attribute "net.host.connection.type" exists
+
 
   @ios_only
   Scenario: iOS Attributes
@@ -50,3 +54,4 @@ Feature: Resource Attributes
 
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.platform" equals "ios"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.bundle_version" equals "1"
+    * the trace payload field "resourceSpans.0.resource" string attribute "net.host.connection.type" exists

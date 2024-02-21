@@ -26,13 +26,11 @@ class BugsnagPerformance {
       {DateTime? startTime,
       BugsnagPerformanceSpanContext? parentContext,
       bool? makeCurrentContext = true}) {
-    return _client.startSpan(
-      name,
-      startTime: startTime,
-      parentContext: parentContext,
-      makeCurrentContext: makeCurrentContext,
-      attributes: BugsnagPerformanceSpanAttributes(isFirstClass: true)
-    );
+    return _client.startSpan(name,
+        startTime: startTime,
+        parentContext: parentContext,
+        makeCurrentContext: makeCurrentContext,
+        attributes: BugsnagPerformanceSpanAttributes(isFirstClass: true));
   }
 
   static BugsnagPerformanceSpan startNetworkSpan(
