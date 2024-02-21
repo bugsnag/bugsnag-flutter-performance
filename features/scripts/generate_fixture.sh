@@ -31,11 +31,9 @@ BS_DART_LOCATION=features/fixture_resources/lib
 
 BS_DART_DESTINATION=features/fixtures/mazerunner
 
-ANDROID_PROPERTIES=features/fixtures/mazerunner/android/local.properties
+ANDROID_GRADLE=features/fixtures/mazerunner/android/app/build.gradle
 
-MIN_VERSION_KEY=flutter.minSdkVersion
 
-MIN_VERSION_VALUE=19
 
 echo "Remove old fixture"
 
@@ -61,13 +59,7 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_dio_client:{'path'
 
 echo "update min sdk version in android gradle file"
 
-if grep -q "^${MIN_VERSION_KEY}=" "$ANDROID_PROPERTIES"; then
-  # Key exists, update it
-  sed -i "/^${MIN_VERSION_KEY}=/c\\${MIN_VERSION_KEY}=${MIN_VERSION_VALUE}" "$ANDROID_PROPERTIES"
-else
-  # Key doesn't exist, add it
-  echo -e "\n${MIN_VERSION_KEY}=${MIN_VERSION_VALUE}" >> "$ANDROID_PROPERTIES"
-fi
+sed -i '' 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 19/g' "$ANDROID_GRADLE"
 
 echo "Add dev team to Xcode project"
 
