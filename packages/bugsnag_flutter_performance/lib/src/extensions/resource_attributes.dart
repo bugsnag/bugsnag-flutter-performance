@@ -2,6 +2,7 @@ import 'package:device_info/device_info.dart';
 import 'dart:io';
 import 'package:package_info/package_info.dart';
 import 'package:bugsnag_flutter_performance/src/device_id_manager.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 abstract class ResourceAttributesProvider {
   Future<List<Map<String, Object>>> resourceAttributes();
@@ -18,7 +19,33 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
       await _initializeResourceAttributes();
       _didInitializeAttributes = true;
     }
+    await _addNetworkStatus();
     return _resourceAttributes;
+  }
+
+  Future<void> _addNetworkStatus() async {
+    var status = "unavailable";
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      status = "cell";
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      status = "wifi";
+    }
+
+    Map<String, Object> networkStatusAttribute = {
+      'key': 'net.host.connection.type',
+      'value': {
+        'stringValue': status,
+      }
+    };
+
+    final existingIndex = _resourceAttributes
+        .indexWhere((attr) => attr['key'] == 'net.host.connection.type');
+    if (existingIndex != -1) {
+      _resourceAttributes[existingIndex] = networkStatusAttribute;
+    } else {
+      _resourceAttributes.add(networkStatusAttribute);
+    }
   }
 
   Future<void> _initializeResourceAttributes() async {

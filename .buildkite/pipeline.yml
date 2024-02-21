@@ -26,8 +26,8 @@ steps:
     env:
       FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
     commands:
-      - pod repo update trunk
       - bundle install
+      - pod repo update trunk
       - features/scripts/generate_fixture.sh
       - features/scripts/build_ios_app.sh
     plugins:
