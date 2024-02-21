@@ -23,8 +23,7 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
     return _resourceAttributes;
   }
 
-  Future<void> _addNetworkStatus() async
-  {
+  Future<void> _addNetworkStatus() async {
     String status = "unavailable";
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
@@ -40,7 +39,8 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
       }
     };
 
-    int existingIndex = _resourceAttributes.indexWhere((attr) => attr['key'] == 'net.host.connection.type');
+    int existingIndex = _resourceAttributes
+        .indexWhere((attr) => attr['key'] == 'net.host.connection.type');
     if (existingIndex != -1) {
       _resourceAttributes[existingIndex] = networkStatusAttribute;
     } else {
