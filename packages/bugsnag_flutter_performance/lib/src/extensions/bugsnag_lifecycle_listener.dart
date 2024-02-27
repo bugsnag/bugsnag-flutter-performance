@@ -9,6 +9,7 @@ class BugsnagLifecycleListenerImpl
     implements BugsnagLifecycleListener {
   static BugsnagLifecycleListenerImpl get instance => _instance!;
   static BugsnagLifecycleListenerImpl? _instance;
+  bool _isObserving = false;
 
   void Function()? _onAppBackgrounded;
 
@@ -19,6 +20,10 @@ class BugsnagLifecycleListenerImpl
 
   @override
   void startObserving(void Function() onAppBackgrounded) {
+    if (_isObserving) {
+      return;
+    }
+    _isObserving = true;
     _onAppBackgrounded = onAppBackgrounded;
     WidgetsBinding.instance.addObserver(this);
   }
