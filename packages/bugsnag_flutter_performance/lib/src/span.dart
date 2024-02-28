@@ -29,6 +29,7 @@ class BugsnagPerformanceSpanImpl
       {required this.name,
       required this.startTime,
       void Function(BugsnagPerformanceSpan)? onEnded,
+      void Function(BugsnagPerformanceSpan)? onCanceled,
       TraceId? traceId,
       SpanId? spanId,
       this.parentSpanId,
@@ -36,6 +37,7 @@ class BugsnagPerformanceSpanImpl
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
+    this.onCanceled = onCanceled ?? _onCanceled;
     this.attributes = attributes ?? BugsnagPerformanceSpanAttributes();
   }
   final String name;
@@ -49,8 +51,8 @@ class BugsnagPerformanceSpanImpl
   late final BugsnagPerformanceSpanAttributes attributes;
   DateTime? endTime;
   late final void Function(BugsnagPerformanceSpan) onEnded;
+  late final void Function(BugsnagPerformanceSpan) onCanceled;
   late final BugsnagClock clock;
-  bool wasCancelled = false;
 
   @override
   void end({
@@ -64,7 +66,7 @@ class BugsnagPerformanceSpanImpl
     }
     endTime = clock.now();
     if (cancelled) {
-      wasCancelled = true;
+      onCanceled(this);
       return;
     }
     // Update span attributes with network information if provided
@@ -150,3 +152,5 @@ SpanId? _decodeSpanId(String? spanIdString) {
 }
 
 void _onEnded(BugsnagPerformanceSpan span) {}
+
+void _onCanceled(BugsnagPerformanceSpan span) {}

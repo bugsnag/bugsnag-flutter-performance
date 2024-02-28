@@ -27,7 +27,7 @@ class MockRetryQueueBuilder implements RetryQueueBuilder {
 
 class MockLifecycleListener implements BugsnagLifecycleListener {
   @override
-  void startObserving(void Function() onAppBackgrounded) {}
+  void startObserving({void Function()? onAppBackgrounded}) {}
 }
 
 void main() {
@@ -38,9 +38,9 @@ void main() {
     late BugsnagPerformanceClientImpl client;
 
     setUp(() {
-      client = BugsnagPerformanceClientImpl();
+      client = BugsnagPerformanceClientImpl(
+          lifecycleListener: MockLifecycleListener());
       client.retryQueueBuilder = MockRetryQueueBuilder();
-      client.lifecycleListener = MockLifecycleListener();
     });
     group('start', () {
       test('should set configuration with the provided parameters', () async {

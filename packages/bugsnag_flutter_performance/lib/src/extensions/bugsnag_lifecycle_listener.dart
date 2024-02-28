@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 abstract class BugsnagLifecycleListener {
-  void startObserving(void Function() onAppBackgrounded);
+  void startObserving({required void Function() onAppBackgrounded});
 }
 
 class BugsnagLifecycleListenerImpl
@@ -19,7 +19,7 @@ class BugsnagLifecycleListenerImpl
   }
 
   @override
-  void startObserving(void Function() onAppBackgrounded) {
+  void startObserving({required void Function() onAppBackgrounded}) {
     if (_isObserving) {
       return;
     }

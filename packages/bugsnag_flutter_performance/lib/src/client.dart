@@ -50,7 +50,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   DateTime? _lastSamplingProbabilityRefreshDate;
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
-  BugsnagLifecycleListener? lifecycleListener;
+  late final BugsnagLifecycleListener? _lifecycleListener;
   final Map<String, dynamic> _initialExtraConfig = {};
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
@@ -58,9 +58,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
   BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
       _networkRequestCallback;
-  final List<BugsnagPerformanceSpan> _potentiallyOpenSpans = [];
+  final Map<SpanId, BugsnagPerformanceSpan> _potentiallyOpenSpans = {};
 
-  BugsnagPerformanceClientImpl() {
+  BugsnagPerformanceClientImpl({BugsnagLifecycleListener? lifecycleListener}) {
     retryQueueBuilder = RetryQueueBuilderImpl();
     BugsnagClockImpl.ensureInitialized();
     _packageBuilder = PackageBuilderImpl(
@@ -70,7 +70,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _probabilityStore = SamplingProbabilityStoreImpl(_clock);
     _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
     BugsnagLifecycleListenerImpl.ensureInitialized();
-    lifecycleListener = BugsnagLifecycleListenerImpl.instance;
+    _lifecycleListener =
+        lifecycleListener ?? BugsnagLifecycleListenerImpl.instance;
   }
 
   @override
@@ -92,7 +93,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _setup();
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
-    lifecycleListener?.startObserving(_onAppBackgrounded);
+    _lifecycleListener?.startObserving(onAppBackgrounded: _onAppBackgrounded);
   }
 
   @override
@@ -117,6 +118,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         if (await _sampler?.sample(endedSpan) ?? true) {
           _currentBatch?.add(endedSpan);
         }
+        _potentiallyOpenSpans.remove(endedSpan.spanId);
+      },
+      onCanceled: (cancledSpan) {
+        _potentiallyOpenSpans.remove(cancledSpan.spanId);
       },
       parentSpanId: parent?.spanId,
       attributes: attributes,
@@ -131,7 +136,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     if (makeCurrentContext == true) {
       _addContext(span);
     }
-    _potentiallyOpenSpans.add(span);
+    _potentiallyOpenSpans[span.spanId] = span;
     return span;
   }
 
@@ -291,9 +296,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   void _onAppBackgrounded() {
-    for (var span in _potentiallyOpenSpans) {
-      span.end(cancelled: true);
-    }
+    _potentiallyOpenSpans.forEach((key, value) {
+      value.end(cancelled: true);
+    });
     _potentiallyOpenSpans.clear();
   }
 }
