@@ -31,6 +31,11 @@ BS_DART_LOCATION=features/fixture_resources/lib
 
 BS_DART_DESTINATION=features/fixtures/mazerunner
 
+ANDROID_GRADLE=features/fixtures/mazerunner/android/app/build.gradle
+
+PODFILE=features/fixtures/mazerunner/ios/Podfile
+
+
 echo "Remove old fixture"
 
 rm -rf $FIXTURE_LOCATION
@@ -53,7 +58,13 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_http_client:{'path
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_dio_client:{'path':'$DIO_WRAPPER_PACKAGE_PATH'}"
 
+echo "update min sdk version in android gradle file"
 
+sed -i '' 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 19/g' "$ANDROID_GRADLE"
+
+echo "Add min platform to pod file"
+
+sed -i '' "s/# platform :ios, '11.0'/platform :ios, '12.0'/" "$PODFILE"
 
 echo "Add dev team to Xcode project"
 
