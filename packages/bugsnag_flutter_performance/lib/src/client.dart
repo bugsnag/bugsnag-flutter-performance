@@ -296,9 +296,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   void _onAppBackgrounded() {
-    _potentiallyOpenSpans.forEach((key, value) {
-      value.end(cancelled: true);
-    });
+    var keys = List<SpanId>.from(_potentiallyOpenSpans.keys);
+    for (var key in keys) {
+      _potentiallyOpenSpans[key]?.end(cancelled: true);
+      _potentiallyOpenSpans.remove(key);
+    }
     _potentiallyOpenSpans.clear();
   }
 }

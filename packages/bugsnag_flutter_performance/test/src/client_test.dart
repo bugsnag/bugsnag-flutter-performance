@@ -8,6 +8,7 @@ import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class MockRetryQueue implements RetryQueue {
@@ -26,8 +27,16 @@ class MockRetryQueueBuilder implements RetryQueueBuilder {
 }
 
 class MockLifecycleListener implements BugsnagLifecycleListener {
+  void Function()? _onAppBackgrounded;
+
   @override
-  void startObserving({void Function()? onAppBackgrounded}) {}
+  void startObserving({void Function()? onAppBackgrounded}) {
+    _onAppBackgrounded = onAppBackgrounded;
+  }
+
+  void triggerAppBackgrounded() {
+    _onAppBackgrounded?.call();
+  }
 }
 
 void main() {
@@ -36,16 +45,15 @@ void main() {
   BugsnagClockImpl.ensureInitialized();
   group('BugsnagPerformanceClient', () {
     late BugsnagPerformanceClientImpl client;
-
+    final lifecycleListener = MockLifecycleListener();
     setUp(() {
-      client = BugsnagPerformanceClientImpl(
-          lifecycleListener: MockLifecycleListener());
+      client =
+          BugsnagPerformanceClientImpl(lifecycleListener: lifecycleListener);
       client.retryQueueBuilder = MockRetryQueueBuilder();
     });
     group('start', () {
       test('should set configuration with the provided parameters', () async {
         await client.start(apiKey: apiKey, endpoint: endpoint);
-
         expect(client.configuration!.apiKey, equals(apiKey));
         expect(client.configuration!.endpoint, equals(endpoint));
       });
@@ -70,6 +78,15 @@ void main() {
                 timeAfterStart.nanosecondsSinceEpoch,
             isTrue);
         expect(span.endTime, isNull);
+      });
+    });
+    group('onAppBackgrounded', () {
+      test('should cancel spans when app background event triggers', () async {
+        await client.start(apiKey: apiKey, endpoint: endpoint);
+        final span = client.startSpan("test");
+        expect(span.isOpen(), isTrue);
+        lifecycleListener.triggerAppBackgrounded();
+        expect(span.isOpen(), isFalse);
       });
     });
   });
