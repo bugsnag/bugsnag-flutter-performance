@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/app_start_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
@@ -49,6 +50,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   DateTime? _lastSamplingProbabilityRefreshDate;
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
+  late final BugsnagLifecycleListener? _lifecycleListener;
   final Map<String, dynamic> _initialExtraConfig = {};
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
@@ -56,8 +58,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
   BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
       _networkRequestCallback;
+  final Map<SpanId, BugsnagPerformanceSpan> _potentiallyOpenSpans = {};
 
-  BugsnagPerformanceClientImpl() {
+  BugsnagPerformanceClientImpl({BugsnagLifecycleListener? lifecycleListener}) {
     retryQueueBuilder = RetryQueueBuilderImpl();
     BugsnagClockImpl.ensureInitialized();
     _packageBuilder = PackageBuilderImpl(
@@ -66,6 +69,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _clock = BugsnagClockImpl.instance;
     _probabilityStore = SamplingProbabilityStoreImpl(_clock);
     _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
+    BugsnagLifecycleListenerImpl.ensureInitialized();
+    _lifecycleListener =
+        lifecycleListener ?? BugsnagLifecycleListenerImpl.instance;
   }
 
   @override
@@ -87,6 +93,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _setup();
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
+    _lifecycleListener?.startObserving(onAppBackgrounded: _onAppBackgrounded);
   }
 
   @override
@@ -111,6 +118,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         if (await _sampler?.sample(endedSpan) ?? true) {
           _currentBatch?.add(endedSpan);
         }
+        _potentiallyOpenSpans.remove(endedSpan.spanId);
+      },
+      onCanceled: (cancledSpan) {
+        _potentiallyOpenSpans.remove(cancledSpan.spanId);
       },
       parentSpanId: parent?.spanId,
       attributes: attributes,
@@ -125,7 +136,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     if (makeCurrentContext == true) {
       _addContext(span);
     }
-
+    _potentiallyOpenSpans[span.spanId] = span;
     return span;
   }
 
@@ -282,5 +293,14 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _networkSpans.remove(requestId);
     }
     return true;
+  }
+
+  void _onAppBackgrounded() {
+    var keys = List<SpanId>.from(_potentiallyOpenSpans.keys);
+    for (var key in keys) {
+      _potentiallyOpenSpans[key]?.end(cancelled: true);
+      _potentiallyOpenSpans.remove(key);
+    }
+    _potentiallyOpenSpans.clear();
   }
 }

@@ -18,6 +18,7 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
     int? httpStatusCode,
     int? requestContentLength,
     int? responseContentLength,
+    bool cancelled = false,
   });
   dynamic toJson();
 }
@@ -28,6 +29,7 @@ class BugsnagPerformanceSpanImpl
       {required this.name,
       required this.startTime,
       void Function(BugsnagPerformanceSpan)? onEnded,
+      void Function(BugsnagPerformanceSpan)? onCanceled,
       TraceId? traceId,
       SpanId? spanId,
       this.parentSpanId,
@@ -35,6 +37,7 @@ class BugsnagPerformanceSpanImpl
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
+    this.onCanceled = onCanceled ?? _onCanceled;
     this.attributes = attributes ?? BugsnagPerformanceSpanAttributes();
   }
   final String name;
@@ -48,6 +51,7 @@ class BugsnagPerformanceSpanImpl
   late final BugsnagPerformanceSpanAttributes attributes;
   DateTime? endTime;
   late final void Function(BugsnagPerformanceSpan) onEnded;
+  late final void Function(BugsnagPerformanceSpan) onCanceled;
   late final BugsnagClock clock;
 
   @override
@@ -55,12 +59,16 @@ class BugsnagPerformanceSpanImpl
     int? httpStatusCode,
     int? requestContentLength,
     int? responseContentLength,
+    bool cancelled = false,
   }) {
-    if (endTime != null) {
+    if (!isOpen()) {
       return;
     }
     endTime = clock.now();
-
+    if (cancelled) {
+      onCanceled(this);
+      return;
+    }
     // Update span attributes with network information if provided
     if (httpStatusCode != null) attributes.httpStatusCode = httpStatusCode;
     if (requestContentLength != null && requestContentLength > 0) {
@@ -144,3 +152,5 @@ SpanId? _decodeSpanId(String? spanIdString) {
 }
 
 void _onEnded(BugsnagPerformanceSpan span) {}
+
+void _onCanceled(BugsnagPerformanceSpan span) {}

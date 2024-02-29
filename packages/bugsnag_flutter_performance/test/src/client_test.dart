@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bugsnag_flutter_performance/src/client.dart';
+import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
@@ -24,21 +25,34 @@ class MockRetryQueueBuilder implements RetryQueueBuilder {
   }
 }
 
+class MockLifecycleListener implements BugsnagLifecycleListener {
+  void Function()? _onAppBackgrounded;
+
+  @override
+  void startObserving({void Function()? onAppBackgrounded}) {
+    _onAppBackgrounded = onAppBackgrounded;
+  }
+
+  void triggerAppBackgrounded() {
+    _onAppBackgrounded?.call();
+  }
+}
+
 void main() {
   const apiKey = 'TestApiKey';
   final endpoint = Uri.tryParse('https://bugsnag.com')!;
   BugsnagClockImpl.ensureInitialized();
   group('BugsnagPerformanceClient', () {
     late BugsnagPerformanceClientImpl client;
-
+    final lifecycleListener = MockLifecycleListener();
     setUp(() {
-      client = BugsnagPerformanceClientImpl();
+      client =
+          BugsnagPerformanceClientImpl(lifecycleListener: lifecycleListener);
       client.retryQueueBuilder = MockRetryQueueBuilder();
     });
     group('start', () {
       test('should set configuration with the provided parameters', () async {
         await client.start(apiKey: apiKey, endpoint: endpoint);
-
         expect(client.configuration!.apiKey, equals(apiKey));
         expect(client.configuration!.endpoint, equals(endpoint));
       });
@@ -63,6 +77,15 @@ void main() {
                 timeAfterStart.nanosecondsSinceEpoch,
             isTrue);
         expect(span.endTime, isNull);
+      });
+    });
+    group('onAppBackgrounded', () {
+      test('should cancel spans when app background event triggers', () async {
+        await client.start(apiKey: apiKey, endpoint: endpoint);
+        final span = client.startSpan("test");
+        expect(span.isOpen(), isTrue);
+        lifecycleListener.triggerAppBackgrounded();
+        expect(span.isOpen(), isFalse);
       });
     });
   });
