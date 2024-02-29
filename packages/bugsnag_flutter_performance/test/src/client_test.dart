@@ -8,7 +8,6 @@ import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class MockRetryQueue implements RetryQueue {
