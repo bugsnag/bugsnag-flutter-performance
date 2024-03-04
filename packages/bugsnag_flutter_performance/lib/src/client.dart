@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/app_start_instrumentation.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/navigation_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
@@ -16,6 +17,9 @@ import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'bugsnag_network_request_info.dart';
+// ignore: implementation_imports
+import 'package:bugsnag_navigator_observer/src/bugsnag_navigator_observer_callbacks.dart';
+
 import 'configuration.dart';
 import 'span.dart';
 
@@ -54,6 +58,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   final Map<String, dynamic> _initialExtraConfig = {};
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
+  late final NavigationInstrumentation _navigationInstrumentation;
   final Map<int, BugsnagPerformanceSpanContextStack> _zoneContextStacks = {};
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
   BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
@@ -72,6 +77,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     BugsnagLifecycleListenerImpl.ensureInitialized();
     _lifecycleListener =
         lifecycleListener ?? BugsnagLifecycleListenerImpl.instance;
+    _navigationInstrumentation = NavigationInstrumentationImpl(
+      client: this,
+      clock: _clock,
+    );
   }
 
   @override
@@ -90,6 +99,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     });
     _appStartInstrumentation
         .setEnabled(configuration?.instrumentAppStart ?? false);
+    _navigationInstrumentation
+        .setEnabled(configuration?.instrumentNavigation ?? false);
     _setup();
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
@@ -171,6 +182,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         (timer) {
       _updateSamplingProbabilityIfNeeded(force: true);
     });
+    BugsnagNavigatorObserverCallbacks.setup(
+      willShowNewRouteCallback: _navigationInstrumentation.willShowRoute,
+    );
   }
 
   void _sendBatch(SpanBatch batch) async {

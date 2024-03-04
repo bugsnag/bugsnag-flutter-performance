@@ -2,6 +2,8 @@ name: bugsnag_flutter_performance
 description: A new Flutter plugin project.
 version: 0.0.1
 homepage:
+# TODO: Remove once all dependencies are published
+publish_to: none
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -17,6 +19,8 @@ dependencies:
   path_provider: ^2.0.2
   uuid: ^4.0.0
   connectivity_plus: ^5.0.2
+  bugsnag_navigator_observer:
+    path: ../bugsnag-flutter-navigator-observer
 
 dev_dependencies:
   flutter_test:
