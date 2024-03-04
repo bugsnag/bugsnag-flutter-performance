@@ -15,6 +15,7 @@ import 'http_callback_edit_scenario.dart';
 import 'http_callback_cancel_span.dart';
 import 'dio_get_scenario.dart';
 import 'dio_post_scenario.dart';
+import 'http_get_multiple_subscribers_scenario.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -46,4 +47,6 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('DIOPostScenario', () => DIOPostScenario()),
   ScenarioInfo('DIOCallbackCancelSpan', () => DIOCallbackCancelSpanScenario()),
   ScenarioInfo('DIOCallbackEditScenario', () => DIOCallbackEditScenario()),
+  ScenarioInfo('HttpGetMultipleSubscribersScenario',
+      () => HttpGetMultipleSubscribersScenario()),
 ];
