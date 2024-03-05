@@ -14,6 +14,7 @@ abstract class Scenario {
   }
 
   Widget? createWidget() => null;
+  RouteSettings? routeSettings() => null;
 
   Future<void> run();
 

@@ -23,3 +23,16 @@ Feature: Automatic instrumentation spans
     * the span named "[AppStart/FlutterInit]" is the parent of the span named "[AppStartPhase/pre runApp()]"
     * the span named "[AppStart/FlutterInit]" is the parent of the span named "[AppStartPhase/runApp()]"
     * the span named "[AppStart/FlutterInit]" is the parent of the span named "[AppStartPhase/UI init]"
+
+  Scenario: AutoInstrumentNavigationBasicScenario
+    Given I run "AutoInstrumentNavigationBasicScenario"
+    And I wait for 1 span
+    Then the trace "Content-Type" header equals "application/json"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+    * a span field "name" equals "[Navigation]/AutoInstrumentNavigationBasicScenarioScreen"
+    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
+    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
+    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
+    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
+    * every span bool attribute "bugsnag.span.first_class" does not exist

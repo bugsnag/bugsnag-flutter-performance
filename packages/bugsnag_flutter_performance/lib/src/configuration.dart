@@ -6,6 +6,7 @@ class BugsnagPerformanceConfiguration {
   int probabilityRequestsPause = 30000;
   int probabilityValueExpireTime = 24 * 3600 * 1000;
   bool instrumentAppStart = true;
+  bool instrumentNavigation = true;
 
   void applyExtraConfig(String key, dynamic value) {
     switch (key) {
@@ -20,6 +21,9 @@ class BugsnagPerformanceConfiguration {
         break;
       case 'instrumentAppStart':
         instrumentAppStart = value;
+        break;
+      case 'instrumentNavigation':
+        instrumentNavigation = value;
         break;
     }
   }

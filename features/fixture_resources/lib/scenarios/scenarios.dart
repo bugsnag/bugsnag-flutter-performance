@@ -1,3 +1,5 @@
+import 'package:mazerunner/scenarios/auto_instrument_navigation_basic_scenario.dart';
+
 import 'auto_instrument_app_starts_scenario.dart';
 import 'dio_callback_cancel_span.dart';
 import 'dio_callback_edit_scenario.dart';
@@ -49,4 +51,6 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('DIOCallbackEditScenario', () => DIOCallbackEditScenario()),
   ScenarioInfo('HttpGetMultipleSubscribersScenario',
       () => HttpGetMultipleSubscribersScenario()),
+  ScenarioInfo('AutoInstrumentNavigationBasicScenario',
+      () => AutoInstrumentNavigationBasicScenario())
 ];

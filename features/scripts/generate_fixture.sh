@@ -7,7 +7,8 @@ fi
 
 FIXTURE_LOCATION=features/fixtures/mazerunner
 
-PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance" 
+PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance"
+NAVIGATOR_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-navigator-observer"
 
 HTTP_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-http-client" 
 
@@ -47,6 +48,7 @@ $FLUTTER_BIN create $FIXTURE_LOCATION  --org com.bugsnag --platforms=ios,android
 echo "Add dependencies"
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_performance:{'path':'$PACKAGE_PATH'}"
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_navigator_observer:{'path':'$NAVIGATOR_PACKAGE_PATH'}"
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" path_provider
 
