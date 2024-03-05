@@ -1,5 +1,5 @@
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
-import 'package:bugsnag_http_client/bugsnag_http_client.dart';
+import 'package:bugsnag_http_client/bugsnag_http_client.dart' as http;
 import '../main.dart';
 import 'scenario.dart';
 
@@ -15,8 +15,7 @@ class HttpCallbackEditScenario extends Scenario {
           return info;
         });
     setBatchSize(1);
-    BugSnagHttpClient()
-        .withSubscriber(BugsnagPerformance.networkInstrumentation)
-        .get(FixtureConfig.MAZE_HOST);
+    http.addSubscriber(BugsnagPerformance.networkInstrumentation);
+    http.BugSnagHttpClient().get(FixtureConfig.MAZE_HOST);
   }
 }

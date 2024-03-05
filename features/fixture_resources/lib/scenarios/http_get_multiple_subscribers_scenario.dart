@@ -3,11 +3,12 @@ import 'package:bugsnag_http_client/bugsnag_http_client.dart' as http;
 import '../main.dart';
 import 'scenario.dart';
 
-class HttpGetScenario extends Scenario {
+class HttpGetMultipleSubscribersScenario extends Scenario {
   @override
   Future<void> run() async {
     await startBugsnag();
     setBatchSize(1);
+    http.addSubscriber(BugsnagPerformance.networkInstrumentation);
     http.addSubscriber(BugsnagPerformance.networkInstrumentation);
     http.get(FixtureConfig.MAZE_HOST);
   }
