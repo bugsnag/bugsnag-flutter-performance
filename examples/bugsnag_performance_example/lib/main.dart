@@ -7,7 +7,7 @@ const apiKey = 'YOUR_API_KEY_HERE';
 Future<void> main() async {
   BugsnagPerformance.start(apiKey: apiKey);
   http.addSubscriber(BugsnagPerformance.networkInstrumentation);
-  runApp(const MainApp());
+  BugsnagPerformance.measureRunApp(() async => runApp(const MainApp()));
 }
 
 class MainApp extends StatelessWidget {
