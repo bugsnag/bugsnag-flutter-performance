@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 const apiKey = 'YOUR_API_KEY_HERE';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   BugsnagPerformance.start(apiKey: apiKey);
   http.addSubscriber(BugsnagPerformance.networkInstrumentation);
   runApp(const MainApp());

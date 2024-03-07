@@ -16,6 +16,7 @@ import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
+import 'package:flutter/widgets.dart';
 import 'bugsnag_network_request_info.dart';
 // ignore: implementation_imports
 import 'package:bugsnag_navigator_observer/src/bugsnag_navigator_observer_callbacks.dart';
@@ -89,6 +90,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       Uri? endpoint,
       BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
           networkRequestCallback}) async {
+    WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
