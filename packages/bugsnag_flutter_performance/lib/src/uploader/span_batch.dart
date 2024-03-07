@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bugsnag_flutter_performance/src/configuration.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
 
@@ -13,7 +15,9 @@ abstract class SpanBatch {
 class SpanBatchImpl implements SpanBatch {
   List<BugsnagPerformanceSpan> _spans = [];
   int _autoTriggerExportOnBatchSize = 0;
+  int _autoExpireBatchAfterSeconds = 0;
   bool _drainIsAllowed = false;
+  final DateTime creationTime = DateTime.now();
 
   @override
   void Function(SpanBatch batch) onBatchFull = (_) {};
@@ -21,6 +25,10 @@ class SpanBatchImpl implements SpanBatch {
   @override
   void configure(BugsnagPerformanceConfiguration configuration) {
     _autoTriggerExportOnBatchSize = configuration.autoTriggerExportOnBatchSize;
+    _autoExpireBatchAfterSeconds = configuration.autoExpireBatchAfterSeconds;
+    Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      checkIfExpired();
+    });
   }
 
   @override
@@ -65,4 +73,12 @@ class SpanBatchImpl implements SpanBatch {
   }
 
   bool get _isFull => _spans.length >= _autoTriggerExportOnBatchSize;
+
+  void checkIfExpired() {
+    if( DateTime.now().difference(creationTime).inSeconds > _autoExpireBatchAfterSeconds)
+    {
+      _drainIsAllowed = true;
+      onBatchFull(this);
+    }
+  }
 }

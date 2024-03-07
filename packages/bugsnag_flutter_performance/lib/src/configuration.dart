@@ -3,6 +3,7 @@ class BugsnagPerformanceConfiguration {
   String? apiKey;
   Uri? endpoint;
   int autoTriggerExportOnBatchSize = 100;
+  int autoExpireBatchAfterSeconds = 60;
   int probabilityRequestsPause = 30000;
   int probabilityValueExpireTime = 24 * 3600 * 1000;
   bool instrumentAppStart = true;
