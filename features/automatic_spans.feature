@@ -20,6 +20,7 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.span.category" equals "app_start"
     * a span string attribute "bugsnag.span.category" equals "app_start_phase"
     * every span bool attribute "bugsnag.span.first_class" does not exist
+    * every span string attribute "bugsnag.app_start.type" equals "FlutterInit"
     * the span named "[AppStart/FlutterInit]" is the parent of the span named "[AppStartPhase/pre runApp()]"
     * the span named "[AppStart/FlutterInit]" is the parent of the span named "[AppStartPhase/runApp()]"
     * the span named "[AppStart/FlutterInit]" is the parent of the span named "[AppStartPhase/UI init]"

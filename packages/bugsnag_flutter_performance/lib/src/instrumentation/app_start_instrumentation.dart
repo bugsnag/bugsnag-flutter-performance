@@ -31,7 +31,7 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
     }
     flutterInitSpan = client.startSpan(
       '[AppStart/FlutterInit]',
-      attributes: BugsnagPerformanceSpanAttributes(category: 'app_start'),
+      attributes: BugsnagPerformanceSpanAttributes(category: 'app_start', appStartType: 'FlutterInit'),
     );
     preRunAppPhaseSpan = client.startSpan(
       '[AppStartPhase/pre runApp()]',
@@ -39,6 +39,7 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
       attributes: BugsnagPerformanceSpanAttributes(
         category: 'app_start_phase',
         phase: 'pre runApp()',
+        appStartType: 'FlutterInit',
       ),
     );
   }
@@ -58,6 +59,7 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
       attributes: BugsnagPerformanceSpanAttributes(
         category: 'app_start_phase',
         phase: 'runApp()',
+        appStartType: 'FlutterInit',
       ),
     );
   }
@@ -77,6 +79,7 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
       attributes: BugsnagPerformanceSpanAttributes(
         category: 'app_start_phase',
         phase: 'UI init',
+        appStartType: 'FlutterInit',
       ),
     );
     SchedulerBinding.instance.addPostFrameCallback((_) {

@@ -8,7 +8,8 @@ class BugsnagPerformanceSpanAttributes {
       this.httpMethod,
       this.httpStatusCode,
       this.requestContentLength,
-      this.responseContentLength});
+      this.responseContentLength,
+      this.appStartType});
 
   final String category;
   final bool? isFirstClass;
@@ -19,6 +20,7 @@ class BugsnagPerformanceSpanAttributes {
   int? httpStatusCode;
   int? requestContentLength;
   int? responseContentLength;
+  final String? appStartType;
 
   BugsnagPerformanceSpanAttributes.fromJson(dynamic json)
       : category = _value(
@@ -41,6 +43,11 @@ class BugsnagPerformanceSpanAttributes {
         phase = _value(
           json: json,
           key: 'bugsnag.phase',
+          type: _ParameterType.string,
+        ) as String?,
+        appStartType = _value(
+          json: json,
+          key: 'bugsnag.app_start.type',
           type: _ParameterType.string,
         ) as String?,
         url = _value(
@@ -96,6 +103,13 @@ class BugsnagPerformanceSpanAttributes {
               'stringValue': phase,
             }
           },
+        if (appStartType != null)
+        {
+          'key': 'bugsnag.app_start.type',
+          'value': {
+            'stringValue': appStartType,
+          }
+        },
         if (url != null)
           {
             'key': 'http.url',
