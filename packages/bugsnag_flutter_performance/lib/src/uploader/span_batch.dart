@@ -15,7 +15,7 @@ abstract class SpanBatch {
 class SpanBatchImpl implements SpanBatch {
   List<BugsnagPerformanceSpan> _spans = [];
   int _autoTriggerExportOnBatchSize = 0;
-  int _autoExpireBatchAfterSeconds = 0;
+  int _autoExportBatchAfterSeconds = 0;
   bool _drainIsAllowed = false;
   final DateTime creationTime = DateTime.now();
 
@@ -25,9 +25,9 @@ class SpanBatchImpl implements SpanBatch {
   @override
   void configure(BugsnagPerformanceConfiguration configuration) {
     _autoTriggerExportOnBatchSize = configuration.autoTriggerExportOnBatchSize;
-    _autoExpireBatchAfterSeconds = configuration.autoExpireBatchAfterSeconds;
+    _autoExportBatchAfterSeconds = configuration.autoExportBatchAfterSeconds;
     Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      checkIfExpired();
+      checkForAutoExportAfterSeconds();
     });
   }
 
@@ -74,8 +74,8 @@ class SpanBatchImpl implements SpanBatch {
 
   bool get _isFull => _spans.length >= _autoTriggerExportOnBatchSize;
 
-  void checkIfExpired() {
-    if( DateTime.now().difference(creationTime).inSeconds > _autoExpireBatchAfterSeconds)
+  void checkForAutoExportAfterSeconds() {
+    if( DateTime.now().difference(creationTime).inSeconds > _autoExportBatchAfterSeconds)
     {
       _drainIsAllowed = true;
       onBatchFull(this);

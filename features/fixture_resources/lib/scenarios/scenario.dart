@@ -22,6 +22,10 @@ abstract class Scenario {
     BugsnagPerformance.setExtraConfig("autoTriggerExportOnBatchSize", size);
   }
 
+  void setBatchAutoExportAfterSeconds(int seconds) {
+    BugsnagPerformance.setExtraConfig("autoExportBatchAfterSeconds", seconds);
+  }
+
   Future<void> startBugsnag() async {
     BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
     await BugsnagPerformance.start(
