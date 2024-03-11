@@ -7,7 +7,7 @@ class DIOGetScenario extends Scenario {
   @override
   Future<void> run() async {
     await startBugsnag();
-    setBatchSize(1);
+    setMaxBatchSize(1);
     BugsnagDioClient()
         .withSubscriber(BugsnagPerformance.networkInstrumentation)
         .client

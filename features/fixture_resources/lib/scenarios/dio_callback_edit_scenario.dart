@@ -15,7 +15,7 @@ class DIOCallbackEditScenario extends Scenario {
           info.url = "edited";
           return info;
         });
-    setBatchSize(1);
+    setMaxBatchSize(1);
     BugsnagDioClient()
         .withSubscriber(BugsnagPerformance.networkInstrumentation)
         .client

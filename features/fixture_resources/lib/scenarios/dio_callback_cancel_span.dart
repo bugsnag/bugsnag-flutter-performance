@@ -14,7 +14,7 @@ class DIOCallbackCancelSpanScenario extends Scenario {
         networkRequestCallback: (info) {
           return null;
         });
-    setBatchSize(1);
+    setMaxBatchSize(1);
     BugsnagDioClient()
         .withSubscriber(BugsnagPerformance.networkInstrumentation)
         .client
