@@ -7,3 +7,6 @@
 [submodule "packages/bugsnag-flutter-navigator-observer"]
 	path = packages/bugsnag-flutter-navigator-observer
 	url=git@github.com:bugsnag/bugsnag-flutter-navigator-observer.git
+[submodule "packages/bugsnag-flutter-dart-io-http-client"]
+	path = packages/bugsnag-flutter-dart-io-http-client
+	url = git@github.com:bugsnag/bugsnag-flutter-dart-io-http-client.git
