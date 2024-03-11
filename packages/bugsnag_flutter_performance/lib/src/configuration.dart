@@ -3,7 +3,7 @@ class BugsnagPerformanceConfiguration {
   String? apiKey;
   Uri? endpoint;
   int maxBatchSize = 100;
-  int maxBatchAge = 60000; // milliseconds
+  int maxBatchAge = 60 * 1000; // milliseconds
   int probabilityRequestsPause = 30000;
   int probabilityValueExpireTime = 24 * 3600 * 1000;
   bool instrumentAppStart = true;
