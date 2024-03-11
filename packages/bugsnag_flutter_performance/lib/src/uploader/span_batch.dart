@@ -14,20 +14,20 @@ abstract class SpanBatch {
 
 class SpanBatchImpl implements SpanBatch {
   List<BugsnagPerformanceSpan> _spans = [];
-  int _autoTriggerExportOnBatchSize = 0;
-  int _autoExportBatchAfterSeconds = 0;
+  int _maxBatchSize = 0;
+  int _maxBatchAge = 0;
   bool _drainIsAllowed = false;
-  final DateTime creationTime = DateTime.now();
+  final DateTime _creationTime = DateTime.now();
 
   @override
   void Function(SpanBatch batch) onBatchFull = (_) {};
 
   @override
   void configure(BugsnagPerformanceConfiguration configuration) {
-    _autoTriggerExportOnBatchSize = configuration.autoTriggerExportOnBatchSize;
-    _autoExportBatchAfterSeconds = configuration.autoExportBatchAfterSeconds;
+    _maxBatchSize = configuration.maxBatchSize;
+    _maxBatchAge = configuration.maxBatchAge;
     Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      checkForAutoExportAfterSeconds();
+      _checkForMaxBatchAge();
     });
   }
 
@@ -72,11 +72,11 @@ class SpanBatchImpl implements SpanBatch {
     }
   }
 
-  bool get _isFull => _spans.length >= _autoTriggerExportOnBatchSize;
+  bool get _isFull => _spans.length >= _maxBatchSize;
 
-  void checkForAutoExportAfterSeconds() {
-    if( DateTime.now().difference(creationTime).inSeconds > _autoExportBatchAfterSeconds)
-    {
+  void _checkForMaxBatchAge() {
+    if (DateTime.now().difference(_creationTime).inMilliseconds >
+        _maxBatchAge) {
       _drainIsAllowed = true;
       onBatchFull(this);
     }

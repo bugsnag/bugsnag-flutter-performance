@@ -12,6 +12,6 @@ class AutoInstrumentAppStartsScenario extends Scenario {
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
     BugsnagPerformance.measureRunApp(() async => await Duration(seconds: 1));
-    setBatchSize(4);
+    setMaxBatchSize(4);
   }
 }

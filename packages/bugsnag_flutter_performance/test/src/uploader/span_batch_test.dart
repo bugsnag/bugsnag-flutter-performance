@@ -32,8 +32,7 @@ void main() {
 
       setUp(() {
         batch.configure(
-          BugsnagPerformanceConfiguration()
-            ..autoTriggerExportOnBatchSize = batchSize,
+          BugsnagPerformanceConfiguration()..maxBatchSize = batchSize,
         );
       });
 

@@ -5,7 +5,7 @@ class AutoExportAfterSecondsScenario extends Scenario {
   @override
   Future<void> run() async {
     await startBugsnag();
-    setBatchAutoExportAfterSeconds(10);
+    setMaxBatchAge(5000);
     final span = BugsnagPerformance.startSpan('AutoExportAfterSecondsScenario');
     span.end();
   }

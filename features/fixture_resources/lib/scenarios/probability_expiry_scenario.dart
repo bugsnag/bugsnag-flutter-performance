@@ -15,7 +15,7 @@ class ProbabilityExpiryScenario extends Scenario {
     BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
-    setBatchSize(1);
+    setMaxBatchSize(1);
     await Future.delayed(Duration(milliseconds: 500));
     final span = BugsnagPerformance.startSpan('myspan');
     span.end();

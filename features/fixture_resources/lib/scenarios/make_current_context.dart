@@ -7,7 +7,7 @@ class MakeCurrentContextScenario extends Scenario {
   @override
   Future<void> run() async {
     await startBugsnag();
-    setBatchSize(3);
+    setMaxBatchSize(3);
     final span1 = BugsnagPerformance.startSpan('span1');
     final span2 =
         BugsnagPerformance.startSpan('span2', makeCurrentContext: false);

@@ -18,12 +18,12 @@ abstract class Scenario {
 
   Future<void> run();
 
-  void setBatchSize(int size) {
-    BugsnagPerformance.setExtraConfig("autoTriggerExportOnBatchSize", size);
+  void setMaxBatchSize(int size) {
+    BugsnagPerformance.setExtraConfig("maxBatchSize", size);
   }
 
-  void setBatchAutoExportAfterSeconds(int seconds) {
-    BugsnagPerformance.setExtraConfig("autoExportBatchAfterSeconds", seconds);
+  void setMaxBatchAge(int milliseconds) {
+    BugsnagPerformance.setExtraConfig("maxBatchAge", milliseconds);
   }
 
   Future<void> startBugsnag() async {

@@ -2,8 +2,8 @@ class BugsnagPerformanceConfiguration {
   BugsnagPerformanceConfiguration({this.apiKey, this.endpoint});
   String? apiKey;
   Uri? endpoint;
-  int autoTriggerExportOnBatchSize = 100;
-  int autoExportBatchAfterSeconds = 60;
+  int maxBatchSize = 100;
+  int maxBatchAge = 60000; // milliseconds
   int probabilityRequestsPause = 30000;
   int probabilityValueExpireTime = 24 * 3600 * 1000;
   bool instrumentAppStart = true;
@@ -11,8 +11,8 @@ class BugsnagPerformanceConfiguration {
 
   void applyExtraConfig(String key, dynamic value) {
     switch (key) {
-      case 'autoTriggerExportOnBatchSize':
-        autoTriggerExportOnBatchSize = value;
+      case 'maxBatchSize':
+        maxBatchSize = value;
         break;
       case 'probabilityRequestsPause':
         probabilityRequestsPause = value;
@@ -26,8 +26,8 @@ class BugsnagPerformanceConfiguration {
       case 'instrumentNavigation':
         instrumentNavigation = value;
         break;
-        case 'autoExportBatchAfterSeconds':
-        autoExportBatchAfterSeconds = value;
+      case 'maxBatchAge':
+        maxBatchAge = value;
         break;
     }
   }
