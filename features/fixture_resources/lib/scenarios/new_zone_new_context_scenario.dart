@@ -7,7 +7,7 @@ class NewZoneNewContextScenario extends Scenario {
   @override
   Future<void> run() async {
     await startBugsnag();
-    setBatchSize(4);
+    setMaxBatchSize(4);
     final span1 = BugsnagPerformance.startSpan('span1');
 
     runZoned(() {

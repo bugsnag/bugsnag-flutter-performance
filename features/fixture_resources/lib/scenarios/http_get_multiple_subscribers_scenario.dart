@@ -7,7 +7,7 @@ class HttpGetMultipleSubscribersScenario extends Scenario {
   @override
   Future<void> run() async {
     await startBugsnag();
-    setBatchSize(1);
+    setMaxBatchSize(1);
     http.addSubscriber(BugsnagPerformance.networkInstrumentation);
     http.addSubscriber(BugsnagPerformance.networkInstrumentation);
     http.get(FixtureConfig.MAZE_HOST);

@@ -7,7 +7,7 @@ class HttpPostScenario extends Scenario {
   @override
   Future<void> run() async {
     await startBugsnag();
-    setBatchSize(1);
+    setMaxBatchSize(1);
     http.addSubscriber(BugsnagPerformance.networkInstrumentation);
     http.BugSnagHttpClient()
         .post(FixtureConfig.MAZE_HOST, body: {"key": "value"});

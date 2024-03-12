@@ -13,7 +13,7 @@ class HttpCallbackCancelSpanScenario extends Scenario {
         networkRequestCallback: (info) {
           return null;
         });
-    setBatchSize(1);
+    setMaxBatchSize(1);
     http.addSubscriber(BugsnagPerformance.networkInstrumentation);
     http.BugSnagHttpClient().get(FixtureConfig.MAZE_HOST);
     await Future.delayed(const Duration(seconds: 10));

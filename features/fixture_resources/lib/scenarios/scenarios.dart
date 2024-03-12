@@ -18,6 +18,7 @@ import 'http_callback_cancel_span.dart';
 import 'dio_get_scenario.dart';
 import 'dio_post_scenario.dart';
 import 'http_get_multiple_subscribers_scenario.dart';
+import 'max_batch_age_scenario.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -52,5 +53,7 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('HttpGetMultipleSubscribersScenario',
       () => HttpGetMultipleSubscribersScenario()),
   ScenarioInfo('AutoInstrumentNavigationBasicScenario',
-      () => AutoInstrumentNavigationBasicScenario())
+      () => AutoInstrumentNavigationBasicScenario()),
+  ScenarioInfo('MaxBatchAgeScenario',
+      () => MaxBatchAgeScenario()),
 ];

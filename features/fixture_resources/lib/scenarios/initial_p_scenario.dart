@@ -16,7 +16,7 @@ class InitialPScenario extends Scenario {
     BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
-    setBatchSize(1);
+    setMaxBatchSize(1);
     BugsnagPerformance.startSpan('First').end();
   }
 
