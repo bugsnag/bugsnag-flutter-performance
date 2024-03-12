@@ -9,7 +9,7 @@ class DartIoGetScenario extends Scenario {
   @override
   Future<void> run() async {
     await startBugsnag();
-    setBatchSize(1);
+    setMaxBatchSize(1);
     dartIo.addSubscriber(BugsnagPerformance.networkInstrumentation);
     final client = dartIo.BugsnagHttpClient();
     HttpClientRequest request = await client.getUrl(FixtureConfig.MAZE_HOST);
