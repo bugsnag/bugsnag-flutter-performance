@@ -273,6 +273,7 @@ class _HomePageState extends State<MazeRunnerHomePage> {
 
     log('Running scenario');
     _currentScenario = scenario;
+    scenario.runCommandCallback = () => _onRunCommand(context, retry: true);
     await scenario.run();
     Widget? scenarioWidget = scenario.createWidget();
     if (scenarioWidget != null) {

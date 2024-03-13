@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_node.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_state.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
@@ -50,10 +48,8 @@ class _MeasuredScreenState extends State<MeasuredScreen> {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       final isLoading = node!.isLoading();
       measuredScreenCallbacks.didShowScreen(state, isLoading: isLoading);
-      print('Is loading: $isLoading');
       if (isLoading) {
         node.addDidFinishLoadingCallback(() {
-          print('Finish loading callback');
           measuredScreenCallbacks.didFinishLoadingScreen(state);
         });
       }

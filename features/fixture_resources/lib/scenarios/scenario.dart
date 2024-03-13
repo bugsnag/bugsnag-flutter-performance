@@ -7,6 +7,7 @@ import '../main.dart';
 
 abstract class Scenario {
   String? extraConfig;
+  void Function()? runCommandCallback;
 
   Future<void> clearPersistentData() async {
     print('[MazeRunner] Clearing Persistent Data...');

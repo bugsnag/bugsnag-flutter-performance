@@ -1,4 +1,7 @@
+import 'package:mazerunner/scenarios/auto_instrument_navigation_basic_defer_scenario.dart';
 import 'package:mazerunner/scenarios/auto_instrument_navigation_basic_scenario.dart';
+import 'package:mazerunner/scenarios/auto_instrument_navigation_complex_defer_scenario.dart';
+import 'package:mazerunner/scenarios/auto_instrument_navigation_phased_scenario.dart';
 
 import 'auto_instrument_app_starts_scenario.dart';
 import 'dio_callback_cancel_span.dart';
@@ -58,4 +61,10 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('MaxBatchAgeScenario',
       () => MaxBatchAgeScenario()),
   ScenarioInfo('DartIoGetScenario', () => DartIoGetScenario()),
+  ScenarioInfo('AutoInstrumentNavigationPhasedScenario',
+      () => AutoInstrumentNavigationPhasedScenario()),
+  ScenarioInfo('AutoInstrumentNavigationBasicDeferScenario',
+      () => AutoInstrumentNavigationBasicDeferScenario()),
+  ScenarioInfo('AutoInstrumentNavigationComplexDeferScenario',
+      () => AutoInstrumentNavigationComplexDeferScenario())
 ];
