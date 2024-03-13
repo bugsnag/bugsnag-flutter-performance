@@ -19,6 +19,7 @@ import 'dio_get_scenario.dart';
 import 'dio_post_scenario.dart';
 import 'http_get_multiple_subscribers_scenario.dart';
 import 'max_batch_age_scenario.dart';
+import 'dart_io_get_scenario.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -56,4 +57,5 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => AutoInstrumentNavigationBasicScenario()),
   ScenarioInfo('MaxBatchAgeScenario',
       () => MaxBatchAgeScenario()),
+  ScenarioInfo('DartIoGetScenario', () => DartIoGetScenario()),
 ];
