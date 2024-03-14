@@ -70,12 +70,12 @@ class BugsnagPerformanceSpanImpl
       return;
     }
     // Update span attributes with network information if provided
-    if (httpStatusCode != null) attributes.setHttpStatusCode(httpStatusCode);
+    if (httpStatusCode != null) attributes.httpStatusCode = httpStatusCode;
     if (requestContentLength != null && requestContentLength > 0) {
-      attributes.setRequestContentLength(requestContentLength);
+      attributes.requestContentLength = requestContentLength;
     }
     if (responseContentLength != null && responseContentLength > 0) {
-      attributes.setResponseContentLength(responseContentLength);
+      attributes.responseContentLength = responseContentLength;
     }
     onEnded(this);
   }
@@ -118,10 +118,10 @@ class BugsnagPerformanceSpanImpl
   int get hashCode => toJson().hashCode;
 
   void updateSamplingProbability(double samplingProbability) {
-    double? currentSamplingProbability = attributes.getSamplingProbability();
+    double? currentSamplingProbability = attributes.samplingProbability;
     if (currentSamplingProbability == null ||
         samplingProbability < currentSamplingProbability) {
-      attributes.setSamplingProbability(samplingProbability);
+      attributes.samplingProbability = samplingProbability;
     }
   }
 

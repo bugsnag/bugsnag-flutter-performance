@@ -27,23 +27,23 @@ class BugsnagPerformanceSpanAttributes {
     }
   }
 
-  void setHttpStatusCode(int httpStatusCode) {
+  set httpStatusCode(int httpStatusCode) {
     setAttribute('http.status_code', httpStatusCode);
   }
 
-  void setRequestContentLength(int requestContentLength) {
+  set requestContentLength(int requestContentLength) {
     setAttribute('http.request_content_length', requestContentLength);
   }
 
-  void setResponseContentLength(int responseContentLength) {
+  set responseContentLength(int responseContentLength) {
     setAttribute('http.response_content_length', responseContentLength);
   }
 
-  void setSamplingProbability(double samplingProbability) {
+  set samplingProbability(double? samplingProbability) {
     setAttribute('bugsnag.sampling.p', samplingProbability);
   }
 
-  double? getSamplingProbability() {
+  double? get samplingProbability {
     return attributes['bugsnag.sampling.p'];
   }
 

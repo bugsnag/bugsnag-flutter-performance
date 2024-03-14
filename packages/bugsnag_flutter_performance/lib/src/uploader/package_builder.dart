@@ -104,8 +104,7 @@ class PackageBuilderImpl implements PackageBuilder {
     Map<double, int> spansWithProbability = {};
     for (var span in spans) {
       if (span is BugsnagPerformanceSpanImpl) {
-        final samplingProbability = span.attributes.getSamplingProbability();
-        // Skip spans with null sampling probability
+        final samplingProbability = span.attributes.samplingProbability;
         if (samplingProbability != null) {
           final spansCount = spansWithProbability[samplingProbability] ?? 0;
           spansWithProbability[samplingProbability] = spansCount + 1;
