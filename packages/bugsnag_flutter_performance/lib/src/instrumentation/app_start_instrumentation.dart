@@ -31,7 +31,8 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
     }
     flutterInitSpan = client.startSpan(
       '[AppStart/FlutterInit]',
-      attributes: BugsnagPerformanceSpanAttributes(category: 'app_start', appStartType: 'FlutterInit'),
+      attributes: BugsnagPerformanceSpanAttributes(
+          category: 'app_start', appStartType: 'FlutterInit'),
     );
     preRunAppPhaseSpan = client.startSpan(
       '[AppStartPhase/pre runApp()]',
