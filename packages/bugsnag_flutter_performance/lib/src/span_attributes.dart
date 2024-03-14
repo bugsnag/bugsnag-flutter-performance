@@ -48,7 +48,7 @@ class BugsnagPerformanceSpanAttributes {
   }
 
   dynamic toJson() {
-    var typeMap = {
+    const typeMap = {
       bool: 'boolValue',
       double: 'doubleValue',
       int: 'intValue',
