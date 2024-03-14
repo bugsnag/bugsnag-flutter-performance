@@ -102,14 +102,17 @@ class PackageBuilderImpl implements PackageBuilder {
     required List<BugsnagPerformanceSpan> spans,
   }) {
     Map<double, int> spansWithProbability = {};
-    for (var element in spans) {
-      if (element is BugsnagPerformanceSpanImpl) {
-        final spansCount =
-            spansWithProbability[element.attributes.samplingProbability] ?? 0;
-        spansWithProbability[element.attributes.samplingProbability] =
-            spansCount + 1;
+    for (var span in spans) {
+      if (span is BugsnagPerformanceSpanImpl) {
+        final samplingProbability = span.attributes.getSamplingProbability();
+        // Skip spans with null sampling probability
+        if (samplingProbability != null) {
+          final spansCount = spansWithProbability[samplingProbability] ?? 0;
+          spansWithProbability[samplingProbability] = spansCount + 1;
+        }
       }
     }
+
     return spansWithProbability.entries
         .map((e) =>
             '${e.key.toStringAsFixed(2).replaceFirst('0.', '.').replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "")}:${e.value}')

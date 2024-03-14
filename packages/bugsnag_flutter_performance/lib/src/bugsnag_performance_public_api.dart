@@ -30,7 +30,7 @@ class BugsnagPerformance {
         startTime: startTime,
         parentContext: parentContext,
         makeCurrentContext: makeCurrentContext,
-        attributes: BugsnagPerformanceSpanAttributes(isFirstClass: true));
+        attributes: BugsnagPerformanceSpanAttributes(category: "custom", isFirstClass: true));
   }
 
   static BugsnagPerformanceSpan startNetworkSpan(
