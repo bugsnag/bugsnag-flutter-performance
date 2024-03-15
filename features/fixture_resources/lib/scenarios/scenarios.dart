@@ -1,6 +1,8 @@
 import 'package:mazerunner/scenarios/auto_instrument_navigation_basic_defer_scenario.dart';
 import 'package:mazerunner/scenarios/auto_instrument_navigation_basic_scenario.dart';
 import 'package:mazerunner/scenarios/auto_instrument_navigation_complex_defer_scenario.dart';
+import 'package:mazerunner/scenarios/auto_instrument_navigation_embeded_phased_scenario.dart';
+import 'package:mazerunner/scenarios/auto_instrument_navigation_nested_navigation_scenario.dart';
 import 'package:mazerunner/scenarios/auto_instrument_navigation_phased_scenario.dart';
 
 import 'auto_instrument_app_starts_scenario.dart';
@@ -58,13 +60,16 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => HttpGetMultipleSubscribersScenario()),
   ScenarioInfo('AutoInstrumentNavigationBasicScenario',
       () => AutoInstrumentNavigationBasicScenario()),
-  ScenarioInfo('MaxBatchAgeScenario',
-      () => MaxBatchAgeScenario()),
+  ScenarioInfo('MaxBatchAgeScenario', () => MaxBatchAgeScenario()),
   ScenarioInfo('DartIoGetScenario', () => DartIoGetScenario()),
   ScenarioInfo('AutoInstrumentNavigationPhasedScenario',
       () => AutoInstrumentNavigationPhasedScenario()),
   ScenarioInfo('AutoInstrumentNavigationBasicDeferScenario',
       () => AutoInstrumentNavigationBasicDeferScenario()),
   ScenarioInfo('AutoInstrumentNavigationComplexDeferScenario',
-      () => AutoInstrumentNavigationComplexDeferScenario())
+      () => AutoInstrumentNavigationComplexDeferScenario()),
+  ScenarioInfo('AutoInstrumentNavigationEmbededPhasedScenario',
+      () => AutoInstrumentNavigationEmbededPhasedScenario()),
+  ScenarioInfo('AutoInstrumentNavigationNestedNavigationPhasedScenario',
+      () => AutoInstrumentNavigationNestedNavigationPhasedScenario())
 ];

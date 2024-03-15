@@ -106,3 +106,86 @@ Feature: Automatic instrumentation spans
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
+
+  Scenario: AutoInstrumentNavigationEmbededPhasedScenario
+    Given I run "AutoInstrumentNavigationEmbededPhasedScenario"
+    And I wait for 3 seconds
+    * no span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioScreen" exists
+    * no span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen" exists
+    * no span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen" exists
+    Then I invoke "step2"
+    And I wait for 10 spans
+    And I wait for 2 seconds
+    * no span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioScreen" exists
+    * no span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen" exists
+    * a span field "name" equals "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    * a span field "name" equals "[NavigationPhase/pre-build]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    * a span field "name" equals "[NavigationPhase/build]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    * a span field "name" equals "[NavigationPhase/appearing]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    * a span field "name" equals "[NavigationPhase/loading]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen" is the parent of the span named "[NavigationPhase/pre-build]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen" is the parent of the span named "[NavigationPhase/build]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen" is the parent of the span named "[NavigationPhase/appearing]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen" is the parent of the span named "[NavigationPhase/loading]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    Then I invoke "step3"
+    And I wait for 13 spans
+    And I wait for 2 seconds
+    * no span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen" exists
+    * a span field "name" equals "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioScreen"
+    * a span field "name" equals "[NavigationPhase/pre-build]/AutoInstrumentNavigationEmbededPhasedScenarioScreen"
+    * a span field "name" equals "[NavigationPhase/build]/AutoInstrumentNavigationEmbededPhasedScenarioScreen"
+    * a span field "name" equals "[NavigationPhase/appearing]/AutoInstrumentNavigationEmbededPhasedScenarioScreen"
+    * a span field "name" equals "[NavigationPhase/loading]/AutoInstrumentNavigationEmbededPhasedScenarioScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioScreen" is the parent of the span named "[NavigationPhase/pre-build]/AutoInstrumentNavigationEmbededPhasedScenarioScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioScreen" is the parent of the span named "[NavigationPhase/build]/AutoInstrumentNavigationEmbededPhasedScenarioScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioScreen" is the parent of the span named "[NavigationPhase/appearing]/AutoInstrumentNavigationEmbededPhasedScenarioScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioScreen" is the parent of the span named "[NavigationPhase/loading]/AutoInstrumentNavigationEmbededPhasedScenarioScreen"
+    Then I invoke "step4"
+    And I wait for 15 spans
+    * a span field "name" equals "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    * a span field "name" equals "[NavigationPhase/pre-build]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    * a span field "name" equals "[NavigationPhase/build]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    * a span field "name" equals "[NavigationPhase/appearing]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    * a span field "name" equals "[NavigationPhase/loading]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen" is the parent of the span named "[NavigationPhase/pre-build]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen" is the parent of the span named "[NavigationPhase/build]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen" is the parent of the span named "[NavigationPhase/appearing]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen" is the parent of the span named "[NavigationPhase/loading]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioScreen" is the parent of the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioFirstSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioScreen" is the parent of the span named "[Navigation]/AutoInstrumentNavigationEmbededPhasedScenarioLastSubScreen"
+    Then the trace "Content-Type" header equals "application/json"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
+    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
+    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
+    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
+    * every span bool attribute "bugsnag.span.first_class" does not exist
+
+  Scenario: AutoInstrumentNavigationNestedNavigationPhasedScenario
+    Given I run "AutoInstrumentNavigationNestedNavigationPhasedScenario"
+    And I wait for 2 spans
+    * a span field "name" equals "[Navigation]/AutoInstrumentNavigationNestedNavigationPhasedScenarioNestedNavigatorScreen"
+    Then I invoke "step2"
+    And I wait for 5 spans
+    * no span named "[Navigation]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen" exists
+    * a span field "name" equals "[NavigationPhase/pre-build]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen"
+    * a span field "name" equals "[NavigationPhase/build]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen"
+    * a span field "name" equals "[NavigationPhase/appearing]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen"
+    Then I invoke "step3"
+    And I wait for 7 spans
+    * a span field "name" equals "[Navigation]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen"
+    * a span field "name" equals "[NavigationPhase/loading]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen" is the parent of the span named "[NavigationPhase/pre-build]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen" is the parent of the span named "[NavigationPhase/build]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen" is the parent of the span named "[NavigationPhase/appearing]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen"
+    * the span named "[Navigation]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen" is the parent of the span named "[NavigationPhase/loading]/AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen"
+    Then I invoke "step4"
+    And I wait for 8 spans
+    * a span field "name" equals "[Navigation]/AutoInstrumentNavigationNestedNavigationPhasedScenarioPushedScreen"
+    Then the trace "Content-Type" header equals "application/json"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
+    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
+    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
+    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
+    * every span bool attribute "bugsnag.span.first_class" does not exist

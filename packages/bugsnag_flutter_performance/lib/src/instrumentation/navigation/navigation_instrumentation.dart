@@ -60,7 +60,9 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
     node.isLoadingPhasedRoute = false;
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      if (node.currentlyLoadedRoute == route && !node.isLoadingPhasedRoute) {
+      if (node.currentlyLoadedRoute == route &&
+          !node.isLoadingPhasedRoute &&
+          route.isCurrent) {
         final state = ScreenInstrumentationState(
           name: routeDescription,
           startTime: startTime,
