@@ -202,6 +202,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     final result = await _uploader?.upload(package: package);
     if (result == RequestResult.retriableFailure) {
       _retryQueue?.enqueue(headers: package.headers, body: package.payload);
+    }else if(result == RequestResult.success){
+      _retryQueue?.flush();
     }
   }
 
