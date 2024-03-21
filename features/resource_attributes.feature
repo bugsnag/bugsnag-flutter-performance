@@ -1,5 +1,27 @@
 Feature: Resource Attributes
 
+  Scenario: Custom release stage
+    When I run "CustomReleaseStageScenario"
+    And I wait for 1 span
+    Then the trace "Content-Type" header equals "application/json"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
+    * every span field "name" equals "CustomReleaseStageScenario"
+    * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "CustomReleaseStageScenario"
+
+  Scenario: Custom enabled release stage
+    When I run "CustomEnabledReleaseStageScenario"
+    And I wait for 1 span
+    Then the trace "Content-Type" header equals "application/json"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
+    * every span field "name" equals "CustomEnabledReleaseStageScenario"
+    * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "CustomEnabledReleaseStageScenario"
+
+  Scenario: Disabled release stage
+    When I run "DisableCustomReleaseStageScenario"
+    * I should receive no traces
+
   Scenario: Common Attributes
     When I run "ManualSpanScenario"
     And I wait for 1 span

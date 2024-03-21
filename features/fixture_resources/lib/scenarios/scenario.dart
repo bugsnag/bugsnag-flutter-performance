@@ -26,11 +26,14 @@ abstract class Scenario {
     BugsnagPerformance.setExtraConfig("maxBatchAge", milliseconds);
   }
 
-  Future<void> startBugsnag() async {
+  Future<void> startBugsnag(
+      {String? releaseStage, List<String>? enabledReleaseStages}) async {
     BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
     await BugsnagPerformance.start(
         apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
+        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
+        releaseStage: releaseStage,
+        enabledReleaseStages: enabledReleaseStages);
   }
 
   void invokeMethod(String name) {}
