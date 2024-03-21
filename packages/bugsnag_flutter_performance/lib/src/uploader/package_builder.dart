@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bugsnag_flutter_performance/src/span.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/model/otlp_package.dart';
 import 'package:crypto/crypto.dart';
+import '../configuration.dart';
 import '../extensions/resource_attributes.dart';
 
 const int _minSizeForGzip = 128;
@@ -13,12 +14,12 @@ abstract class PackageBuilder {
     List<BugsnagPerformanceSpan> spans,
   );
   Future<OtlpPackage> buildEmptyPackage();
-  void setReleaseStage(String? releaseStage);
+  void setConfig(BugsnagPerformanceConfiguration? config);
 }
 
 class PackageBuilderImpl implements PackageBuilder {
   final ResourceAttributesProvider attributesProvider;
-  String? _releaseStage;
+  BugsnagPerformanceConfiguration? _config;
   PackageBuilderImpl({
     required this.attributesProvider,
   });
@@ -70,8 +71,7 @@ class PackageBuilderImpl implements PackageBuilder {
             }
           ],
           'resource': {
-            'attributes':
-                await attributesProvider.resourceAttributes(_releaseStage)
+            'attributes': await attributesProvider.resourceAttributes(_config)
           },
         }
       ]
@@ -121,7 +121,7 @@ class PackageBuilderImpl implements PackageBuilder {
   }
 
   @override
-  void setReleaseStage(String? releaseStage) {
-    _releaseStage = releaseStage;
+  void setConfig(BugsnagPerformanceConfiguration? config) {
+    _config = config;
   }
 }

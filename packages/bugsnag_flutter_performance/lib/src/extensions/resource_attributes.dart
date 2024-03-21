@@ -4,8 +4,11 @@ import 'package:package_info/package_info.dart';
 import 'package:bugsnag_flutter_performance/src/device_id_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
+import '../configuration.dart';
+
 abstract class ResourceAttributesProvider {
-  Future<List<Map<String, Object>>> resourceAttributes(String? releaseStage);
+  Future<List<Map<String, Object>>> resourceAttributes(
+      BugsnagPerformanceConfiguration? config);
 }
 
 class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
@@ -15,9 +18,9 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
 
   @override
   Future<List<Map<String, Object>>> resourceAttributes(
-      String? releaseStage) async {
+      BugsnagPerformanceConfiguration? config) async {
     if (!_didInitializeAttributes) {
-      await _initializeResourceAttributes(releaseStage);
+      await _initializeResourceAttributes(config);
       _didInitializeAttributes = true;
     }
     await _addNetworkStatus();
@@ -49,7 +52,8 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
     }
   }
 
-  Future<void> _initializeResourceAttributes(String? releaseStage) async {
+  Future<void> _initializeResourceAttributes(
+      BugsnagPerformanceConfiguration? config) async {
     final deviceInfo = DeviceInfoPlugin();
     final packageInfo = await PackageInfo.fromPlatform();
 
@@ -57,7 +61,7 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
       {
         'key': 'deployment.environment',
         'value': {
-          'stringValue': releaseStage,
+          'stringValue': config?.releaseStage,
         }
       },
       {
@@ -81,7 +85,7 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
       {
         "key": "service.version",
         "value": {
-          "stringValue": packageInfo.version,
+          "stringValue": config?.appVersion ?? packageInfo.version,
         }
       },
       {

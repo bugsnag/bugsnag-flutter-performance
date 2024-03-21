@@ -18,6 +18,15 @@ Feature: Resource Attributes
     * every span field "name" equals "CustomEnabledReleaseStageScenario"
     * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "CustomEnabledReleaseStageScenario"
 
+  Scenario: Custom app version
+    When I run "CustomAppVersionScenario"
+    And I wait for 1 span
+    Then the trace "Content-Type" header equals "application/json"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
+    * every span field "name" equals "CustomAppVersionScenario"
+    * the trace payload field "resourceSpans.0.resource" string attribute "service.version" equals "999.888.777"
+
   Scenario: Disabled release stage
     When I run "DisableCustomReleaseStageScenario"
     * I should receive no traces

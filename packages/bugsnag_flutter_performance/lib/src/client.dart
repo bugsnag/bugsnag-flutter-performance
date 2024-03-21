@@ -34,6 +34,7 @@ abstract class BugsnagPerformanceClient {
         networkRequestCallback,
     String? releaseStage,
     List<String>? enabledReleaseStages,
+    String? appVersion,
   });
 
   Future<void> measureRunApp(FutureOr<void> Function() runApp);
@@ -95,6 +96,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         networkRequestCallback,
     String? releaseStage,
     List<String>? enabledReleaseStages,
+    String? appVersion,
   }) async {
     WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
@@ -102,8 +104,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         apiKey: apiKey,
         endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
         releaseStage: releaseStage ?? getDeploymentEnvironment(),
-        enabledReleaseStages: enabledReleaseStages);
-    _packageBuilder.setReleaseStage(configuration!.releaseStage);
+        enabledReleaseStages: enabledReleaseStages,
+        appVersion: appVersion);
+    _packageBuilder.setConfig(configuration);
     _initialExtraConfig.forEach((key, value) {
       setExtraConfig(key, value);
     });
