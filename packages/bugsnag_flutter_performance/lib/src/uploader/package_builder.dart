@@ -13,11 +13,12 @@ abstract class PackageBuilder {
     List<BugsnagPerformanceSpan> spans,
   );
   Future<OtlpPackage> buildEmptyPackage();
+  void setReleaseStage(String? releaseStage);
 }
 
 class PackageBuilderImpl implements PackageBuilder {
   final ResourceAttributesProvider attributesProvider;
-
+  String? _releaseStage;
   PackageBuilderImpl({
     required this.attributesProvider,
   });
@@ -69,7 +70,8 @@ class PackageBuilderImpl implements PackageBuilder {
             }
           ],
           'resource': {
-            'attributes': await attributesProvider.resourceAttributes()
+            'attributes':
+                await attributesProvider.resourceAttributes(_releaseStage)
           },
         }
       ]
@@ -116,5 +118,10 @@ class PackageBuilderImpl implements PackageBuilder {
         .map((e) =>
             '${e.key.toStringAsFixed(2).replaceFirst('0.', '.').replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "")}:${e.value}')
         .join(';');
+  }
+
+  @override
+  void setReleaseStage(String? releaseStage) {
+    _releaseStage = releaseStage;
   }
 }

@@ -122,7 +122,8 @@ void main() {
           'traceId': 'ffa74cc50baa432515e9b28fc4abf2cb',
           'spanId': 'fa0e2d25f149f215',
           'parentSpanId': '6293f00f47da54de',
-          'attributes': [{
+          'attributes': [
+            {
               'key': 'custom',
               'value': {'stringValue': 'value'}
             },
@@ -157,10 +158,11 @@ void main() {
                   isUtc: true)
               .nanosecondsSinceEpoch
               .toString(),
-          'attributes': [{
-            'key': 'custom',
-            'value': {'stringValue': 'value'}
-          },
+          'attributes': [
+            {
+              'key': 'custom',
+              'value': {'stringValue': 'value'}
+            },
           ],
         };
         final span = BugsnagPerformanceSpanImpl.fromJson(json);

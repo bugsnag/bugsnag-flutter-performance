@@ -5,7 +5,7 @@ import 'package:bugsnag_flutter_performance/src/device_id_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 abstract class ResourceAttributesProvider {
-  Future<List<Map<String, Object>>> resourceAttributes();
+  Future<List<Map<String, Object>>> resourceAttributes(String? releaseStage);
 }
 
 class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
@@ -14,9 +14,10 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
   final DeviceIdManager _deviceIdManager = DeviceIdManagerImp();
 
   @override
-  Future<List<Map<String, Object>>> resourceAttributes() async {
+  Future<List<Map<String, Object>>> resourceAttributes(
+      String? releaseStage) async {
     if (!_didInitializeAttributes) {
-      await _initializeResourceAttributes();
+      await _initializeResourceAttributes(releaseStage);
       _didInitializeAttributes = true;
     }
     await _addNetworkStatus();
@@ -48,7 +49,7 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
     }
   }
 
-  Future<void> _initializeResourceAttributes() async {
+  Future<void> _initializeResourceAttributes(String? releaseStage) async {
     final deviceInfo = DeviceInfoPlugin();
     final packageInfo = await PackageInfo.fromPlatform();
 
@@ -56,7 +57,7 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
       {
         'key': 'deployment.environment',
         'value': {
-          'stringValue': getDeploymentEnvironment(),
+          'stringValue': releaseStage,
         }
       },
       {
@@ -167,11 +168,6 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
       return "arm64";
     }
     return "Unknown";
-  }
-
-  static String getDeploymentEnvironment() {
-    final environment = Platform.environment['DEPLOYMENT_ENVIRONMENT'];
-    return environment ?? 'development';
   }
 
   static Future<String> getAndroidAPILevel(DeviceInfoPlugin deviceInfo) async {

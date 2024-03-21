@@ -1,5 +1,9 @@
 class BugsnagPerformanceConfiguration {
-  BugsnagPerformanceConfiguration({this.apiKey, this.endpoint});
+  BugsnagPerformanceConfiguration(
+      {this.apiKey,
+      this.endpoint,
+      this.releaseStage,
+      this.enabledReleaseStages});
   String? apiKey;
   Uri? endpoint;
   int maxBatchSize = 100;
@@ -8,6 +12,14 @@ class BugsnagPerformanceConfiguration {
   int probabilityValueExpireTime = 24 * 3600 * 1000;
   bool instrumentAppStart = true;
   bool instrumentNavigation = true;
+  String? releaseStage;
+  List<String>? enabledReleaseStages;
+
+  bool releaseStageEnabled() {
+    return releaseStage == null ||
+        enabledReleaseStages == null ||
+        enabledReleaseStages!.contains(releaseStage);
+  }
 
   void applyExtraConfig(String key, dynamic value) {
     switch (key) {
