@@ -32,7 +32,7 @@ Feature: Nested Spans
     * the span named "span1" has no parent
 
     * the span named "span1" is the parent of the span named "span2"    
-    * the span named "span1" is the parent of the span named "span3"
+    * the span named "span2" is the parent of the span named "span3"
 
  Scenario: Make Current Context False
     When I run "MakeCurrentContextScenario"
