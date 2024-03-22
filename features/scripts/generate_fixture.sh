@@ -12,8 +12,6 @@ NAVIGATOR_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-navigator-observer"
 
 HTTP_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-http-client" 
 
-DIO_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-dio-client" 
-
 DART_IO_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-dart-io-http-client" 
 
 
@@ -61,10 +59,9 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" native_flutter_proxy
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_http_client:{'path':'$HTTP_WRAPPER_PACKAGE_PATH'}"
 
-$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_dio_client:{'path':'$DIO_WRAPPER_PACKAGE_PATH'}"
-
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_dart_io_http_client:{'path':'$DART_IO_WRAPPER_PACKAGE_PATH'}"
 
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" dio
 
 echo "update min sdk version in android gradle file"
 
