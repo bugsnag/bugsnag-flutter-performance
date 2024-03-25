@@ -18,7 +18,7 @@ abstract class Scenario {
 
   Future<void> run();
 
-  void doSimpleSpan(String name){
+  void doSimpleSpan(String name) {
     BugsnagPerformance.startSpan(name).end();
   }
 
@@ -37,11 +37,12 @@ abstract class Scenario {
   }) async {
     BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
     await BugsnagPerformance.start(
-        apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
-        releaseStage: releaseStage,
-        enabledReleaseStages: enabledReleaseStages,
-        appVersion: appVersion);
+      apiKey: '12312312312312312312312312312312',
+      endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
+      releaseStage: releaseStage,
+      enabledReleaseStages: enabledReleaseStages,
+      appVersion: appVersion,
+    );
   }
 
   void invokeMethod(String name) {}

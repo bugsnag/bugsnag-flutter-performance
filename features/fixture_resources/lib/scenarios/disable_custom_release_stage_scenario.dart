@@ -5,7 +5,9 @@ class DisableCustomReleaseStageScenario extends Scenario {
   @override
   Future<void> run() async {
     await startBugsnag(
-        releaseStage: "custom", enabledReleaseStages: ["release"]);
+      releaseStage: "custom",
+      enabledReleaseStages: ["release"],
+    );
     setMaxBatchSize(1);
     doSimpleSpan('DisableCustomReleaseStageScenario');
   }

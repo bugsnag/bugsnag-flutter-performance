@@ -12,7 +12,7 @@ class BugsnagPerformance {
       BugsnagPerformanceClientImpl();
 
   static Future<void> start({
-    required String? apiKey,
+    required String apiKey,
     Uri? endpoint,
     BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
         networkRequestCallback,
@@ -35,12 +35,16 @@ class BugsnagPerformance {
       BugsnagPerformanceSpanContext? parentContext,
       bool? makeCurrentContext = true,
       bool? isFirstClass = true}) {
-    return _client.startSpan(name,
-        startTime: startTime,
-        parentContext: parentContext,
-        makeCurrentContext: makeCurrentContext,
-        attributes: BugsnagPerformanceSpanAttributes(
-            category: "custom", isFirstClass: isFirstClass));
+    return _client.startSpan(
+      name,
+      startTime: startTime,
+      parentContext: parentContext,
+      makeCurrentContext: makeCurrentContext,
+      attributes: BugsnagPerformanceSpanAttributes(
+        category: "custom",
+        isFirstClass: isFirstClass,
+      ),
+    );
   }
 
   static BugsnagPerformanceSpan startNetworkSpan(

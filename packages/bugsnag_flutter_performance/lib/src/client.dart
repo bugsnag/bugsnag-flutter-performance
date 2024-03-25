@@ -101,11 +101,12 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
     configuration = BugsnagPerformanceConfiguration(
-        apiKey: apiKey,
-        endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
-        releaseStage: releaseStage ?? getDeploymentEnvironment(),
-        enabledReleaseStages: enabledReleaseStages,
-        appVersion: appVersion);
+      apiKey: apiKey,
+      endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
+      releaseStage: releaseStage ?? getDeploymentEnvironment(),
+      enabledReleaseStages: enabledReleaseStages,
+      appVersion: appVersion,
+    );
     _packageBuilder.setConfig(configuration);
     _initialExtraConfig.forEach((key, value) {
       setExtraConfig(key, value);
