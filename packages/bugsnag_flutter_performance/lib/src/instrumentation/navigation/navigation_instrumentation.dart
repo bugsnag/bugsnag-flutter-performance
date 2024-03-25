@@ -133,8 +133,6 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
       if (!route.isCurrent) {
         return;
       }
-      print('POST FRAME');
-      print('Is loading: ${node.isLoading()}');
       if (node.isLoading()) {
         node.addDidFinishLoadingCallback(() {
           if (!route.isCurrent) {

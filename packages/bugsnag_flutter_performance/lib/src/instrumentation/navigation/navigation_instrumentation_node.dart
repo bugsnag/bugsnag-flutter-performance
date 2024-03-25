@@ -18,9 +18,6 @@ class WidgetInstrumentationNode {
   final List<WidgetInstrumentationNode> _children = [];
 
   bool isLoading() {
-    print('$_loadingIndicators');
-    print('$_parent');
-    print('$_children');
     return _loadingIndicators.where((element) => element.mounted).isNotEmpty;
   }
 
@@ -34,7 +31,6 @@ class WidgetInstrumentationNode {
   void registerLoadingIndicator(
       State<BugsnagLoadingIndicator> loadingIndicator) {
     _loadingIndicators.add(loadingIndicator);
-    print('!!!LOADING!!!');
     if (_parent != null) {
       _parent!.registerLoadingIndicator(loadingIndicator);
     }
