@@ -165,10 +165,12 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
       startTime: state.startTime,
       attributes: BugsnagPerformanceSpanAttributes(
         category: 'navigation',
-        navigationRoute: state.name,
-        navigatorName: state.navigatorName,
-        navigationTriggeredBy: triggeredBy,
-        navigationPreviousRoute: previousRoute,
+        additionalAttributes: {
+          'bugsnag.navigation.route': state.name,
+          'bugsnag.navigation.navigator': state.navigatorName,
+          'bugsnag.navigation.triggered_by': triggeredBy,
+          'bugsnag.navigation.previous_route': previousRoute,
+        },
       ),
     );
   }
@@ -182,8 +184,10 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
     }
     final span = state.viewLoadSpan;
     if (span is BugsnagPerformanceSpanImpl) {
-      span.attributes.navigationEndedBy =
-          didFinishLoading ? 'loading_indicator' : 'frame_render';
+      span.attributes.setAttribute(
+        'bugsnag.navigation.ended_by',
+        didFinishLoading ? 'loading_indicator' : 'frame_render',
+      );
     }
     if (span != null) {
       span.end();

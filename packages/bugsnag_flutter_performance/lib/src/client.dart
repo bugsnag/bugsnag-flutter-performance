@@ -16,24 +16,29 @@ import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
-import 'package:flutter/widgets.dart';
-import 'bugsnag_network_request_info.dart';
 // ignore: implementation_imports
 import 'package:bugsnag_navigator_observer/src/bugsnag_navigator_observer_callbacks.dart';
+import 'package:flutter/widgets.dart';
 
+import 'bugsnag_network_request_info.dart';
 import 'configuration.dart';
 import 'span.dart';
 
 const _defaultEndpoint = 'https://otlp.bugsnag.com/v1/traces';
 
 abstract class BugsnagPerformanceClient {
-  Future<void> start(
-      {String? apiKey,
-      Uri? endpoint,
-      BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
-          networkRequestCallback});
+  Future<void> start({
+    String? apiKey,
+    Uri? endpoint,
+    BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
+        networkRequestCallback,
+    String? releaseStage,
+    List<String>? enabledReleaseStages,
+    String? appVersion,
+  });
 
   Future<void> measureRunApp(FutureOr<void> Function() runApp);
+
   BugsnagPerformanceSpan startSpan(
     String name, {
     DateTime? startTime,
@@ -41,7 +46,9 @@ abstract class BugsnagPerformanceClient {
     bool? makeCurrentContext = true,
     BugsnagPerformanceSpanAttributes? attributes,
   });
+
   BugsnagPerformanceSpan startNetworkSpan(String url, String httpMethod);
+
   dynamic networkInstrumentation(dynamic);
 }
 
@@ -60,11 +67,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
   late final NavigationInstrumentation _navigationInstrumentation;
-  final Map<int, BugsnagPerformanceSpanContextStack> _zoneContextStacks = {};
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
   BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
       _networkRequestCallback;
   final Map<SpanId, BugsnagPerformanceSpan> _potentiallyOpenSpans = {};
+  final spanContextStackExpando = Expando<BugsnagPerformanceSpanContextStack>();
 
   BugsnagPerformanceClientImpl({BugsnagLifecycleListener? lifecycleListener}) {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -85,17 +92,25 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   @override
-  Future<void> start(
-      {String? apiKey,
-      Uri? endpoint,
-      BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
-          networkRequestCallback}) async {
+  Future<void> start({
+    String? apiKey,
+    Uri? endpoint,
+    BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
+        networkRequestCallback,
+    String? releaseStage,
+    List<String>? enabledReleaseStages,
+    String? appVersion,
+  }) async {
     WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
+      releaseStage: releaseStage ?? getDeploymentEnvironment(),
+      enabledReleaseStages: enabledReleaseStages,
+      appVersion: appVersion,
     );
+    _packageBuilder.setConfig(configuration);
     _initialExtraConfig.forEach((key, value) {
       setExtraConfig(key, value);
     });
@@ -109,6 +124,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _lifecycleListener?.startObserving(onAppBackgrounded: _onAppBackgrounded);
   }
 
+  String getDeploymentEnvironment() {
+    final environment = Platform.environment['DEPLOYMENT_ENVIRONMENT'];
+    return environment ?? 'development';
+  }
+
   @override
   BugsnagPerformanceSpan startSpan(
     String name, {
@@ -117,11 +137,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     bool? makeCurrentContext = true,
     BugsnagPerformanceSpanAttributes? attributes,
   }) {
-    if (parentContext != null) {
-      _addContext(parentContext);
-    }
-
-    final parent = parentContext ?? _getCurrentContext();
+    final parent = parentContext ?? getCurrentContext();
 
     final span = BugsnagPerformanceSpanImpl(
       name: name,
@@ -133,10 +149,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         }
         _potentiallyOpenSpans.remove(endedSpan.spanId);
       },
-      onCanceled: (cancledSpan) {
-        _potentiallyOpenSpans.remove(cancledSpan.spanId);
+      onCanceled: (canceledSpan) {
+        _potentiallyOpenSpans.remove(canceledSpan.spanId);
       },
       parentSpanId: parent?.spanId,
+      traceId: parent?.traceId,
       attributes: attributes,
     );
     span.clock = _clock;
@@ -193,6 +210,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   void _sendBatch(SpanBatch batch) async {
+    if (!configuration!.releaseStageEnabled()) {
+      batch.drain();
+      return;
+    }
     await _updateSamplingProbabilityIfNeeded();
     var spans = batch.drain();
     if (_sampler != null) {
@@ -205,6 +226,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     final result = await _uploader?.upload(package: package);
     if (result == RequestResult.retriableFailure) {
       _retryQueue?.enqueue(headers: package.headers, body: package.payload);
+    } else if (result == RequestResult.success) {
+      _retryQueue?.flush();
     }
   }
 
@@ -249,23 +272,23 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   BugsnagPerformanceSpanContextStack? _getContextStack() {
-    if (_zoneContextStacks.containsKey(Zone.current.hashCode)) {
-      return _zoneContextStacks[Zone.current.hashCode];
-    } else {
-      _zoneContextStacks[Zone.current.hashCode] =
-          BugsnagPerformanceSpanContextStackImpl();
-      return _zoneContextStacks[Zone.current.hashCode];
+    var stack = spanContextStackExpando[Zone.current];
+    if (stack == null) {
+      stack = BugsnagPerformanceSpanContextStackImpl();
+      spanContextStackExpando[Zone.current] = stack;
     }
+
+    return stack;
   }
 
   void _addContext(BugsnagPerformanceSpanContext newContext) {
     var stack = _getContextStack();
-    if (stack?.getCurrentContext() != newContext) {
-      _getContextStack()?.pushContext(newContext);
+    if (stack != null && stack.getCurrentContext() != newContext) {
+      stack.pushContext(newContext);
     }
   }
 
-  BugsnagPerformanceSpanContext? _getCurrentContext() {
+  BugsnagPerformanceSpanContext? getCurrentContext() {
     return _getContextStack()?.getCurrentContext();
   }
 

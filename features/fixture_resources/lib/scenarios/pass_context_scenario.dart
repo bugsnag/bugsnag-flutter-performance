@@ -11,8 +11,8 @@ class PassContextToNewZoneScenario extends Scenario {
     final span1 = BugsnagPerformance.startSpan('span1');
     runZoned(() {
       final span2 = BugsnagPerformance.startSpan('span2', parentContext: span1);
-      span2.end();
       final span3 = BugsnagPerformance.startSpan('span3');
+      span2.end();
       span3.end();
     }, zoneValues: {});
     await Future.delayed(const Duration(milliseconds: 1000));

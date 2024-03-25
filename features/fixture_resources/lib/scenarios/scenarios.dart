@@ -24,6 +24,11 @@ import 'dio_post_scenario.dart';
 import 'http_get_multiple_subscribers_scenario.dart';
 import 'max_batch_age_scenario.dart';
 import 'dart_io_get_scenario.dart';
+import 'custom_release_stage_scenario.dart';
+import 'custom_enabled_release_stage_scenario.dart';
+import 'disable_custom_release_stage_scenario.dart';
+import 'custom_app_version_scenario.dart';
+import 'manual_span_isfirstclass_false_scenario.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -61,6 +66,15 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => AutoInstrumentNavigationBasicScenario()),
   ScenarioInfo('MaxBatchAgeScenario', () => MaxBatchAgeScenario()),
   ScenarioInfo('DartIoGetScenario', () => DartIoGetScenario()),
+  ScenarioInfo(
+      'CustomReleaseStageScenario', () => CustomReleaseStageScenario()),
+  ScenarioInfo('CustomEnabledReleaseStageScenario',
+      () => CustomEnabledReleaseStageScenario()),
+  ScenarioInfo('DisableCustomReleaseStageScenario',
+      () => DisableCustomReleaseStageScenario()),
+  ScenarioInfo('CustomAppVersionScenario', () => CustomAppVersionScenario()),
+  ScenarioInfo('ManualSpanIsFirstClassFalseScenario',
+      () => ManualSpanIsFirstClassFalseScenario()),
   ScenarioInfo('AutoInstrumentNavigationBasicDeferScenario',
       () => AutoInstrumentNavigationBasicDeferScenario()),
   ScenarioInfo('AutoInstrumentNavigationComplexDeferScenario',

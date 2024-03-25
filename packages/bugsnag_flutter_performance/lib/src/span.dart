@@ -118,7 +118,9 @@ class BugsnagPerformanceSpanImpl
   int get hashCode => toJson().hashCode;
 
   void updateSamplingProbability(double samplingProbability) {
-    if (samplingProbability < attributes.samplingProbability) {
+    double? currentSamplingProbability = attributes.samplingProbability;
+    if (currentSamplingProbability == null ||
+        samplingProbability < currentSamplingProbability) {
       attributes.samplingProbability = samplingProbability;
     }
   }
