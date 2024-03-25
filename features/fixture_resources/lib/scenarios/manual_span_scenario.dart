@@ -6,7 +6,6 @@ class ManualSpanScenario extends Scenario {
   Future<void> run() async {
     await startBugsnag();
     setMaxBatchSize(1);
-    final span = BugsnagPerformance.startSpan('ManualSpanScenario');
-    span.end();
+    doSimpleSpan('ManualSpanScenario');
   }
 }

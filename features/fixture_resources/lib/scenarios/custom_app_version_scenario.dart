@@ -6,7 +6,6 @@ class CustomAppVersionScenario extends Scenario {
   Future<void> run() async {
     await startBugsnag(appVersion: "999.888.777");
     setMaxBatchSize(1);
-    final span = BugsnagPerformance.startSpan('CustomAppVersionScenario');
-    span.end();
+    doSimpleSpan('CustomAppVersionScenario');
   }
 }

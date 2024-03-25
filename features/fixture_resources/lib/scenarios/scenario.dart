@@ -18,6 +18,10 @@ abstract class Scenario {
 
   Future<void> run();
 
+  void doSimpleSpan(String name){
+    BugsnagPerformance.startSpan(name).end();
+  }
+
   void setMaxBatchSize(int size) {
     BugsnagPerformance.setExtraConfig("maxBatchSize", size);
   }

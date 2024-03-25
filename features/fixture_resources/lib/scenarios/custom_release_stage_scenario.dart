@@ -6,7 +6,6 @@ class CustomReleaseStageScenario extends Scenario {
   Future<void> run() async {
     await startBugsnag(releaseStage: "CustomReleaseStageScenario");
     setMaxBatchSize(1);
-    final span = BugsnagPerformance.startSpan('CustomReleaseStageScenario');
-    span.end();
+    doSimpleSpan('CustomReleaseStageScenario');
   }
 }

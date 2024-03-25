@@ -7,8 +7,6 @@ class DisableCustomReleaseStageScenario extends Scenario {
     await startBugsnag(
         releaseStage: "custom", enabledReleaseStages: ["release"]);
     setMaxBatchSize(1);
-    final span =
-        BugsnagPerformance.startSpan('DisableCustomReleaseStageScenario');
-    span.end();
+    doSimpleSpan('DisableCustomReleaseStageScenario');
   }
 }

@@ -17,11 +17,11 @@ class InitialPScenario extends Scenario {
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
     setMaxBatchSize(1);
-    BugsnagPerformance.startSpan('First').end();
+    doSimpleSpan('First');
   }
 
   void step2() {
-    BugsnagPerformance.startSpan('Second').end();
+    doSimpleSpan('Second');
   }
 
   @override

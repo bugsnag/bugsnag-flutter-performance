@@ -8,8 +8,6 @@ class CustomEnabledReleaseStageScenario extends Scenario {
         releaseStage: "CustomEnabledReleaseStageScenario",
         enabledReleaseStages: ["CustomEnabledReleaseStageScenario"]);
     setMaxBatchSize(1);
-    final span =
-        BugsnagPerformance.startSpan('CustomEnabledReleaseStageScenario');
-    span.end();
+    doSimpleSpan('CustomEnabledReleaseStageScenario');
   }
 }
