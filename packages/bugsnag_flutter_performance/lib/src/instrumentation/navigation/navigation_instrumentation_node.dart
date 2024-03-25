@@ -1,25 +1,26 @@
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
-import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_state.dart';
-import 'package:bugsnag_flutter_performance/src/widgets/navigation_instrumentation_node_provider.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_state.dart';
+import 'package:bugsnag_flutter_performance/src/widgets/widget_instrumentation_node_provider.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 typedef DidFinishLoadingCallback = void Function();
-final appRootNavigationNode = NavigationInstrumentationNode();
+final appRootInstrumentationNode = WidgetInstrumentationNode();
 
-class NavigationInstrumentationNode {
-  NavigationInstrumentationNode({
+class WidgetInstrumentationNode {
+  WidgetInstrumentationNode({
     this.state,
   });
-  ScreenInstrumentationState? state;
-  DateTime? routeLoadStartTime;
-  Route? currentlyLoadedRoute;
-  bool isLoadingPhasedRoute = false;
+  WidgetInstrumentationState? state;
+  WidgetInstrumentationNode? _parent;
   final List<DidFinishLoadingCallback> _didFinishLoadingCallbacks = [];
   final Set<State<BugsnagLoadingIndicator>> _loadingIndicators = {};
-  final List<NavigationInstrumentationNode> _children = [];
+  final List<WidgetInstrumentationNode> _children = [];
 
   bool isLoading() {
+    print('$_loadingIndicators');
+    print('$_parent');
+    print('$_children');
     return _loadingIndicators.where((element) => element.mounted).isNotEmpty;
   }
 
@@ -33,20 +34,36 @@ class NavigationInstrumentationNode {
   void registerLoadingIndicator(
       State<BugsnagLoadingIndicator> loadingIndicator) {
     _loadingIndicators.add(loadingIndicator);
+    print('!!!LOADING!!!');
+    if (_parent != null) {
+      _parent!.registerLoadingIndicator(loadingIndicator);
+    }
   }
 
   void unregisterLoadingIndicator(
       State<BugsnagLoadingIndicator> loadingIndicator) {
     _loadingIndicators.remove(loadingIndicator);
+    if (_parent != null) {
+      _parent!.unregisterLoadingIndicator(loadingIndicator);
+    }
   }
 
-  void addChild(NavigationInstrumentationNode node) {
+  void addChild(WidgetInstrumentationNode node) {
+    node._parent = this;
     _children.add(node);
   }
 
-  NavigationInstrumentationNode? child(String name) {
+  void removeChild(WidgetInstrumentationNode node) {
+    _children.remove(node);
+  }
+
+  WidgetInstrumentationNode? child(String name) {
     final nodes = _children.where((element) => element.state?.name == name);
     return nodes.isNotEmpty ? nodes.first : null;
+  }
+
+  void dispose() {
+    _parent?.removeChild(this);
   }
 
   void _waitForNextFrameAndCheckIfLoading() {
@@ -66,9 +83,9 @@ class NavigationInstrumentationNode {
     _didFinishLoadingCallbacks.clear();
   }
 
-  static NavigationInstrumentationNode of(BuildContext context) {
+  static WidgetInstrumentationNode of(BuildContext context) {
     final widget = context.dependOnInheritedWidgetOfExactType<
         NavigationInstrumentationNodeProvider>();
-    return widget != null ? widget.node : appRootNavigationNode;
+    return widget != null ? widget.node : appRootInstrumentationNode;
   }
 }

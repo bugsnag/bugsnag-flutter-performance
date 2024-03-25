@@ -1,15 +1,21 @@
 class BugsnagPerformanceSpanAttributes {
-  BugsnagPerformanceSpanAttributes(
-      {this.category = 'custom',
-      this.isFirstClass,
-      this.samplingProbability = 1.0,
-      this.phase,
-      this.url,
-      this.httpMethod,
-      this.httpStatusCode,
-      this.requestContentLength,
-      this.responseContentLength,
-      this.appStartType});
+  BugsnagPerformanceSpanAttributes({
+    this.category = 'custom',
+    this.isFirstClass,
+    this.samplingProbability = 1.0,
+    this.phase,
+    this.url,
+    this.httpMethod,
+    this.httpStatusCode,
+    this.requestContentLength,
+    this.responseContentLength,
+    this.appStartType,
+    this.navigationRoute,
+    this.navigatorName,
+    this.navigationTriggeredBy,
+    this.navigationEndedBy,
+    this.navigationPreviousRoute,
+  });
 
   final String category;
   final bool? isFirstClass;
@@ -21,6 +27,11 @@ class BugsnagPerformanceSpanAttributes {
   int? requestContentLength;
   int? responseContentLength;
   final String? appStartType;
+  final String? navigationRoute;
+  final String? navigatorName;
+  final String? navigationTriggeredBy;
+  String? navigationEndedBy;
+  final String? navigationPreviousRoute;
 
   BugsnagPerformanceSpanAttributes.fromJson(dynamic json)
       : category = _value(
@@ -74,7 +85,32 @@ class BugsnagPerformanceSpanAttributes {
           json: json,
           key: 'http.response_content_length',
           type: _ParameterType.double,
-        ) as int?;
+        ) as int?,
+        navigationRoute = _value(
+          json: json,
+          key: 'bugsnag.navigation.route',
+          type: _ParameterType.string,
+        ) as String?,
+        navigatorName = _value(
+          json: json,
+          key: 'bugsnag.navigation.navigator',
+          type: _ParameterType.string,
+        ) as String?,
+        navigationTriggeredBy = _value(
+          json: json,
+          key: 'bugsnag.navigation.triggered_by',
+          type: _ParameterType.string,
+        ) as String?,
+        navigationEndedBy = _value(
+          json: json,
+          key: 'bugsnag.navigation.ended_by',
+          type: _ParameterType.string,
+        ) as String?,
+        navigationPreviousRoute = _value(
+          json: json,
+          key: 'bugsnag.navigation.previous_route',
+          type: _ParameterType.string,
+        ) as String?;
 
   dynamic toJson() => [
         {
@@ -104,12 +140,12 @@ class BugsnagPerformanceSpanAttributes {
             }
           },
         if (appStartType != null)
-        {
-          'key': 'bugsnag.app_start.type',
-          'value': {
-            'stringValue': appStartType,
-          }
-        },
+          {
+            'key': 'bugsnag.app_start.type',
+            'value': {
+              'stringValue': appStartType,
+            }
+          },
         if (url != null)
           {
             'key': 'http.url',
@@ -146,6 +182,41 @@ class BugsnagPerformanceSpanAttributes {
             'value': {
               'intValue': responseContentLength
                   .toString(), //integerValue should be a string
+            }
+          },
+        if (navigationRoute != null)
+          {
+            'key': 'bugsnag.navigation.route',
+            'value': {
+              'stringValue': navigationRoute,
+            }
+          },
+        if (navigatorName != null)
+          {
+            'key': 'bugsnag.navigation.navigator',
+            'value': {
+              'stringValue': navigatorName,
+            }
+          },
+        if (navigationTriggeredBy != null)
+          {
+            'key': 'bugsnag.navigation.triggered_by',
+            'value': {
+              'stringValue': navigationTriggeredBy,
+            }
+          },
+        if (navigationEndedBy != null)
+          {
+            'key': 'bugsnag.navigation.ended_by',
+            'value': {
+              'stringValue': navigationEndedBy,
+            }
+          },
+        if (navigationPreviousRoute != null)
+          {
+            'key': 'bugsnag.navigation.previous_route',
+            'value': {
+              'stringValue': navigationPreviousRoute,
             }
           }
       ];

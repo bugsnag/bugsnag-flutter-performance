@@ -8,7 +8,7 @@ class NavigationInstrumentationNodeProvider extends InheritedWidget {
     required super.child,
   });
 
-  final NavigationInstrumentationNode node;
+  final WidgetInstrumentationNode node;
 
   @override
   bool updateShouldNotify(

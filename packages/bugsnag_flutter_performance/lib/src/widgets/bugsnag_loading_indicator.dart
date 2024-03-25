@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 class BugsnagLoadingIndicator extends StatefulWidget {
   const BugsnagLoadingIndicator({
     super.key,
-    required this.child,
+    this.child = const Text(''),
   });
   final Widget child;
 
@@ -14,7 +14,7 @@ class BugsnagLoadingIndicator extends StatefulWidget {
 }
 
 class _BugsnagLoadingIndicatorState extends State<BugsnagLoadingIndicator> {
-  NavigationInstrumentationNode? _node;
+  WidgetInstrumentationNode? _node;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class _BugsnagLoadingIndicatorState extends State<BugsnagLoadingIndicator> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _node = NavigationInstrumentationNode.of(context);
+    _node = WidgetInstrumentationNode.of(context);
     _node?.registerLoadingIndicator(this);
   }
 

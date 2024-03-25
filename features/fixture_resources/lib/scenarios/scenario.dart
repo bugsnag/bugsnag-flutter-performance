@@ -27,6 +27,10 @@ abstract class Scenario {
     BugsnagPerformance.setExtraConfig("maxBatchAge", milliseconds);
   }
 
+  void setInstrumentsNavigation(bool value) {
+    BugsnagPerformance.setExtraConfig("instrumentNavigation", value);
+  }
+
   Future<void> startBugsnag() async {
     BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
     await BugsnagPerformance.start(

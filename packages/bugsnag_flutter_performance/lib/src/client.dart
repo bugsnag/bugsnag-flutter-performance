@@ -185,7 +185,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _updateSamplingProbabilityIfNeeded(force: true);
     });
     BugsnagNavigatorObserverCallbacks.setup(
-      willShowNewRouteCallback: _navigationInstrumentation.willShowRoute,
+      didPushNewRouteCallback: _navigationInstrumentation.didPushNewRoute,
+      didReplaceRouteCallback: _navigationInstrumentation.didReplaceRoute,
+      didRemoveRouteCallback: _navigationInstrumentation.didRemoveRoute,
+      didPopRouteCallback: _navigationInstrumentation.didPopRoute,
     );
   }
 

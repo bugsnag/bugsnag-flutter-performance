@@ -5,19 +5,15 @@ import 'package:mazerunner/main.dart';
 
 import 'scenario.dart';
 
-class AutoInstrumentNavigationNestedNavigationPhasedScenario extends Scenario {
-  final _key = GlobalKey<State<StatefulWidget>>();
-  final _subScreenKey = GlobalKey<
-      _AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreenState>();
+class AutoInstrumentNavigationNestedNavigationScenario extends Scenario {
+  final _key = GlobalKey<
+      _AutoInstrumentNavigationNestedNavigationScenarioSubScreenState>();
+  Route<dynamic>? routeToReplace;
 
   @override
   Future<void> run() async {
-    BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
-    BugsnagPerformance.setExtraConfig("instrumentNavigation", true);
-    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 1000);
-    BugsnagPerformance.start(
-        apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
+    setInstrumentsNavigation(true);
+    await startBugsnag();
     setMaxBatchSize(1);
   }
 
@@ -25,14 +21,15 @@ class AutoInstrumentNavigationNestedNavigationPhasedScenario extends Scenario {
   Widget? createWidget() {
     return BugsnagNavigationContainer(
       child: Navigator(
-        observers: [BugsnagNavigatorObserver()],
+        observers: [
+          BugsnagNavigatorObserver(
+              navigatorName: "nested_scenario_child_navigator")
+        ],
         pages: [
           MaterialPage(
-            child: GestureDetector(
-              key: _key,
-              child: Container(color: Colors.white),
-              onTap: () => runCommandCallback!(),
-            ),
+            child: AutoInstrumentNavigationNestedNavigationScenarioSubScreen(
+                key: _key, runCommandCallback: () => runCommandCallback!()),
+            name: 'nested_scenario_child_route_initial',
           )
         ],
       ),
@@ -42,34 +39,40 @@ class AutoInstrumentNavigationNestedNavigationPhasedScenario extends Scenario {
   @override
   RouteSettings? routeSettings() {
     return const RouteSettings(
-      name:
-          'AutoInstrumentNavigationNestedNavigationPhasedScenarioNestedNavigatorScreen',
+      name: 'nested_defer_navigation_scenario_parent',
     );
   }
 
   void step2() {
-    final route = MaterialPageRoute(
-      builder: (context) =>
-          AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen(
-              key: _subScreenKey,
-              runCommandCallback: () => runCommandCallback!()),
-    );
-    Navigator.of(_key.currentContext!).push(route);
+    _key.currentState!.finishLoading();
   }
 
   void step3() {
-    _subScreenKey.currentState!.finishLoading();
+    routeToReplace = MaterialPageRoute(
+      builder: (context) => GestureDetector(
+        child: Container(
+          color: Colors.white,
+        ),
+        onTap: () => runCommandCallback!(),
+      ),
+      settings: const RouteSettings(
+        name: 'nested_scenario_child_route_2',
+      ),
+    );
+    Navigator.of(_key.currentContext!).push(routeToReplace!);
   }
 
   void step4() {
     final route = MaterialPageRoute(
       builder: (context) => Container(),
       settings: const RouteSettings(
-        name:
-            'AutoInstrumentNavigationNestedNavigationPhasedScenarioPushedScreen',
+        name: 'nested_scenario_child_route_3',
       ),
     );
-    Navigator.of(_subScreenKey.currentContext!).push(route);
+    Navigator.of(_key.currentContext!).replace(
+      oldRoute: routeToReplace!,
+      newRoute: route,
+    );
   }
 
   @override
@@ -90,41 +93,35 @@ class AutoInstrumentNavigationNestedNavigationPhasedScenario extends Scenario {
   }
 }
 
-class AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen
+class AutoInstrumentNavigationNestedNavigationScenarioSubScreen
     extends StatefulWidget {
-  const AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen({
+  const AutoInstrumentNavigationNestedNavigationScenarioSubScreen({
     super.key,
     required this.runCommandCallback,
   });
   final void Function() runCommandCallback;
 
   @override
-  State<AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen>
+  State<AutoInstrumentNavigationNestedNavigationScenarioSubScreen>
       createState() =>
-          _AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreenState();
+          _AutoInstrumentNavigationNestedNavigationScenarioSubScreenState();
 }
 
-class _AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreenState
-    extends State<
-        AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen> {
+class _AutoInstrumentNavigationNestedNavigationScenarioSubScreenState
+    extends State<AutoInstrumentNavigationNestedNavigationScenarioSubScreen> {
   var isLoading = true;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: MeasuredScreen(
-        key: const Key(
-            'AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen'),
-        name: 'AutoInstrumentNavigationNestedNavigationPhasedScenarioSubScreen',
-        builder: (context) => Container(
-          color: Colors.white,
-          child: Row(
-            children: [
-              if (isLoading)
-                const BugsnagLoadingIndicator(child: Text('Loading...')),
-              const Text('Screen'),
-            ],
-          ),
+      child: Container(
+        color: Colors.white,
+        child: Row(
+          children: [
+            if (isLoading)
+              const BugsnagLoadingIndicator(child: Text('Loading...')),
+            const Text('Screen'),
+          ],
         ),
       ),
       onTap: () => widget.runCommandCallback(),

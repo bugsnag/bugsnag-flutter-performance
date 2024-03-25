@@ -1,19 +1,18 @@
-import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_phase.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
 
-class ScreenInstrumentationState {
-  ScreenInstrumentationState({
+class WidgetInstrumentationState {
+  WidgetInstrumentationState({
     required this.name,
     required this.startTime,
     this.parent,
+    this.navigatorName,
   });
 
   final String name;
-  final ScreenInstrumentationState? parent;
+  final WidgetInstrumentationState? parent;
+  final String? navigatorName;
 
   final DateTime startTime;
-  final Map<NavigationInstrumentationPhase, BugsnagPerformanceSpan> phaseSpans =
-      {};
   BugsnagPerformanceSpan? viewLoadSpan;
 
   BugsnagPerformanceSpan? nearestViewLoadSpan() {

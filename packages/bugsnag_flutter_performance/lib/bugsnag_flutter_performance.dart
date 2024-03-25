@@ -6,4 +6,3 @@ export 'src/widgets/bugsnag_loading_indicator.dart'
     show BugsnagLoadingIndicator;
 export 'src/widgets/bugsnag_navigation_container.dart'
     show BugsnagNavigationContainer;
-export 'src/widgets/measured_screen/measured_screen.dart' show MeasuredScreen;

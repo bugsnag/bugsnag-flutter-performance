@@ -10,12 +10,8 @@ class AutoInstrumentNavigationComplexDeferScenario extends Scenario {
 
   @override
   Future<void> run() async {
-    BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
-    BugsnagPerformance.setExtraConfig("instrumentNavigation", true);
-    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 1000);
-    BugsnagPerformance.start(
-        apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
+    setInstrumentsNavigation(true);
+    await startBugsnag();
     setMaxBatchSize(1);
   }
 
@@ -29,8 +25,7 @@ class AutoInstrumentNavigationComplexDeferScenario extends Scenario {
 
   @override
   RouteSettings? routeSettings() {
-    return const RouteSettings(
-        name: 'AutoInstrumentNavigationComplexDeferScenarioScreen');
+    return const RouteSettings(name: 'complex_defer_navigation_scenario');
   }
 
   void step2() {

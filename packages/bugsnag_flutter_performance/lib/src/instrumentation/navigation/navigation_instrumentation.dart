@@ -1,26 +1,34 @@
 import 'package:bugsnag_flutter_performance/src/client.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_node.dart';
-import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_phase.dart';
-import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_state.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_state.dart';
+import 'package:bugsnag_flutter_performance/src/span.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
-import 'package:bugsnag_flutter_performance/src/widgets/measured_screen/measured_screen_callbacks.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 abstract class NavigationInstrumentation {
   void setEnabled(bool enabled);
-  void willShowRoute(
+  void didPushNewRoute(
     Route<dynamic>? route,
-    String? routeDescription,
+    Route<dynamic>? previousRoute,
+    String? navigatorName,
   );
-  void didStartBuildingScreen(ScreenInstrumentationState state);
-  void didFinishBuildingScreen(ScreenInstrumentationState state);
-  void didShowScreen(
-    ScreenInstrumentationState state, {
-    required bool isLoading,
-  });
-  void didFinishLoadingScreen(ScreenInstrumentationState state);
+  void didReplaceRoute(
+    Route<dynamic>? route,
+    Route<dynamic>? previousRoute,
+    String? navigatorName,
+  );
+  void didRemoveRoute(
+    Route<dynamic>? shownRoute,
+    Route<dynamic>? removedRoute,
+    String? navigatorName,
+  );
+  void didPopRoute(
+    Route<dynamic>? shownRoute,
+    Route<dynamic>? poppedRoute,
+    String? navigatorName,
+  );
 }
 
 class NavigationInstrumentationImpl implements NavigationInstrumentation {
@@ -32,14 +40,7 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
   NavigationInstrumentationImpl({
     required this.client,
     required this.clock,
-  }) {
-    measuredScreenCallbacks.setup(
-      didStartBuildingScreenCallback: didStartBuildingScreen,
-      didFinishBuildingScreenCallback: didFinishBuildingScreen,
-      didShowScreenCallback: didShowScreen,
-      didFinishLoadingScreenCallback: didFinishLoadingScreen,
-    );
-  }
+  });
 
   @override
   void setEnabled(bool enabled) {
@@ -47,133 +48,145 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
   }
 
   @override
-  void willShowRoute(Route? route, String? routeDescription) {
+  void didPushNewRoute(
+    Route? route,
+    Route? previousRoute,
+    String? navigatorName,
+  ) {
+    _willShowRoute(
+      route,
+      previousRoute,
+      navigatorName,
+      'push',
+    );
+  }
+
+  @override
+  void didReplaceRoute(
+    Route? route,
+    Route? previousRoute,
+    String? navigatorName,
+  ) {
+    _willShowRoute(
+      route,
+      previousRoute,
+      navigatorName,
+      'replace',
+    );
+  }
+
+  @override
+  void didRemoveRoute(
+    Route? shownRoute,
+    Route? removedRoute,
+    String? navigatorName,
+  ) {
+    _willShowRoute(
+      shownRoute,
+      removedRoute,
+      navigatorName,
+      'remove',
+    );
+  }
+
+  @override
+  void didPopRoute(
+    Route? shownRoute,
+    Route? poppedRoute,
+    String? navigatorName,
+  ) {
+    _willShowRoute(
+      shownRoute,
+      poppedRoute,
+      navigatorName,
+      'pop',
+    );
+  }
+
+  void _willShowRoute(
+    Route? route,
+    Route? previousRoute,
+    String? navigatorName,
+    String triggeredBy,
+  ) {
     final startTime = clock.now();
-    if (!_enabled || routeDescription == null || route == null) {
+    final name = route?.settings.name;
+    if (!_enabled || route == null || name == null) {
       return;
     }
     final node = route.navigator != null
-        ? NavigationInstrumentationNode.of(route.navigator!.context)
-        : appRootNavigationNode;
-    node.routeLoadStartTime = startTime;
-    node.currentlyLoadedRoute = route;
-    node.isLoadingPhasedRoute = false;
+        ? WidgetInstrumentationNode.of(route.navigator!.context)
+        : appRootInstrumentationNode;
+    final state = WidgetInstrumentationState(
+      name: name,
+      startTime: startTime,
+      navigatorName: navigatorName,
+    );
+    node.state = state;
+    _startNavigationSpan(
+      state,
+      triggeredBy: triggeredBy,
+      previousRoute: previousRoute?.settings.name,
+    );
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      if (node.currentlyLoadedRoute == route &&
-          !node.isLoadingPhasedRoute &&
-          route.isCurrent) {
-        final state = ScreenInstrumentationState(
-          name: routeDescription,
-          startTime: startTime,
-        );
-        _startNavigationSpan(state);
-        if (node.isLoading()) {
-          node.addDidFinishLoadingCallback(() {
-            _endNavigationSpan(state);
-          });
-        } else {
-          _endNavigationSpan(state);
-        }
+      if (!route.isCurrent) {
+        return;
       }
-      node.currentlyLoadedRoute = null;
-      node.routeLoadStartTime = null;
-      node.isLoadingPhasedRoute = false;
+      print('POST FRAME');
+      print('Is loading: ${node.isLoading()}');
+      if (node.isLoading()) {
+        node.addDidFinishLoadingCallback(() {
+          if (!route.isCurrent) {
+            return;
+          }
+          _endNavigationSpan(state, didFinishLoading: true);
+        });
+      } else {
+        _endNavigationSpan(state, didFinishLoading: false);
+      }
     });
   }
 
-  @override
-  void didStartBuildingScreen(ScreenInstrumentationState state) {
-    _startNavigationSpan(state);
-    _startNavigationPhaseSpan(
-      state,
-      phase: NavigationInstrumentationPhase.preBuild,
-      startTime: state.startTime,
-    );
-    _endNavigationPhaseSpan(state,
-        phase: NavigationInstrumentationPhase.preBuild);
-    _startNavigationPhaseSpan(state,
-        phase: NavigationInstrumentationPhase.build);
-  }
-
-  @override
-  void didFinishBuildingScreen(ScreenInstrumentationState state) {
-    _endNavigationPhaseSpan(state, phase: NavigationInstrumentationPhase.build);
-    _startNavigationPhaseSpan(state,
-        phase: NavigationInstrumentationPhase.appearing);
-  }
-
-  @override
-  void didShowScreen(ScreenInstrumentationState state,
-      {required bool isLoading}) {
-    _endNavigationPhaseSpan(state,
-        phase: NavigationInstrumentationPhase.appearing);
-    if (isLoading) {
-      _startNavigationPhaseSpan(state,
-          phase: NavigationInstrumentationPhase.loading);
-    } else {
-      _endNavigationSpan(state);
-    }
-  }
-
-  @override
-  void didFinishLoadingScreen(ScreenInstrumentationState state) {
-    _endNavigationPhaseSpan(state,
-        phase: NavigationInstrumentationPhase.loading);
-    _endNavigationSpan(state);
-  }
-
-  void _startNavigationSpan(ScreenInstrumentationState state) {
+  void _startNavigationSpan(
+    WidgetInstrumentationState state, {
+    required String triggeredBy,
+    String? previousRoute,
+  }) {
     if (!_enabled || state.viewLoadSpan != null) {
       return;
     }
+    final name = state.navigatorName != null
+        ? '[Navigation]/${state.navigatorName}/${state.name}'
+        : '[Navigation]/${state.name}';
     state.viewLoadSpan = client.startSpan(
-      '[Navigation]/${state.name}',
+      name,
       parentContext: state.nearestViewLoadSpan(),
       startTime: state.startTime,
       attributes: BugsnagPerformanceSpanAttributes(
         category: 'navigation',
+        navigationRoute: state.name,
+        navigatorName: state.navigatorName,
+        navigationTriggeredBy: triggeredBy,
+        navigationPreviousRoute: previousRoute,
       ),
     );
   }
 
-  void _endNavigationSpan(ScreenInstrumentationState state) {
+  void _endNavigationSpan(
+    WidgetInstrumentationState state, {
+    bool didFinishLoading = false,
+  }) {
     if (!_enabled) {
       return;
     }
     final span = state.viewLoadSpan;
+    if (span is BugsnagPerformanceSpanImpl) {
+      span.attributes.navigationEndedBy =
+          didFinishLoading ? 'loading_indicator' : 'frame_render';
+    }
     if (span != null) {
       span.end();
     }
-  }
-
-  void _startNavigationPhaseSpan(
-    ScreenInstrumentationState state, {
-    required NavigationInstrumentationPhase phase,
-    DateTime? startTime,
-  }) {
-    final parentSpan = state.viewLoadSpan;
-    if (!_enabled || parentSpan == null || state.phaseSpans[phase] != null) {
-      return;
-    }
-    state.phaseSpans[phase] =
-        client.startSpan('[NavigationPhase/${phase.name()}]/${state.name}',
-            parentContext: parentSpan,
-            startTime: startTime,
-            attributes: BugsnagPerformanceSpanAttributes(
-              category: 'navigation_phase',
-              phase: phase.name(),
-            ));
-  }
-
-  void _endNavigationPhaseSpan(
-    ScreenInstrumentationState state, {
-    required NavigationInstrumentationPhase phase,
-  }) {
-    final span = state.phaseSpans[phase];
-    if (!_enabled || span == null || !span.isOpen()) {
-      return;
-    }
-    span.end();
   }
 }
