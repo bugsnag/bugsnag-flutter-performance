@@ -41,6 +41,7 @@ abstract class Scenario {
     String? appVersion,
   }) async {
     BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
+    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 1000);
     await BugsnagPerformance.start(
       apiKey: '12312312312312312312312312312312',
       endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
