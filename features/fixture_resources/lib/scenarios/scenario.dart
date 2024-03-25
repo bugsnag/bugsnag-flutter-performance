@@ -18,6 +18,10 @@ abstract class Scenario {
 
   Future<void> run();
 
+  void doSimpleSpan(String name) {
+    BugsnagPerformance.startSpan(name).end();
+  }
+
   void setMaxBatchSize(int size) {
     BugsnagPerformance.setExtraConfig("maxBatchSize", size);
   }
@@ -26,11 +30,19 @@ abstract class Scenario {
     BugsnagPerformance.setExtraConfig("maxBatchAge", milliseconds);
   }
 
-  Future<void> startBugsnag() async {
+  Future<void> startBugsnag({
+    String? releaseStage,
+    List<String>? enabledReleaseStages,
+    String? appVersion,
+  }) async {
     BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
     await BugsnagPerformance.start(
-        apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
+      apiKey: '12312312312312312312312312312312',
+      endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
+      releaseStage: releaseStage,
+      enabledReleaseStages: enabledReleaseStages,
+      appVersion: appVersion,
+    );
   }
 
   void invokeMethod(String name) {}

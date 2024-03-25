@@ -18,7 +18,9 @@ class BugsnagPerformanceSpanAttributes {
     setAttribute('bugsnag.app_start.type', appStartType);
     setAttribute('http.method', httpMethod);
     setAttribute('http.url', url);
-    additionalAttributes?.forEach((key, value) {setAttribute(key, value);});
+    additionalAttributes?.forEach((key, value) {
+      setAttribute(key, value);
+    });
   }
 
   void setAttribute(String key, dynamic value) {

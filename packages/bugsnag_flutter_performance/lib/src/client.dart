@@ -27,11 +27,15 @@ import 'span.dart';
 const _defaultEndpoint = 'https://otlp.bugsnag.com/v1/traces';
 
 abstract class BugsnagPerformanceClient {
-  Future<void> start(
-      {String? apiKey,
-      Uri? endpoint,
-      BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
-          networkRequestCallback});
+  Future<void> start({
+    String? apiKey,
+    Uri? endpoint,
+    BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
+        networkRequestCallback,
+    String? releaseStage,
+    List<String>? enabledReleaseStages,
+    String? appVersion,
+  });
 
   Future<void> measureRunApp(FutureOr<void> Function() runApp);
 
@@ -88,17 +92,25 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   @override
-  Future<void> start(
-      {String? apiKey,
-      Uri? endpoint,
-      BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
-          networkRequestCallback}) async {
+  Future<void> start({
+    String? apiKey,
+    Uri? endpoint,
+    BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
+        networkRequestCallback,
+    String? releaseStage,
+    List<String>? enabledReleaseStages,
+    String? appVersion,
+  }) async {
     WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
+      releaseStage: releaseStage ?? getDeploymentEnvironment(),
+      enabledReleaseStages: enabledReleaseStages,
+      appVersion: appVersion,
     );
+    _packageBuilder.setConfig(configuration);
     _initialExtraConfig.forEach((key, value) {
       setExtraConfig(key, value);
     });
@@ -110,6 +122,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
     _lifecycleListener?.startObserving(onAppBackgrounded: _onAppBackgrounded);
+  }
+
+  String getDeploymentEnvironment() {
+    final environment = Platform.environment['DEPLOYMENT_ENVIRONMENT'];
+    return environment ?? 'development';
   }
 
   @override
@@ -190,6 +207,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   void _sendBatch(SpanBatch batch) async {
+    if (!configuration!.releaseStageEnabled()) {
+      batch.drain();
+      return;
+    }
     await _updateSamplingProbabilityIfNeeded();
     var spans = batch.drain();
     if (_sampler != null) {

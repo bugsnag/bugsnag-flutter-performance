@@ -11,26 +11,40 @@ class BugsnagPerformance {
   static final BugsnagPerformanceClientImpl _client =
       BugsnagPerformanceClientImpl();
 
-  static Future<void> start(
-      {String? apiKey,
-      Uri? endpoint,
-      BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
-          networkRequestCallback}) async {
+  static Future<void> start({
+    required String apiKey,
+    Uri? endpoint,
+    BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
+        networkRequestCallback,
+    String? releaseStage,
+    List<String>? enabledReleaseStages,
+    String? appVersion,
+  }) async {
     return _client.start(
-        apiKey: apiKey,
-        endpoint: endpoint,
-        networkRequestCallback: networkRequestCallback);
+      apiKey: apiKey,
+      endpoint: endpoint,
+      networkRequestCallback: networkRequestCallback,
+      releaseStage: releaseStage,
+      enabledReleaseStages: enabledReleaseStages,
+      appVersion: appVersion,
+    );
   }
 
   static BugsnagPerformanceSpan startSpan(String name,
       {DateTime? startTime,
       BugsnagPerformanceSpanContext? parentContext,
-      bool? makeCurrentContext = true}) {
-    return _client.startSpan(name,
-        startTime: startTime,
-        parentContext: parentContext,
-        makeCurrentContext: makeCurrentContext,
-        attributes: BugsnagPerformanceSpanAttributes(category: "custom", isFirstClass: true));
+      bool? makeCurrentContext = true,
+      bool? isFirstClass = true}) {
+    return _client.startSpan(
+      name,
+      startTime: startTime,
+      parentContext: parentContext,
+      makeCurrentContext: makeCurrentContext,
+      attributes: BugsnagPerformanceSpanAttributes(
+        category: "custom",
+        isFirstClass: isFirstClass,
+      ),
+    );
   }
 
   static BugsnagPerformanceSpan startNetworkSpan(

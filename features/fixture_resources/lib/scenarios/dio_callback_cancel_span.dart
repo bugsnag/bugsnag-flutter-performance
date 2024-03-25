@@ -20,6 +20,6 @@ class DIOCallbackCancelSpanScenario extends Scenario {
         .client
         .get(FixtureConfig.MAZE_HOST.toString());
     await Future.delayed(const Duration(seconds: 10));
-    BugsnagPerformance.startSpan('DIOCallbackCancelSpanScenario').end();
+    doSimpleSpan('DIOCallbackCancelSpanScenario');
   }
 }

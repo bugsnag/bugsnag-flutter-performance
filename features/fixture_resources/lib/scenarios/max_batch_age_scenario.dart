@@ -6,7 +6,6 @@ class MaxBatchAgeScenario extends Scenario {
   Future<void> run() async {
     await startBugsnag();
     setMaxBatchAge(5000);
-    final span = BugsnagPerformance.startSpan('MaxBatchAgeScenario');
-    span.end();
+    doSimpleSpan('MaxBatchAgeScenario');
   }
 }
