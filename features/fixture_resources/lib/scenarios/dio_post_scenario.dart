@@ -1,4 +1,5 @@
-import 'package:bugsnag_flutter_dart_io_http_client/bugsnag_flutter_dart_io_http_client.dart' as dart_io;
+import 'package:bugsnag_flutter_dart_io_http_client/bugsnag_flutter_dart_io_http_client.dart'
+    as dart_io;
 import 'package:dio/dio.dart';
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:dio/io.dart';
@@ -11,7 +12,7 @@ class DIOPostScenario extends Scenario {
     await startBugsnag();
     setMaxBatchSize(1);
 
-    dart_io.addSubscriber(BugsnagPerformance.networkInstrumentation);
+    dart_io.addSubscriber(bugsnag_performance.networkInstrumentation);
     final dio = Dio();
     dio.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {

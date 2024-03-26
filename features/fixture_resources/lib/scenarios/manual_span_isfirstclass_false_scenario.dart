@@ -6,9 +6,11 @@ class ManualSpanIsFirstClassFalseScenario extends Scenario {
   Future<void> run() async {
     await startBugsnag();
     setMaxBatchSize(1);
-    BugsnagPerformance.startSpan(
-      'ManualSpanIsFirstClassFalseScenario',
-      isFirstClass: false,
-    ).end();
+    bugsnag_performance
+        .startSpan(
+          'ManualSpanIsFirstClassFalseScenario',
+          isFirstClass: false,
+        )
+        .end();
   }
 }

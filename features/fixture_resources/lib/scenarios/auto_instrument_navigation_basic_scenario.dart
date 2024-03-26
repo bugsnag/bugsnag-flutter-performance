@@ -8,10 +8,10 @@ import 'scenario.dart';
 class AutoInstrumentNavigationBasicScenario extends Scenario {
   @override
   Future<void> run() async {
-    BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
-    BugsnagPerformance.setExtraConfig("instrumentNavigation", true);
-    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 1000);
-    BugsnagPerformance.start(
+    bugsnag_performance.setExtraConfig("instrumentAppStart", false);
+    bugsnag_performance.setExtraConfig("instrumentNavigation", true);
+    bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 1000);
+    bugsnag_performance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
     setMaxBatchSize(1);

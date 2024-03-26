@@ -6,17 +6,17 @@ import 'scenario.dart';
 class HttpCallbackCancelSpanScenario extends Scenario {
   @override
   Future<void> run() async {
-    BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
-    await BugsnagPerformance.start(
+    bugsnag_performance.setExtraConfig("instrumentAppStart", false);
+    await bugsnag_performance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
         networkRequestCallback: (info) {
           return null;
         });
     setMaxBatchSize(1);
-    http.addSubscriber(BugsnagPerformance.networkInstrumentation);
+    http.addSubscriber(bugsnag_performance.networkInstrumentation);
     http.BugSnagHttpClient().get(FixtureConfig.MAZE_HOST);
     await Future.delayed(const Duration(seconds: 10));
-    BugsnagPerformance.startSpan('HttpCallbackCancelSpanScenario').end();
+    bugsnag_performance.startSpan('HttpCallbackCancelSpanScenario').end();
   }
 }

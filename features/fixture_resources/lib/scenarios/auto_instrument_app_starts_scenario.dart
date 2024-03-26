@@ -6,12 +6,12 @@ import 'scenario.dart';
 class AutoInstrumentAppStartsScenario extends Scenario {
   @override
   Future<void> run() async {
-    BugsnagPerformance.setExtraConfig("instrumentAppStart", true);
-    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 1000);
-    BugsnagPerformance.start(
+    bugsnag_performance.setExtraConfig("instrumentAppStart", true);
+    bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 1000);
+    bugsnag_performance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
-    BugsnagPerformance.measureRunApp(() async => await Duration(seconds: 1));
+    bugsnag_performance.measureRunApp(() async => await Duration(seconds: 1));
     setMaxBatchSize(4);
   }
 }

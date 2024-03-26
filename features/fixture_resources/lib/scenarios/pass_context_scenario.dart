@@ -8,10 +8,11 @@ class PassContextToNewZoneScenario extends Scenario {
   Future<void> run() async {
     await startBugsnag();
     setMaxBatchSize(3);
-    final span1 = BugsnagPerformance.startSpan('span1');
+    final span1 = bugsnag_performance.startSpan('span1');
     runZoned(() {
-      final span2 = BugsnagPerformance.startSpan('span2', parentContext: span1);
-      final span3 = BugsnagPerformance.startSpan('span3');
+      final span2 =
+          bugsnag_performance.startSpan('span2', parentContext: span1);
+      final span3 = bugsnag_performance.startSpan('span3');
       span2.end();
       span3.end();
     }, zoneValues: {});
