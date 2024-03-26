@@ -64,6 +64,7 @@ class BugsnagPerformance {
     await _client.measureRunApp(runApp);
   }
 
+  // Intended for internal-use only
   void setExtraConfig(String key, dynamic value) {
     _client.setExtraConfig(key, value);
   }
