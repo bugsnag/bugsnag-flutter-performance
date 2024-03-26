@@ -6,8 +6,8 @@ import 'scenario.dart';
 class HttpCallbackEditScenario extends Scenario {
   @override
   Future<void> run() async {
-    BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
-    await BugsnagPerformance.start(
+    bugsnag_performance.setExtraConfig("instrumentAppStart", false);
+    await bugsnag_performance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
         networkRequestCallback: (info) {
@@ -15,7 +15,7 @@ class HttpCallbackEditScenario extends Scenario {
           return info;
         });
     setMaxBatchSize(1);
-    http.addSubscriber(BugsnagPerformance.networkInstrumentation);
+    http.addSubscriber(bugsnag_performance.networkInstrumentation);
     http.BugSnagHttpClient().get(FixtureConfig.MAZE_HOST);
   }
 }
