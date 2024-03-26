@@ -13,7 +13,7 @@ export 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart'
 export 'src/span.dart' show BugsnagPerformanceSpan;
 
 class BugsnagPerformance {
-  BugsnagPerformance._();
+  BugsnagPerformance._internal();
 
   static final BugsnagPerformanceClientImpl _client =
       BugsnagPerformanceClientImpl();
@@ -26,7 +26,7 @@ class BugsnagPerformance {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     String? appVersion,
-  }) async {
+  }) {
     return _client.start(
       apiKey: apiKey,
       endpoint: endpoint,
@@ -48,7 +48,7 @@ class BugsnagPerformance {
       parentContext: parentContext,
       makeCurrentContext: makeCurrentContext,
       attributes: BugsnagPerformanceSpanAttributes(
-        category: "custom",
+        category: 'custom',
         isFirstClass: isFirstClass,
       ),
     );
