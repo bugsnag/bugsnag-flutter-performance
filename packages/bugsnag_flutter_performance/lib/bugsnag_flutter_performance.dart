@@ -75,4 +75,4 @@ class BugsnagPerformance {
 }
 
 // ignore: non_constant_identifier_names
-final BugsnagPerformance bugsnag_performance = BugsnagPerformance._();
+final BugsnagPerformance bugsnag_performance = BugsnagPerformance._internal();
