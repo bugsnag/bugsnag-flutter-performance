@@ -9,6 +9,7 @@ import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dar
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 
 class MockRetryQueue implements RetryQueue {
   @override
@@ -77,6 +78,11 @@ void main() {
                 timeAfterStart.nanosecondsSinceEpoch,
             isTrue);
         expect(span.endTime, isNull);
+      });
+    });
+    group('invalidApiKey', () {
+      test('should throw exception when invalid API key is used', () async {
+        expect(() => bugsnag_performance.start(apiKey: "invalid"), throwsA(isA<InvalidBugsnagApiKeyException>()));
       });
     });
     group('onAppBackgrounded', () {

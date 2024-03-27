@@ -16,6 +16,14 @@ export 'src/widgets/bugsnag_loading_indicator.dart'
 export 'src/widgets/bugsnag_navigation_container.dart'
     show BugsnagNavigationContainer;
 
+class InvalidBugsnagApiKeyException implements Exception {
+  String message;
+  InvalidBugsnagApiKeyException(this.message);
+
+  @override
+  String toString() => "InvalidApiKeyException: $message";
+}
+
 class BugsnagPerformance {
   BugsnagPerformance._internal();
 
@@ -31,6 +39,7 @@ class BugsnagPerformance {
     List<String>? enabledReleaseStages,
     String? appVersion,
   }) {
+    _validateApiKey(apiKey);
     return _client.start(
       apiKey: apiKey,
       endpoint: endpoint,
@@ -39,6 +48,14 @@ class BugsnagPerformance {
       enabledReleaseStages: enabledReleaseStages,
       appVersion: appVersion,
     );
+  }
+
+  void _validateApiKey(String apiKey) {
+    final RegExp regExp = RegExp(r'^[0-9a-fA-F]{32}$');
+    if(apiKey.isEmpty || !regExp.hasMatch(apiKey))
+    {
+      throw InvalidBugsnagApiKeyException("Invalid configuration. apiKey should be a 32-character hexademical string, got $apiKey");
+    }
   }
 
   BugsnagPerformanceSpan startSpan(String name,
