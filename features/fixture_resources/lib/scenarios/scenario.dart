@@ -7,6 +7,7 @@ import '../main.dart';
 
 abstract class Scenario {
   String? extraConfig;
+  void Function()? runCommandCallback;
 
   Future<void> clearPersistentData() async {
     print('[MazeRunner] Clearing Persistent Data...');
@@ -30,12 +31,17 @@ abstract class Scenario {
     bugsnag_performance.setExtraConfig("maxBatchAge", milliseconds);
   }
 
+  void setInstrumentsNavigation(bool value) {
+    bugsnag_performance.setExtraConfig("instrumentNavigation", value);
+  }
+
   Future<void> startBugsnag({
     String? releaseStage,
     List<String>? enabledReleaseStages,
     String? appVersion,
   }) async {
     bugsnag_performance.setExtraConfig("instrumentAppStart", false);
+    bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 1000);
     await bugsnag_performance.start(
       apiKey: '12312312312312312312312312312312',
       endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
