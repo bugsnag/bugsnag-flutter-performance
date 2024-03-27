@@ -12,6 +12,14 @@ export 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart'
     show bugsnag_performance;
 export 'src/span.dart' show BugsnagPerformanceSpan;
 
+class InvalidBugsnagApiKeyException implements Exception {
+  String message;
+  InvalidBugsnagApiKeyException([this.message = "Invalid Bugsnag Performance API Key"]);
+
+  @override
+  String toString() => "InvalidApiKeyException: $message";
+}
+
 class BugsnagPerformance {
   BugsnagPerformance._internal();
 
@@ -27,6 +35,7 @@ class BugsnagPerformance {
     List<String>? enabledReleaseStages,
     String? appVersion,
   }) {
+    _validateApiKey(apiKey);
     return _client.start(
       apiKey: apiKey,
       endpoint: endpoint,
@@ -35,6 +44,14 @@ class BugsnagPerformance {
       enabledReleaseStages: enabledReleaseStages,
       appVersion: appVersion,
     );
+  }
+
+  void _validateApiKey(String apiKey) {
+    final RegExp regExp = RegExp(r'^[0-9a-fA-F]{32}$');
+    if(apiKey.isEmpty || !regExp.hasMatch(apiKey))
+    {
+      throw InvalidBugsnagApiKeyException("API Key is not in the expected format, please double check your start code.");
+    }
   }
 
   BugsnagPerformanceSpan startSpan(String name,
