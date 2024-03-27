@@ -155,8 +155,8 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
       return;
     }
     final name = state.navigatorName != null
-        ? '[Navigation]/${state.navigatorName}/${state.name}'
-        : '[Navigation]/${state.name}';
+        ? '[Navigation]${state.navigatorName}/${state.name}'
+        : '[Navigation]${state.name}';
     state.viewLoadSpan = client.startSpan(
       name,
       parentContext: state.nearestViewLoadSpan(),
