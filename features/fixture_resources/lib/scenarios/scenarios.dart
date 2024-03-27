@@ -25,6 +25,7 @@ import 'custom_enabled_release_stage_scenario.dart';
 import 'disable_custom_release_stage_scenario.dart';
 import 'custom_app_version_scenario.dart';
 import 'manual_span_isfirstclass_false_scenario.dart';
+import 'get_current_context_scenario.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -71,4 +72,5 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('CustomAppVersionScenario', () => CustomAppVersionScenario()),
   ScenarioInfo('ManualSpanIsFirstClassFalseScenario',
       () => ManualSpanIsFirstClassFalseScenario()),
+  ScenarioInfo('GetCurrentContextScenario', () => GetCurrentContextScenario()),
 ];
