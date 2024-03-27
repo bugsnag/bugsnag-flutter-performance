@@ -20,15 +20,15 @@ abstract class Scenario {
   Future<void> run();
 
   void doSimpleSpan(String name) {
-    BugsnagPerformance.startSpan(name).end();
+    bugsnag_performance.startSpan(name).end();
   }
 
   void setMaxBatchSize(int size) {
-    BugsnagPerformance.setExtraConfig("maxBatchSize", size);
+    bugsnag_performance.setExtraConfig("maxBatchSize", size);
   }
 
   void setMaxBatchAge(int milliseconds) {
-    BugsnagPerformance.setExtraConfig("maxBatchAge", milliseconds);
+    bugsnag_performance.setExtraConfig("maxBatchAge", milliseconds);
   }
 
   void setInstrumentsNavigation(bool value) {
@@ -40,9 +40,9 @@ abstract class Scenario {
     List<String>? enabledReleaseStages,
     String? appVersion,
   }) async {
-    BugsnagPerformance.setExtraConfig("instrumentAppStart", false);
-    BugsnagPerformance.setExtraConfig("probabilityValueExpireTime", 1000);
-    await BugsnagPerformance.start(
+    bugsnag_performance.setExtraConfig("instrumentAppStart", false);
+    bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 1000);
+    await bugsnag_performance.start(
       apiKey: '12312312312312312312312312312312',
       endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
       releaseStage: releaseStage,

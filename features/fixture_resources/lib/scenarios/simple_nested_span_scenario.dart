@@ -6,8 +6,8 @@ class SimpleNestedSpanScenario extends Scenario {
   Future<void> run() async {
     await startBugsnag();
     setMaxBatchSize(2);
-    final span1 = BugsnagPerformance.startSpan('span1');
-    final span2 = BugsnagPerformance.startSpan('span2');
+    final span1 = bugsnag_performance.startSpan('span1');
+    final span2 = bugsnag_performance.startSpan('span2');
     span2.end();
     span1.end();
   }
