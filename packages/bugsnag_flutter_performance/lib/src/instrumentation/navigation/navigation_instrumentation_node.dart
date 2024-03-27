@@ -54,8 +54,9 @@ class WidgetInstrumentationNode {
   }
 
   WidgetInstrumentationNode? child(String name) {
-    final nodes = _children.where((element) => element.state?.name == name);
-    return nodes.isNotEmpty ? nodes.first : null;
+    final namedIndex =
+        _children.indexWhere((element) => element.state?.name == name);
+    return namedIndex != -1 ? _children[namedIndex] : null;
   }
 
   void dispose() {
@@ -73,7 +74,7 @@ class WidgetInstrumentationNode {
   }
 
   void _didFinishLoading() {
-    for (var element in _didFinishLoadingCallbacks) {
+    for (final element in _didFinishLoadingCallbacks) {
       element();
     }
     _didFinishLoadingCallbacks.clear();

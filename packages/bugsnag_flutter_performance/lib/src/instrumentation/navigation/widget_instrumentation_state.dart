@@ -19,9 +19,6 @@ class WidgetInstrumentationState {
     if (viewLoadSpan != null && viewLoadSpan!.isOpen()) {
       return viewLoadSpan;
     }
-    if (parent == null) {
-      return null;
-    }
-    return parent!.nearestViewLoadSpan();
+    return parent?.nearestViewLoadSpan();
   }
 }

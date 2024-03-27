@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 class BugsnagLoadingIndicator extends StatefulWidget {
   const BugsnagLoadingIndicator({
     super.key,
-    this.child = const Text(''),
+    this.child = const SizedBox.shrink(),
   });
   final Widget child;
 

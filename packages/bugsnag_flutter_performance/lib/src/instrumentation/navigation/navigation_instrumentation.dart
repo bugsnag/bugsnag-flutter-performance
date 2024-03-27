@@ -33,7 +33,7 @@ abstract class NavigationInstrumentation {
 
 class NavigationInstrumentationImpl implements NavigationInstrumentation {
   final BugsnagPerformanceClient client;
-  late final BugsnagClock clock;
+  final BugsnagClock clock;
 
   var _enabled = true;
 

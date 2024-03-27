@@ -26,13 +26,16 @@ class _BugsnagNavigationContainerState
   Widget build(BuildContext context) {
     _currentNode?.dispose();
     final parentNode = WidgetInstrumentationNode.of(context);
-    _currentNode = WidgetInstrumentationNode(
-        state: WidgetInstrumentationState(
-            name: widget.name ?? 'NavigationContainer',
-            startTime: BugsnagClockImpl.instance.now()));
-    parentNode.addChild(_currentNode!);
+    final newNode = WidgetInstrumentationNode(
+      state: WidgetInstrumentationState(
+        name: widget.name ?? 'NavigationContainer',
+        startTime: BugsnagClockImpl.instance.now(),
+      ),
+    );
+    _currentNode = newNode;
+    parentNode.addChild(newNode);
     return NavigationInstrumentationNodeProvider(
-      node: _currentNode!,
+      node: newNode,
       child: widget.child,
     );
   }
