@@ -193,3 +193,11 @@ Then('the span named {string} has no parent') do |spanName|
 
   Maze.check.true(span1['parentSpanId'] == nil);
 end
+
+Then('no span named {string} exists') do |span_name|
+  spans = spans_from_request_list(Maze::Server.list_for("traces"))
+
+  spans_with_name = spans.find_all { |span| span['name'].eql?(span_name) }
+
+  Maze.check.true(spans_with_name.length() == 0);
+end

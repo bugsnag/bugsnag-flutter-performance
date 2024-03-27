@@ -11,6 +11,10 @@ import 'bugsnag_flutter_performance.dart';
 export 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart'
     show bugsnag_performance;
 export 'src/span.dart' show BugsnagPerformanceSpan;
+export 'src/widgets/bugsnag_loading_indicator.dart'
+    show BugsnagLoadingIndicator;
+export 'src/widgets/bugsnag_navigation_container.dart'
+    show BugsnagNavigationContainer;
 
 class BugsnagPerformance {
   BugsnagPerformance._internal();

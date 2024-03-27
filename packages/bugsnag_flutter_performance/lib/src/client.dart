@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
-import 'package:bugsnag_flutter_performance/src/instrumentation/app_start_instrumentation.dart';
-import 'package:bugsnag_flutter_performance/src/instrumentation/navigation_instrumentation.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/app_start/app_start_instrumentation.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
@@ -204,7 +204,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _updateSamplingProbabilityIfNeeded(force: true);
     });
     BugsnagNavigatorObserverCallbacks.setup(
-      willShowNewRouteCallback: _navigationInstrumentation.willShowRoute,
+      didPushNewRouteCallback: _navigationInstrumentation.didPushNewRoute,
+      didReplaceRouteCallback: _navigationInstrumentation.didReplaceRoute,
+      didRemoveRouteCallback: _navigationInstrumentation.didRemoveRoute,
+      didPopRouteCallback: _navigationInstrumentation.didPopRoute,
     );
   }
 

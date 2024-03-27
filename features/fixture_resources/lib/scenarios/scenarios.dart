@@ -1,4 +1,8 @@
+import 'package:mazerunner/scenarios/auto_instrument_navigation_basic_defer_scenario.dart';
 import 'package:mazerunner/scenarios/auto_instrument_navigation_basic_scenario.dart';
+import 'package:mazerunner/scenarios/auto_instrument_navigation_complex_defer_scenario.dart';
+import 'package:mazerunner/scenarios/auto_instrument_navigation_nested_navigation_scenario.dart';
+import 'package:mazerunner/scenarios/auto_instrument_navigation_push_and_pop_scenario.dart';
 
 import 'auto_instrument_app_starts_scenario.dart';
 import 'dio_callback_cancel_span.dart';
@@ -73,4 +77,12 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('ManualSpanIsFirstClassFalseScenario',
       () => ManualSpanIsFirstClassFalseScenario()),
   ScenarioInfo('GetCurrentContextScenario', () => GetCurrentContextScenario()),
+  ScenarioInfo('AutoInstrumentNavigationBasicDeferScenario',
+      () => AutoInstrumentNavigationBasicDeferScenario()),
+  ScenarioInfo('AutoInstrumentNavigationComplexDeferScenario',
+      () => AutoInstrumentNavigationComplexDeferScenario()),
+  ScenarioInfo('AutoInstrumentNavigationNestedNavigationScenario',
+      () => AutoInstrumentNavigationNestedNavigationScenario()),
+  ScenarioInfo('AutoInstrumentNavigationPushAndPopScenario',
+      () => AutoInstrumentNavigationPushAndPopScenario())
 ];
