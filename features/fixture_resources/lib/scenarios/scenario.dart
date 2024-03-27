@@ -32,7 +32,7 @@ abstract class Scenario {
   }
 
   void setInstrumentsNavigation(bool value) {
-    BugsnagPerformance.setExtraConfig("instrumentNavigation", value);
+    bugsnag_performance.setExtraConfig("instrumentNavigation", value);
   }
 
   Future<void> startBugsnag({
