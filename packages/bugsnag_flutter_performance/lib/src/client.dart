@@ -49,6 +49,8 @@ abstract class BugsnagPerformanceClient {
 
   BugsnagPerformanceSpan startNetworkSpan(String url, String httpMethod);
 
+  BugsnagPerformanceSpanContext? getCurrentSpanContext();
+
   dynamic networkInstrumentation(dynamic);
 }
 
@@ -137,7 +139,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     bool? makeCurrentContext = true,
     BugsnagPerformanceSpanAttributes? attributes,
   }) {
-    final parent = parentContext ?? getCurrentContext();
+    final parent = parentContext ?? getCurrentSpanContext();
 
     final span = BugsnagPerformanceSpanImpl(
       name: name,
@@ -285,7 +287,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     }
   }
 
-  BugsnagPerformanceSpanContext? getCurrentContext() {
+  @override
+  BugsnagPerformanceSpanContext? getCurrentSpanContext() {
     return _getContextStack()?.getCurrentContext();
   }
 
