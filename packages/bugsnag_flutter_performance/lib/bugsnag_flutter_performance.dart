@@ -14,7 +14,7 @@ export 'src/span.dart' show BugsnagPerformanceSpan;
 
 class InvalidBugsnagApiKeyException implements Exception {
   String message;
-  InvalidBugsnagApiKeyException([this.message = "Invalid Bugsnag Performance API Key"]);
+  InvalidBugsnagApiKeyException(this.message);
 
   @override
   String toString() => "InvalidApiKeyException: $message";
@@ -50,7 +50,7 @@ class BugsnagPerformance {
     final RegExp regExp = RegExp(r'^[0-9a-fA-F]{32}$');
     if(apiKey.isEmpty || !regExp.hasMatch(apiKey))
     {
-      throw InvalidBugsnagApiKeyException("API Key is not in the expected format, please double check your start code.");
+      throw InvalidBugsnagApiKeyException("Invalid configuration. apiKey should be a 32-character hexademical string, got $apiKey");
     }
   }
 
