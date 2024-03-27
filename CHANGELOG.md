@@ -1,6 +1,6 @@
 Changelog
 =========
 
-## TBD
+## 1.0.0 (TBD)
 
-Initial preview release
+Initial release
