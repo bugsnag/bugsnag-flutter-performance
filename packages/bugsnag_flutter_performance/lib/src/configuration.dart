@@ -11,7 +11,7 @@ class BugsnagPerformanceConfiguration {
   int maxBatchAge = 60 * 1000; // milliseconds
   int probabilityRequestsPause = 30000;
   int probabilityValueExpireTime = 24 * 3600 * 1000;
-  bool instrumentAppStart = true;
+  bool autoInstrumentAppStart = true;
   bool instrumentNavigation = true;
   String? releaseStage;
   List<String>? enabledReleaseStages;
@@ -35,7 +35,7 @@ class BugsnagPerformanceConfiguration {
         probabilityValueExpireTime = value;
         break;
       case 'instrumentAppStart':
-        instrumentAppStart = value;
+        autoInstrumentAppStart = value;
         break;
       case 'instrumentNavigation':
         instrumentNavigation = value;

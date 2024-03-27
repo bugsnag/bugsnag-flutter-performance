@@ -115,7 +115,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       setExtraConfig(key, value);
     });
     _appStartInstrumentation
-        .setEnabled(configuration?.instrumentAppStart ?? false);
+        .setEnabled(configuration?.autoInstrumentAppStart ?? false);
     _navigationInstrumentation
         .setEnabled(configuration?.instrumentNavigation ?? false);
     _setup();
