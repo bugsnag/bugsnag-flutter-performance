@@ -13,7 +13,7 @@ class GetCurrentContextScenario extends Scenario {
     }
 
     final span1 = bugsnag_performance.startSpan('context');
-    if(bugsnag_performance.getCurrentSpanContext() == null) {
+    if(bugsnag_performance.getCurrentSpanContext() != null) {
       doSimpleSpan('part 2: not null');
       span1.end();
     }
