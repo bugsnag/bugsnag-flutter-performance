@@ -93,6 +93,10 @@ class BugsnagPerformance {
   dynamic networkInstrumentation(dynamic data) {
     return _client.networkInstrumentation(data);
   }
+
+  BugsnagPerformanceSpanContext? getCurrentSpanContext() {
+    return _client.getCurrentSpanContext();
+  }
 }
 
 // ignore: non_constant_identifier_names

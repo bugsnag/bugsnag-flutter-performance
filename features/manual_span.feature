@@ -29,3 +29,11 @@ Feature: Manual Spans
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span field "name" equals "MaxBatchAgeScenario"
+
+  Scenario: Get Current Context
+    When I run "GetCurrentContextScenario"
+    And I wait for 3 spans
+    * the span named "part 1: null" exists
+    * the span named "part 2: not null" exists
+    * the span named "context" is the parent of the span named "part 2: not null"    
+
