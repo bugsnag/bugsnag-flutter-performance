@@ -16,6 +16,6 @@ class HttpCallbackEditScenario extends Scenario {
         });
     setMaxBatchSize(1);
     http.addSubscriber(bugsnag_performance.networkInstrumentation);
-    http.BugSnagHttpClient().get(FixtureConfig.MAZE_HOST);
+    http.Client().get(FixtureConfig.MAZE_HOST);
   }
 }
