@@ -9,8 +9,8 @@ class CustomSpanTimeScenario extends Scenario {
     bugsnag_performance
         .startSpan(
       'custom-time',
-      startTime: DateTime(1985, 1, 1, 0, 0, 0, 0, 0),
+      startTime: DateTime.fromMicrosecondsSinceEpoch(473385600000000, isUtc: true)
     )
-    .end(endTime: DateTime(1986, 1, 1, 0, 0, 0, 0, 0));
+    .end(endTime: DateTime.fromMicrosecondsSinceEpoch(504921600000000, isUtc: true));
   }
 }
