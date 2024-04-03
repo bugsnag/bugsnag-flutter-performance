@@ -29,9 +29,7 @@ class BugsnagPerformanceSpanContextStackImpl
 }
 
 abstract class BugsnagPerformanceSpanContext {
-
-  static final BugsnagPerformanceSpanContext invalid =
-  DefaultSpanContext();
+  static final BugsnagPerformanceSpanContext invalid = DefaultSpanContext();
 
   TraceId get traceId;
   SpanId get spanId;

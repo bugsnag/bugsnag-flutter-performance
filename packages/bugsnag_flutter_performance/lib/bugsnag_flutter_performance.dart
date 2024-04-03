@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:bugsnag_flutter_performance/src/bugsnag_network_request_info.dart';
 import 'package:bugsnag_flutter_performance/src/client.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
-import 'package:bugsnag_flutter_performance/src/span_context.dart';
 
 import 'bugsnag_flutter_performance.dart';
 export 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart'
@@ -53,9 +52,9 @@ class BugsnagPerformance {
 
   void _validateApiKey(String apiKey) {
     final RegExp regExp = RegExp(r'^[0-9a-fA-F]{32}$');
-    if(apiKey.isEmpty || !regExp.hasMatch(apiKey))
-    {
-      throw InvalidBugsnagApiKeyException("Invalid configuration. apiKey should be a 32-character hexademical string, got $apiKey");
+    if (apiKey.isEmpty || !regExp.hasMatch(apiKey)) {
+      throw InvalidBugsnagApiKeyException(
+          "Invalid configuration. apiKey should be a 32-character hexademical string, got $apiKey");
     }
   }
 

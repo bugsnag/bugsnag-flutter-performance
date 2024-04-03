@@ -82,7 +82,8 @@ void main() {
     });
     group('invalidApiKey', () {
       test('should throw exception when invalid API key is used', () async {
-        expect(() => bugsnag_performance.start(apiKey: "invalid"), throwsA(isA<InvalidBugsnagApiKeyException>()));
+        expect(() => bugsnag_performance.start(apiKey: "invalid"),
+            throwsA(isA<InvalidBugsnagApiKeyException>()));
       });
     });
     group('onAppBackgrounded', () {

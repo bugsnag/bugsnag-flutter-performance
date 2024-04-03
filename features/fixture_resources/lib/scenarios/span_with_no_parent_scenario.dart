@@ -9,10 +9,12 @@ class SpanWithNoParentScenario extends Scenario {
 
     final parent = bugsnag_performance.startSpan('parent');
 
-    bugsnag_performance.startSpan(
-      'no-parent',
-      parentContext: BugsnagPerformanceSpanContext.invalid,
-    ).end();
+    bugsnag_performance
+        .startSpan(
+          'no-parent',
+          parentContext: BugsnagPerformanceSpanContext.invalid,
+        )
+        .end();
 
     parent.end();
   }
