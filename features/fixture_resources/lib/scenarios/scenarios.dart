@@ -31,6 +31,7 @@ import 'custom_app_version_scenario.dart';
 import 'manual_span_isfirstclass_false_scenario.dart';
 import 'get_current_context_scenario.dart';
 import 'check_network_callback_type_scenario.dart';
+import 'custom_span_time_scenario.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -88,4 +89,4 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => AutoInstrumentNavigationPushAndPopScenario()),
   ScenarioInfo('CheckNetworkCallbackTypeScenario',
       () => CheckNetworkCallbackTypeScenario()),
-];
+  ScenarioInfo('CustomSpanTimeScenario', () => CustomSpanTimeScenario()),];
