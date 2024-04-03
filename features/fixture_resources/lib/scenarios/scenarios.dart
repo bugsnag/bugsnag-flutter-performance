@@ -30,6 +30,7 @@ import 'disable_custom_release_stage_scenario.dart';
 import 'custom_app_version_scenario.dart';
 import 'manual_span_isfirstclass_false_scenario.dart';
 import 'get_current_context_scenario.dart';
+import 'check_network_callback_type_scenario.dart';
 import 'scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
@@ -84,5 +85,7 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('AutoInstrumentNavigationNestedNavigationScenario',
       () => AutoInstrumentNavigationNestedNavigationScenario()),
   ScenarioInfo('AutoInstrumentNavigationPushAndPopScenario',
-      () => AutoInstrumentNavigationPushAndPopScenario())
+      () => AutoInstrumentNavigationPushAndPopScenario()),
+  ScenarioInfo('CheckNetworkCallbackTypeScenario',
+      () => CheckNetworkCallbackTypeScenario()),
 ];
