@@ -136,4 +136,12 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
 
+  Scenario: Network callback type
+    When I run "CheckNetworkCallbackTypeScenario"
+    And I wait for 2 spans
+    Then the trace "Content-Type" header equals "application/json"
+    * the span named "GET" exists
+
+
+
     

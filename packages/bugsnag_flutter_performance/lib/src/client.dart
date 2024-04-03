@@ -139,7 +139,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     bool? makeCurrentContext = true,
     BugsnagPerformanceSpanAttributes? attributes,
   }) {
-    final parent = parentContext ?? getCurrentSpanContext();
+    final BugsnagPerformanceSpanContext? parent =
+        parentContext != BugsnagPerformanceSpanContext.invalid
+            ? parentContext ?? getCurrentSpanContext()
+            : null;
 
     final span = BugsnagPerformanceSpanImpl(
       name: name,
@@ -311,9 +314,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
     if (status == "started") {
       String url = data["url"];
+      final String method = data["http_method"];
       if (_networkRequestCallback != null) {
         BugsnagNetworkRequestInfo requestInfo =
-            BugsnagNetworkRequestInfo(url: url);
+            BugsnagNetworkRequestInfo(url: url, type: method);
         BugsnagNetworkRequestInfo? modifiedRequestInfo =
             _networkRequestCallback!(requestInfo);
         if (modifiedRequestInfo?.url == null ||
@@ -322,7 +326,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         }
         url = modifiedRequestInfo.url!;
       }
-      final span = startNetworkSpan(url, data['http_method']);
+      final span = startNetworkSpan(url, method);
       _networkSpans[requestId] = span;
     } else if (status == "complete") {
       final span = _networkSpans[requestId];

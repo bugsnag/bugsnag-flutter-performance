@@ -37,3 +37,17 @@ Feature: Manual Spans
     * the span named "part 2: not null" exists
     * the span named "context" is the parent of the span named "part 2: not null"    
 
+  Scenario: Custom timings
+    When I run "CustomSpanTimeScenario"
+    And I wait for 1 span
+    * every span field "startTimeUnixNano" equals "473385600000000000"
+    * every span field "endTimeUnixNano" equals "504921600000000000"
+
+  Scenario: Span With No Parent
+    When I run "SpanWithNoParentScenario"
+    And I wait for 2 spans
+    * the span named "parent" exists
+    * the span named "no-parent" exists
+    * the span named "no-parent" has no parent
+
+

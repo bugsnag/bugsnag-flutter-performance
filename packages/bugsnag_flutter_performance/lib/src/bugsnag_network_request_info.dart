@@ -1,4 +1,5 @@
 class BugsnagNetworkRequestInfo {
   String? url;
-  BugsnagNetworkRequestInfo({this.url});
+  String? type;
+  BugsnagNetworkRequestInfo({this.url, this.type});
 }

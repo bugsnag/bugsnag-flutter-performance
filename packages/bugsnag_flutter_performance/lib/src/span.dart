@@ -19,6 +19,7 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
     int? requestContentLength,
     int? responseContentLength,
     bool cancelled = false,
+    DateTime? endTime,
   });
   dynamic toJson();
 }
@@ -60,11 +61,12 @@ class BugsnagPerformanceSpanImpl
     int? requestContentLength,
     int? responseContentLength,
     bool cancelled = false,
+    DateTime? endTime,
   }) {
     if (!isOpen()) {
       return;
     }
-    endTime = clock.now();
+    this.endTime = endTime ?? clock.now();
     if (cancelled) {
       onCanceled(this);
       return;
