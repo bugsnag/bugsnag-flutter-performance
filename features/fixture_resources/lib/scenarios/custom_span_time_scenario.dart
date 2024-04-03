@@ -7,7 +7,10 @@ class CustomSpanTimeScenario extends Scenario {
     await startBugsnag();
     setMaxBatchSize(1);
     bugsnag_performance
-        .startSpan('custom-time', startTime: DateTime(1985))
-        .end(endTime: DateTime(1986));
+        .startSpan(
+      'custom-time',
+      startTime: DateTime(1985, 1, 1, 0, 0, 0, 0, 0),
+    )
+    .end(endTime: DateTime(1986, 1, 1, 0, 0, 0, 0, 0));
   }
 }
