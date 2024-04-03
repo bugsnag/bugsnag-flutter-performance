@@ -43,3 +43,11 @@ Feature: Manual Spans
     * every span field "startTimeUnixNano" equals "473385600000000000"
     * every span field "endTimeUnixNano" equals "504921600000000000"
 
+  Scenario: Span With No Parent
+    When I run "SpanWithNoParentScenario"
+    And I wait for 2 spans
+    * the span named "parent" exists
+    * the span named "no-parent" exists
+    * the span named "no-parent" has no parent
+
+

@@ -54,6 +54,8 @@ abstract class BugsnagPerformanceClient {
   dynamic networkInstrumentation(dynamic);
 }
 
+
+
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   BugsnagPerformanceConfiguration? configuration;
   late RetryQueueBuilder retryQueueBuilder;
@@ -139,7 +141,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     bool? makeCurrentContext = true,
     BugsnagPerformanceSpanAttributes? attributes,
   }) {
-    final parent = parentContext ?? getCurrentSpanContext();
+
+    final BugsnagPerformanceSpanContext? parent = parentContext != BugsnagPerformanceSpanContext.invalid
+        ? parentContext ?? getCurrentSpanContext()
+        : null;
 
     final span = BugsnagPerformanceSpanImpl(
       name: name,

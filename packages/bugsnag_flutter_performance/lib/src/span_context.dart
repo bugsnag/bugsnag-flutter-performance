@@ -29,7 +29,25 @@ class BugsnagPerformanceSpanContextStackImpl
 }
 
 abstract class BugsnagPerformanceSpanContext {
+
+  static final BugsnagPerformanceSpanContext invalid =
+  DefaultSpanContext();
+
   TraceId get traceId;
   SpanId get spanId;
   bool isOpen();
+}
+
+class DefaultSpanContext implements BugsnagPerformanceSpanContext {
+  @override
+  final TraceId traceId = BigInt.zero;
+  @override
+  final SpanId spanId = BigInt.zero;
+
+  DefaultSpanContext();
+
+  @override
+  bool isOpen() {
+    return false;
+  }
 }

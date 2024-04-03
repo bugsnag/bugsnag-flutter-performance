@@ -10,6 +10,8 @@ import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'bugsnag_flutter_performance.dart';
 export 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart'
     show bugsnag_performance;
+export 'package:bugsnag_flutter_performance/src/span_context.dart'
+    show BugsnagPerformanceSpanContext;
 export 'src/span.dart' show BugsnagPerformanceSpan;
 export 'src/widgets/bugsnag_loading_indicator.dart'
     show BugsnagLoadingIndicator;
@@ -26,7 +28,6 @@ class InvalidBugsnagApiKeyException implements Exception {
 
 class BugsnagPerformance {
   BugsnagPerformance._internal();
-
   static final BugsnagPerformanceClientImpl _client =
       BugsnagPerformanceClientImpl();
 
