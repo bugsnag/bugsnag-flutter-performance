@@ -16,7 +16,7 @@ class DIOPostScenario extends Scenario {
     final dio = Dio();
     dio.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {
-        return dart_io.BugsnagHttpClient();
+        return dart_io.HttpClient();
       },
     );
 

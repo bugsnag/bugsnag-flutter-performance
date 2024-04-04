@@ -15,7 +15,7 @@ class HttpCallbackCancelSpanScenario extends Scenario {
         });
     setMaxBatchSize(1);
     http.addSubscriber(bugsnag_performance.networkInstrumentation);
-    http.BugSnagHttpClient().get(FixtureConfig.MAZE_HOST);
+    http.Client().get(FixtureConfig.MAZE_HOST);
     await Future.delayed(const Duration(seconds: 10));
     bugsnag_performance.startSpan('HttpCallbackCancelSpanScenario').end();
   }

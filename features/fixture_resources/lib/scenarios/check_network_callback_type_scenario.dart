@@ -17,7 +17,7 @@ class CheckNetworkCallbackTypeScenario extends Scenario {
         });
     setMaxBatchSize(2);
     http.addSubscriber(bugsnag_performance.networkInstrumentation);
-    await http.BugSnagHttpClient().get(FixtureConfig.MAZE_HOST);
+    await http.Client().get(FixtureConfig.MAZE_HOST);
     doSimpleSpan(type);
   }
 }

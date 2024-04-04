@@ -22,7 +22,7 @@ class DIOCallbackCancelSpanScenario extends Scenario {
     final dio = Dio();
     dio.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {
-        return dart_io.BugsnagHttpClient();
+        return dart_io.HttpClient();
       },
     );
     dio.get(FixtureConfig.MAZE_HOST.toString());
