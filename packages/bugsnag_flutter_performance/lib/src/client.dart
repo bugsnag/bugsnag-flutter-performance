@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/app_start/app_start_instrumentation.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/bugsnag_performance_navigator_observer_callbacks.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
@@ -16,8 +17,6 @@ import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
-// ignore: implementation_imports
-import 'package:bugsnag_navigator_observer/src/bugsnag_navigator_observer_callbacks.dart';
 import 'package:flutter/widgets.dart';
 
 import 'bugsnag_network_request_info.dart';
@@ -206,7 +205,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         (timer) {
       _updateSamplingProbabilityIfNeeded(force: true);
     });
-    BugsnagNavigatorObserverCallbacks.setup(
+    BugsnagPerformanceNavigatorObserverCallbacks.setup(
       didPushNewRouteCallback: _navigationInstrumentation.didPushNewRoute,
       didReplaceRouteCallback: _navigationInstrumentation.didReplaceRoute,
       didRemoveRouteCallback: _navigationInstrumentation.didRemoveRoute,
