@@ -1,5 +1,5 @@
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
-import 'package:bugsnag_navigator_observer/bugsnag_flutter_navigator_observer.dart';
+
 import 'package:flutter/material.dart';
 import 'package:mazerunner/main.dart';
 
@@ -22,7 +22,7 @@ class AutoInstrumentNavigationNestedNavigationScenario extends Scenario {
     return BugsnagNavigationContainer(
       child: Navigator(
         observers: [
-          BugsnagNavigatorObserver(
+          BugsnagPerformanceNavigatorObserver(
               navigatorName: "nested_scenario_child_navigator")
         ],
         pages: [

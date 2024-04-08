@@ -4,11 +4,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:flutter/material.dart';
 import 'package:native_flutter_proxy/custom_proxy.dart';
 import 'package:native_flutter_proxy/native_proxy_reader.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:bugsnag_navigator_observer/bugsnag_flutter_navigator_observer.dart';
 import 'package:http/http.dart' as http;
 
 import 'scenarios/scenario.dart';
@@ -93,7 +93,7 @@ class MazeRunnerFlutterApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: const Color.fromARGB(255, 73, 73, 227),
       ),
-      navigatorObservers: [BugsnagNavigatorObserver()],
+      navigatorObservers: [BugsnagPerformanceNavigatorObserver()],
       home: FutureBuilder<String>(
         future: _getMazeRunnerUrl(),
         builder: (_, mazerunnerUrl) {
