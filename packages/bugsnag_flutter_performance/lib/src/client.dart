@@ -35,6 +35,7 @@ abstract class BugsnagPerformanceClient {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     String? appVersion,
+    bool? instrumentAppStart
   });
 
   Future<void> measureRunApp(FutureOr<void> Function() runApp);
@@ -102,6 +103,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     String? appVersion,
+    bool? instrumentAppStart
   }) async {
     WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
