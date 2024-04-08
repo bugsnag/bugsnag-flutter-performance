@@ -6,11 +6,7 @@ class BugsnagPerformanceNavigatorObserver extends NavigatorObserver {
   final String? navigatorName;
 
   /// Create and configure a `BugsnagPerformanceNavigatorObserver` to listen for navigation
-  /// events and leave breadcrumbs and/or set the context.
-  ///
-  /// If the [navigatorName] is `null` then the breadcrumbs will be suffixed
-  /// with `"navigator"` resulting in breadcrumbs such as `Route pushed on navigator`,
-  /// `Route replaced on navigator` and `Route removed from navigator`.
+  /// events.
   ///
   /// Typically you will configure this in you `MaterialApp`, `CupertinoApp`
   /// or `Navigator`:
