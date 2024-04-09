@@ -4,14 +4,16 @@ class BugsnagPerformanceConfiguration {
       this.endpoint,
       this.releaseStage,
       this.enabledReleaseStages,
-      this.appVersion});
+      this.appVersion,
+      this.instrumentAppStarts,
+      });
   String? apiKey;
   Uri? endpoint;
   int maxBatchSize = 100;
   int maxBatchAge = 60 * 1000; // milliseconds
   int probabilityRequestsPause = 30000;
   int probabilityValueExpireTime = 24 * 3600 * 1000;
-  bool instrumentAppStart = true;
+  bool? instrumentAppStarts;
   bool instrumentNavigation = true;
   String? releaseStage;
   List<String>? enabledReleaseStages;
@@ -35,7 +37,7 @@ class BugsnagPerformanceConfiguration {
         probabilityValueExpireTime = value;
         break;
       case 'instrumentAppStart':
-        instrumentAppStart = value;
+        instrumentAppStarts = value;
         break;
       case 'instrumentNavigation':
         instrumentNavigation = value;

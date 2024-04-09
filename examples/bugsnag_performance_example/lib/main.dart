@@ -6,6 +6,7 @@ const apiKey = 'YOUR_API_KEY_HERE';
 
 Future<void> main() async {
   bugsnag_performance.start(apiKey: apiKey);
+  bugsnag_performance.start(apiKey: apiKey, instrumentAppStart: true);
   http.addSubscriber(bugsnag_performance.networkInstrumentation);
   bugsnag_performance.measureRunApp(() async => runApp(const MainApp()));
 }
