@@ -40,7 +40,6 @@ class BugsnagPerformance {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     String? appVersion,
-    bool? instrumentAppStarts,
   }) {
     _validateApiKey(apiKey);
     return _client.start(
@@ -50,7 +49,6 @@ class BugsnagPerformance {
       releaseStage: releaseStage,
       enabledReleaseStages: enabledReleaseStages,
       appVersion: appVersion,
-      instrumentAppStarts: instrumentAppStarts,
     );
   }
 
