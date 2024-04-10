@@ -42,7 +42,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.bugsnag_flutter_performance
+        package: com.bugsnag.flutter_performance
         pluginClass: BugsnagFlutterPerformancePlugin
       ios:
         pluginClass: BugsnagFlutterPerformancePlugin
