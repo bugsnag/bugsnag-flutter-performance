@@ -154,22 +154,12 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
     if (!_enabled || state.viewLoadSpan != null) {
       return;
     }
-    final name = state.navigatorName != null
-        ? '[Navigation]${state.navigatorName}/${state.name}'
-        : '[Navigation]${state.name}';
-    state.viewLoadSpan = client.startSpan(
-      name,
+    state.viewLoadSpan = client.startNavigationSpan(
+      routeName: state.name,
+      navigatorName: state.navigatorName,
       parentContext: state.nearestViewLoadSpan(),
       startTime: state.startTime,
-      attributes: BugsnagPerformanceSpanAttributes(
-        category: 'navigation',
-        additionalAttributes: {
-          'bugsnag.navigation.route': state.name,
-          'bugsnag.navigation.navigator': state.navigatorName,
-          'bugsnag.navigation.triggered_by': triggeredBy,
-          'bugsnag.navigation.previous_route': previousRoute,
-        },
-      ),
+      triggeredBy: triggeredBy,
     );
   }
 

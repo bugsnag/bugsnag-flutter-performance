@@ -81,6 +81,21 @@ class BugsnagPerformance {
     return _client.startNetworkSpan(url, httpMethod.toUpperCase());
   }
 
+  BugsnagPerformanceSpan startNavigationSpan({
+    required String routeName,
+    String? navigatorName,
+    String? previousRoute,
+    BugsnagPerformanceSpanContext? parentContext,
+  }) {
+    return _client.startNavigationSpan(
+      routeName: routeName,
+      triggeredBy: 'manual',
+      navigatorName: navigatorName,
+      previousRoute: previousRoute,
+      parentContext: parentContext,
+    );
+  }
+
   Future<void> measureRunApp(
     FutureOr<void> Function() runApp,
   ) async {
