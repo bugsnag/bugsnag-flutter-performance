@@ -17,6 +17,7 @@ import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'bugsnag_network_request_info.dart';
@@ -358,6 +359,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   bool _isEnabledOnCurrentPlatform() {
-    return !kIsWeb
+    return !kIsWeb;
   }
 }
