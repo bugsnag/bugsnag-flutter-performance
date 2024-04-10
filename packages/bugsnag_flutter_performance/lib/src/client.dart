@@ -102,6 +102,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     List<String>? enabledReleaseStages,
     String? appVersion,
   }) async {
+    if (!_isEnabledOnCurrentPlatform()) {
+      _appStartInstrumentation.setEnabled(false);
+      _navigationInstrumentation.setEnabled(false);
+      return;
+    }
     WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
     configuration = BugsnagPerformanceConfiguration(
@@ -350,5 +355,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _potentiallyOpenSpans.remove(key);
     }
     _potentiallyOpenSpans.clear();
+  }
+
+  bool _isEnabledOnCurrentPlatform() {
+    return !kIsWeb
   }
 }
