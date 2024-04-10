@@ -156,6 +156,7 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
     state.viewLoadSpan = client.startNavigationSpan(
       routeName: state.name,
       navigatorName: state.navigatorName,
+      previousRoute: previousRoute,
       parentContext: state.nearestViewLoadSpan(),
       startTime: state.startTime,
       triggeredBy: triggeredBy,
