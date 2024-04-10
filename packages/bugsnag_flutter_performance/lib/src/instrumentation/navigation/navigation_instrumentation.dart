@@ -2,7 +2,6 @@ import 'package:bugsnag_flutter_performance/src/client.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_node.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_state.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
-import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
