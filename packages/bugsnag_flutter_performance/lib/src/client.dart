@@ -17,6 +17,7 @@ import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader_client.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'bugsnag_network_request_info.dart';
@@ -102,6 +103,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     List<String>? enabledReleaseStages,
     String? appVersion,
   }) async {
+    if (!_isEnabledOnCurrentPlatform()) {
+      _appStartInstrumentation.setEnabled(false);
+      _navigationInstrumentation.setEnabled(false);
+      return;
+    }
     WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
     configuration = BugsnagPerformanceConfiguration(
@@ -350,5 +356,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _potentiallyOpenSpans.remove(key);
     }
     _potentiallyOpenSpans.clear();
+  }
+
+  bool _isEnabledOnCurrentPlatform() {
+    return !kIsWeb;
   }
 }
