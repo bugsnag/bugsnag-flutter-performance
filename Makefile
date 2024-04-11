@@ -57,6 +57,17 @@ endif
 	@git clean -df
 	cd packages/bugsnag_flutter_performance && flutter pub publish
 
+
+staging: staging
+	mkdir -p staging/bugsnag_flutter_performance
+	cd packages/bugsnag_flutter_performance && cp -a . ../../staging/bugsnag_flutter_performance
+	rm -f staging/bugsnag_flutter_performance/pubspec.lock
+	cp -r example staging/bugsnag_flutter_performance/example
+	cp README.md staging/bugsnag_flutter_performance/.
+	cp LICENSE staging/bugsnag_flutter_performance/.
+	cp CHANGELOG.md staging/bugsnag_flutter_performance/.
+	sed -i '' -e '1,2d' staging/bugsnag_flutter_performance/CHANGELOG.md
+
 aar:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) build aar --suppress-analytics
 
