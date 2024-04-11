@@ -1,0 +1,109 @@
+agents:
+  queue: macos-12-arm
+
+steps:
+
+  - label: ":test_tube: 3.10.0"
+    timeout_in_minutes: 10
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    commands:
+      - make test
+
+  - label: ":lint-roller: 3.10.0"
+    timeout_in_minutes: 10
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    commands:
+      - make lint
+
+  #
+  # iOS
+  #
+  - label: Build iOS Test Fixture
+    key: "ios-fixture-3-10-0"
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    commands:
+      - bundle install
+      - pod repo update trunk
+      - features/scripts/generate_fixture.sh
+      - features/scripts/build_ios_app.sh
+    plugins:
+      artifacts#v1.5.0:
+        upload:
+          - "features/fixtures/mazerunner/build/ios/ipa/mazerunner.ipa"
+
+  - label: ':bitbar: iOS 14 end-to-end tests'
+    depends_on: "ios-fixture-3-10-0"
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    agents:
+      queue: opensource
+    plugins:
+      artifacts#v1.5.0:
+        download: "features/fixtures/mazerunner/build/ios/ipa/mazerunner.ipa"
+        upload: "maze_output/failed/**/*"
+        upload: "maze_output/passed/**/*"
+      docker-compose#v4.7.0:
+        pull: maze-runner
+        run: maze-runner
+        service-ports: true
+        command:
+          - "--app=/app/features/fixtures/mazerunner/build/ios/ipa/mazerunner.ipa"
+          - "--farm=bb"
+          - "--device=IOS_14|IOS_15|IOS_16"
+          - "--no-tunnel"
+          - "--aws-public-ip"
+          - "--fail-fast"
+    concurrency: 25
+    concurrency_group: 'bitbar'
+    concurrency_method: eager
+
+
+  #
+  # Android
+  #
+  - label: Build Android Test Fixture
+    key: "android-fixture-3-10-0"
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      JAVA_VERSION: "11"
+    commands:
+      - bundle install
+      - features/scripts/generate_fixture.sh
+      - features/scripts/build_android_app.sh
+    plugins:
+      artifacts#v1.5.0:
+        upload:
+          - "features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
+
+  - label: ':bitbar: Android 12 end-to-end tests 3.10.0'
+    depends_on: "android-fixture-3-10-0"
+    timeout_in_minutes: 20
+    env:
+      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+    agents:
+      queue: opensource
+    plugins:
+      artifacts#v1.5.0:
+        download: "features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
+        upload: "maze_output/failed/**/*"
+        upload: "maze_output/passed/**/*"
+      docker-compose#v4.7.0:
+        pull: maze-runner
+        run: maze-runner
+        service-ports: true
+        command:
+          - "--app=features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
+          - "--farm=bb"
+          - "--device=ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13"
+          - "--no-tunnel"
+          - "--aws-public-ip"
+          - "--fail-fast"
+    concurrency: 25
+    concurrency_group: 'bitbar'
+    concurrency_method: eager

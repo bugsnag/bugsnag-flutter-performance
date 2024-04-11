@@ -25,3 +25,11 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+Package.resolved
+Podfile.lock
+maze_output/
+
+# ignored as fixtures are generated
+features/fixtures
+bb.ready
