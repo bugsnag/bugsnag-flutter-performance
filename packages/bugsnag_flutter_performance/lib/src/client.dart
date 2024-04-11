@@ -49,6 +49,15 @@ abstract class BugsnagPerformanceClient {
 
   BugsnagPerformanceSpan startNetworkSpan(String url, String httpMethod);
 
+  BugsnagPerformanceSpan startNavigationSpan({
+    required String routeName,
+    required String triggeredBy,
+    String? navigatorName,
+    String? previousRoute,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  });
+
   BugsnagPerformanceSpanContext? getCurrentSpanContext();
 
   dynamic networkInstrumentation(dynamic);
@@ -309,6 +318,33 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         makeCurrentContext: false,
         attributes: BugsnagPerformanceSpanAttributes(
             category: "network", httpMethod: httpMethod, url: url));
+  }
+
+  @override
+  BugsnagPerformanceSpan startNavigationSpan({
+    required String routeName,
+    required String triggeredBy,
+    String? navigatorName,
+    String? previousRoute,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  }) {
+    final name = navigatorName != null
+        ? '[Navigation]$navigatorName/$routeName'
+        : '[Navigation]$routeName';
+    return startSpan(
+      name,
+      parentContext: parentContext,
+      attributes: BugsnagPerformanceSpanAttributes(
+        category: 'navigation',
+        additionalAttributes: {
+          'bugsnag.navigation.route': routeName,
+          'bugsnag.navigation.navigator': navigatorName,
+          'bugsnag.navigation.triggered_by': triggeredBy,
+          'bugsnag.navigation.previous_route': previousRoute,
+        },
+      ),
+    );
   }
 
   @override

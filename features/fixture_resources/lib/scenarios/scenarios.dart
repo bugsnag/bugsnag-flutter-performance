@@ -8,6 +8,7 @@ import 'auto_instrument_app_starts_scenario.dart';
 import 'dio_callback_cancel_span.dart';
 import 'dio_callback_edit_scenario.dart';
 import 'initial_p_scenario.dart';
+import 'manual_navigation_span_scenario.dart';
 import 'manual_span_scenario.dart';
 import 'probability_expiry_scenario.dart';
 import 'start_sdk_default.dart';
@@ -92,4 +93,6 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => CheckNetworkCallbackTypeScenario()),
   ScenarioInfo('CustomSpanTimeScenario', () => CustomSpanTimeScenario()),
   ScenarioInfo('SpanWithNoParentScenario', () => SpanWithNoParentScenario()),
+  ScenarioInfo(
+      'ManualNavigationSpanScenario', () => ManualNavigationSpanScenario()),
 ];

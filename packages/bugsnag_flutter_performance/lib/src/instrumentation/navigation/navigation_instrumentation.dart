@@ -2,7 +2,6 @@ import 'package:bugsnag_flutter_performance/src/client.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_node.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_state.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
-import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -154,22 +153,13 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
     if (!_enabled || state.viewLoadSpan != null) {
       return;
     }
-    final name = state.navigatorName != null
-        ? '[Navigation]${state.navigatorName}/${state.name}'
-        : '[Navigation]${state.name}';
-    state.viewLoadSpan = client.startSpan(
-      name,
+    state.viewLoadSpan = client.startNavigationSpan(
+      routeName: state.name,
+      navigatorName: state.navigatorName,
+      previousRoute: previousRoute,
       parentContext: state.nearestViewLoadSpan(),
       startTime: state.startTime,
-      attributes: BugsnagPerformanceSpanAttributes(
-        category: 'navigation',
-        additionalAttributes: {
-          'bugsnag.navigation.route': state.name,
-          'bugsnag.navigation.navigator': state.navigatorName,
-          'bugsnag.navigation.triggered_by': triggeredBy,
-          'bugsnag.navigation.previous_route': previousRoute,
-        },
-      ),
+      triggeredBy: triggeredBy,
     );
   }
 
