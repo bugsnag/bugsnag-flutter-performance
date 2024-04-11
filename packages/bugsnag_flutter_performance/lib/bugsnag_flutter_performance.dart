@@ -81,8 +81,8 @@ class BugsnagPerformance {
     return _client.startNetworkSpan(url, httpMethod.toUpperCase());
   }
 
-  BugsnagPerformanceSpan startNavigationSpan({
-    required String routeName,
+  BugsnagPerformanceSpan startNavigationSpan(
+    String routeName, {
     String? navigatorName,
     String? previousRoute,
     BugsnagPerformanceSpanContext? parentContext,

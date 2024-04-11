@@ -8,7 +8,7 @@ class ManualNavigationSpanScenario extends Scenario {
     setMaxBatchSize(1);
     bugsnag_performance
         .startNavigationSpan(
-          routeName: 'navigationScenarioRoute',
+          'navigationScenarioRoute',
           navigatorName: 'customNavigator',
           previousRoute: 'navigationScenarioPreviousRoute',
         )
