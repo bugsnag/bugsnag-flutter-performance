@@ -11,7 +11,7 @@
 [![Documentation](https://img.shields.io/badge/documentation-latest-blue.svg)](https://docs.bugsnag.com/performance/flutter/)
 [![Build status](https://badge.buildkite.com/700ab6c9d7b51c72fa52459ad023b503692bde8bf5337b93a0.svg?branch=main)](https://buildkite.com/bugsnag/bugsnag-flutter-performance)
 
-Monitor the start-up, navigation and network requests of your game and see the results in your [BugSnag](https://www.bugsnag.com) dashboard.
+Monitor the start-up, navigation and network requests of Flutter apps running on iOS and Android and see the results in your [BugSnag](https://www.bugsnag.com) dashboard.
 
 ## Features
 
