@@ -7,7 +7,7 @@ labels: ''
 assignees: ''
 
 ---
-Please checkout our [documentation](https://docs.bugsnag.com/performance/flutter/) for guides, references and tutorials.
+Please checkout our [documentation](https://docs.bugsnag.com/performance/integration-guides/flutter/) for guides, references and tutorials.
 
 If you have questions about your integration please contact us at [support@bugsnag.com](mailto:support@bugsnag.com).
 
