@@ -1,32 +1,30 @@
 ---
 name: Bug report
 about: Create a report to help us improve the library
-title: ""
-labels: ""
-assignees: ""
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 <!-- Before raising, please check if somebody else has already reported your issue. -->
 
 ### Describe the bug
-
 A clear and concise description of what the bug is.
 
 ### Steps to reproduce
-
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
 ### Environment
-
-- BugSnag Performance version:
-- BugSnag version (if any):
-- Flutter version:
-- Flutter-first app or native app with Flutter component(s):
-- iOS/Android version:
-- Simulator/emulator or physical device:
+* Bugsnag Performance library version:
+ * Bugsnag Error Monitoring library version (if any):
+ * Flutter version:
+* Flutter app or native app with flutter module:
+* iOS/Android version:
+* Simulator/emulator or physical device:
 
 <!--
   Below are a few approaches you might take to communicate the issue, in
@@ -51,5 +49,4 @@ A clear and concise description of what the bug is.
 ```
 
 ```
-
 </details>
