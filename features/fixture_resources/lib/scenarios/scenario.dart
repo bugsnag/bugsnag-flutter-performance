@@ -35,6 +35,10 @@ abstract class Scenario {
     bugsnag_performance.setExtraConfig("instrumentNavigation", value);
   }
 
+  void setInstrumentsViewLoad(bool value) {
+    bugsnag_performance.setExtraConfig("instrumentViewLoad", value);
+  }
+
   Future<void> startBugsnag({
     String? releaseStage,
     List<String>? enabledReleaseStages,

@@ -6,6 +6,8 @@ import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.d
 import 'package:bugsnag_flutter_performance/src/instrumentation/app_start/app_start_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/bugsnag_performance_navigator_observer_callbacks.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/measured_widget_callbacks.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/view_load_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
@@ -58,6 +60,19 @@ abstract class BugsnagPerformanceClient {
     DateTime? startTime,
   });
 
+  BugsnagPerformanceSpan startViewLoadSpan({
+    required String viewName,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  });
+
+  BugsnagPerformanceSpan startViewLoadPhaseSpan({
+    required String viewName,
+    required String phase,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  });
+
   BugsnagPerformanceSpanContext? getCurrentSpanContext();
 
   dynamic networkInstrumentation(dynamic);
@@ -78,6 +93,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
   late final NavigationInstrumentation _navigationInstrumentation;
+  late final ViewLoadInstrumentation _viewLoadInstrumentation;
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
   BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
       _networkRequestCallback;
@@ -97,6 +113,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _lifecycleListener =
         lifecycleListener ?? BugsnagLifecycleListenerImpl.instance;
     _navigationInstrumentation = NavigationInstrumentationImpl(
+      client: this,
+      clock: _clock,
+    );
+    _viewLoadInstrumentation = ViewLoadInstrumentationImpl(
       client: this,
       clock: _clock,
     );
@@ -134,6 +154,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         .setEnabled(configuration?.instrumentAppStart ?? false);
     _navigationInstrumentation
         .setEnabled(configuration?.instrumentNavigation ?? false);
+    _viewLoadInstrumentation
+        .setEnabled(configuration?.instrumentViewLoad ?? false);
     _setup();
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
@@ -225,6 +247,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       didReplaceRouteCallback: _navigationInstrumentation.didReplaceRoute,
       didRemoveRouteCallback: _navigationInstrumentation.didRemoveRoute,
       didPopRouteCallback: _navigationInstrumentation.didPopRoute,
+    );
+    MeasuredWidgetCallbacks.setup(
+      willBuildCallback: _viewLoadInstrumentation.willBuildView,
+      didBuildCallback: _viewLoadInstrumentation.didBuildView,
     );
   }
 
@@ -342,6 +368,48 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
           'bugsnag.navigation.navigator': navigatorName,
           'bugsnag.navigation.triggered_by': triggeredBy,
           'bugsnag.navigation.previous_route': previousRoute,
+        },
+      ),
+    );
+  }
+
+  @override
+  BugsnagPerformanceSpan startViewLoadSpan({
+    required String viewName,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  }) {
+    return startSpan(
+      '[ViewLoad]FlutterWidget/$viewName',
+      parentContext: parentContext,
+      startTime: startTime,
+      attributes: BugsnagPerformanceSpanAttributes(
+        category: 'view_load',
+        additionalAttributes: {
+          'bugsnag.view.type': 'FlutterWidget',
+          'bugsnag.view.name': viewName,
+        },
+      ),
+    );
+  }
+
+  @override
+  BugsnagPerformanceSpan startViewLoadPhaseSpan({
+    required String viewName,
+    required String phase,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  }) {
+    return startSpan(
+      '[ViewLoadPhase]FlutterWidget/$viewName/$phase',
+      parentContext: parentContext,
+      startTime: startTime,
+      attributes: BugsnagPerformanceSpanAttributes(
+        category: 'view_load_phase',
+        phase: phase,
+        additionalAttributes: {
+          'bugsnag.view.type': 'FlutterWidget',
+          'bugsnag.view.name': viewName,
         },
       ),
     );
