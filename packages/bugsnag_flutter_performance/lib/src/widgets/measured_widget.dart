@@ -4,6 +4,7 @@ import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/measur
 import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/view_load_instrumentation_state.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:bugsnag_flutter_performance/src/widgets/widget_instrumentation_node_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class MeasuredWidget extends StatefulWidget {
@@ -62,6 +63,11 @@ class _MeasuredWidgetContent extends StatefulWidget {
 
   @override
   State<_MeasuredWidgetContent> createState() => _MeasuredWidgetContentState();
+
+  @override
+  StatefulElement createElement() {
+    return _MeasuredWidgetContentElement(this);
+  }
 }
 
 class _MeasuredWidgetContentState extends State<_MeasuredWidgetContent> {
@@ -77,11 +83,27 @@ class _MeasuredWidgetContentState extends State<_MeasuredWidgetContent> {
       state: _state!,
       context: context,
     );
-    final content = widget.builder(context);
+    return widget.builder(context);
+  }
+}
+
+class _MeasuredWidgetContentElement extends StatefulElement {
+  _MeasuredWidgetContentElement(super.widget);
+
+  var didBuild = false;
+
+  @override
+  Element? updateChild(Element? child, Widget? newWidget, Object? newSlot) {
+    final result = super.updateChild(child, newWidget, newSlot);
+    final instrumentationState = (state as _MeasuredWidgetContentState)._state;
+    if (didBuild || instrumentationState == null) {
+      return result;
+    }
     measuredWidgetCallbacks.didBuildWidget(
-      state: _state!,
-      context: context,
+      state: instrumentationState,
+      context: this,
     );
-    return content;
+    didBuild = true;
+    return result;
   }
 }
