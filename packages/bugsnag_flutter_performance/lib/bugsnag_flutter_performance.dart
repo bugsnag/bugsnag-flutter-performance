@@ -18,6 +18,7 @@ export 'src/widgets/bugsnag_navigation_container.dart'
     show BugsnagNavigationContainer;
 export 'src/instrumentation/navigation/bugsnag_performance_navigator_observer.dart'
     show BugsnagPerformanceNavigatorObserver;
+export 'src/widgets/measured_widget.dart' show MeasuredWidget;
 
 class InvalidBugsnagApiKeyException implements Exception {
   String message;

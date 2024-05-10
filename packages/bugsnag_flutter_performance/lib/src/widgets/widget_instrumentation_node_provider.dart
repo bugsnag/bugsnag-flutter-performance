@@ -1,8 +1,8 @@
-import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_node.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_node.dart';
 import 'package:flutter/widgets.dart';
 
-class NavigationInstrumentationNodeProvider extends InheritedWidget {
-  const NavigationInstrumentationNodeProvider({
+class WidgetInstrumentationNodeProvider extends InheritedWidget {
+  const WidgetInstrumentationNodeProvider({
     super.key,
     required this.node,
     required super.child,
@@ -12,7 +12,7 @@ class NavigationInstrumentationNodeProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(
-      covariant NavigationInstrumentationNodeProvider oldWidget) {
+      covariant WidgetInstrumentationNodeProvider oldWidget) {
     return oldWidget.node != node;
   }
 }
