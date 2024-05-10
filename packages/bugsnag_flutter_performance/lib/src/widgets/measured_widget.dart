@@ -7,7 +7,7 @@ import 'package:bugsnag_flutter_performance/src/widgets/widget_instrumentation_n
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class MeasuredWidget extends StatefulWidget {
+class MeasuredWidget extends StatelessWidget {
   const MeasuredWidget({
     super.key,
     required this.name,
@@ -18,41 +18,49 @@ class MeasuredWidget extends StatefulWidget {
   final Widget Function(BuildContext) builder;
 
   @override
-  State<MeasuredWidget> createState() => _MeasuredWidgetState();
+  Widget build(BuildContext context) {
+    if (context is _MeasuredWidgetElement) {
+      context._currentNode?.dispose();
+      final parentNode = WidgetInstrumentationNode.of(context);
+      final newNode = WidgetInstrumentationNode(
+        state: WidgetInstrumentationState(
+          name: name,
+          startTime: BugsnagClockImpl.instance.now(),
+        ),
+      );
+      context._currentNode = newNode;
+      parentNode.addChild(newNode);
+      return WidgetInstrumentationNodeProvider(
+        node: newNode,
+        child: _MeasuredWidgetContent(
+          name: name,
+          builder: builder,
+        ),
+      );
+    } else {
+      return builder(context);
+    }
+  }
+
+  @override
+  StatelessElement createElement() {
+    return _MeasuredWidgetElement(this);
+  }
 }
 
-class _MeasuredWidgetState extends State<MeasuredWidget> {
+class _MeasuredWidgetElement extends StatelessElement {
+  _MeasuredWidgetElement(super.widget);
+
   WidgetInstrumentationNode? _currentNode;
 
   @override
-  Widget build(BuildContext context) {
+  void unmount() {
     _currentNode?.dispose();
-    final parentNode = WidgetInstrumentationNode.of(context);
-    final newNode = WidgetInstrumentationNode(
-      state: WidgetInstrumentationState(
-        name: widget.name,
-        startTime: BugsnagClockImpl.instance.now(),
-      ),
-    );
-    _currentNode = newNode;
-    parentNode.addChild(newNode);
-    return WidgetInstrumentationNodeProvider(
-      node: newNode,
-      child: _MeasuredWidgetContent(
-        name: widget.name,
-        builder: widget.builder,
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _currentNode?.dispose();
-    super.dispose();
+    super.unmount();
   }
 }
 
-class _MeasuredWidgetContent extends StatefulWidget {
+class _MeasuredWidgetContent extends StatelessWidget {
   const _MeasuredWidgetContent({
     required this.name,
     required this.builder,
@@ -62,45 +70,40 @@ class _MeasuredWidgetContent extends StatefulWidget {
   final Widget Function(BuildContext) builder;
 
   @override
-  State<_MeasuredWidgetContent> createState() => _MeasuredWidgetContentState();
+  Widget build(BuildContext context) {
+    if (context is _MeasuredWidgetContentElement) {
+      context._state ??= ViewLoadInstrumentationState(
+        name: name,
+        startTime: BugsnagClockImpl.instance.now(),
+      );
+      measuredWidgetCallbacks.willBuildWidget(
+        state: context._state!,
+        context: context,
+      );
+    }
+    return builder(context);
+  }
 
   @override
-  StatefulElement createElement() {
+  StatelessElement createElement() {
     return _MeasuredWidgetContentElement(this);
   }
 }
 
-class _MeasuredWidgetContentState extends State<_MeasuredWidgetContent> {
-  ViewLoadInstrumentationState? _state;
-
-  @override
-  Widget build(BuildContext context) {
-    _state ??= ViewLoadInstrumentationState(
-      name: widget.name,
-      startTime: BugsnagClockImpl.instance.now(),
-    );
-    measuredWidgetCallbacks.willBuildWidget(
-      state: _state!,
-      context: context,
-    );
-    return widget.builder(context);
-  }
-}
-
-class _MeasuredWidgetContentElement extends StatefulElement {
+class _MeasuredWidgetContentElement extends StatelessElement {
   _MeasuredWidgetContentElement(super.widget);
 
+  ViewLoadInstrumentationState? _state;
   var didBuild = false;
 
   @override
   Element? updateChild(Element? child, Widget? newWidget, Object? newSlot) {
     final result = super.updateChild(child, newWidget, newSlot);
-    final instrumentationState = (state as _MeasuredWidgetContentState)._state;
-    if (didBuild || instrumentationState == null) {
+    if (didBuild || _state == null) {
       return result;
     }
     measuredWidgetCallbacks.didBuildWidget(
-      state: instrumentationState,
+      state: _state!,
       context: this,
     );
     didBuild = true;
