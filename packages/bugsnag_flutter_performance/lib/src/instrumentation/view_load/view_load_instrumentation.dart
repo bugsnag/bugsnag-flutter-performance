@@ -77,7 +77,7 @@ class ViewLoadInstrumentationImpl implements ViewLoadInstrumentation {
       if (node.isLoading()) {
         state.loadingSpan = client.startViewLoadPhaseSpan(
           viewName: state.name,
-          phase: 'loading',
+          phase: 'loading content',
           parentContext: viewLoadSpan,
         );
         node.addDidFinishLoadingCallback(() {
