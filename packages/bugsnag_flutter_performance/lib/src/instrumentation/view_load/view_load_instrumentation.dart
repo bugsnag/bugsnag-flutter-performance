@@ -41,8 +41,10 @@ class ViewLoadInstrumentationImpl implements ViewLoadInstrumentation {
     if (!_enabled || state.viewLoadSpan != null) {
       return;
     }
+    final node = WidgetInstrumentationNode.of(context);
     final viewLoadSpan = client.startViewLoadSpan(
       viewName: state.name,
+      parentContext: node.state?.nearestNavigationSpan(),
     );
     state.viewLoadSpan = viewLoadSpan;
     state.buildingSpan = client.startViewLoadPhaseSpan(
