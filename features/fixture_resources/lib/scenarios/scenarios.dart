@@ -8,6 +8,7 @@ import 'package:mazerunner/scenarios/auto_instrument_view_load_basic_scenario.da
 import 'package:mazerunner/scenarios/auto_instrument_view_load_nested_scenario.dart';
 
 import 'auto_instrument_app_starts_scenario.dart';
+import 'auto_instrument_navigation_with_view_load_scenario.dart';
 import 'dio_callback_cancel_span.dart';
 import 'dio_callback_edit_scenario.dart';
 import 'initial_p_scenario.dart';
@@ -104,4 +105,6 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => AutoInstrumentViewLoadBasicDeferScenario()),
   ScenarioInfo('AutoInstrumentViewLoadNestedScenario',
       () => AutoInstrumentViewLoadNestedScenario()),
+  ScenarioInfo('AutoInstrumentNavigationWithViewLoadScenario',
+      () => AutoInstrumentNavigationWithViewLoadScenario()),
 ];
