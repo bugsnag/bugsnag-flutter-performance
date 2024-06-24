@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bugsnag_bridge/bugsnag_bridge.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/app_start/app_start_instrumentation.dart';
@@ -130,6 +131,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         networkRequestCallback,
     String? releaseStage,
     List<String>? enabledReleaseStages,
+    List<String>? tracePropagationUrls,
     String? appVersion,
   }) async {
     if (!_isEnabledOnCurrentPlatform()) {
@@ -144,6 +146,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
       releaseStage: releaseStage ?? getDeploymentEnvironment(),
       enabledReleaseStages: enabledReleaseStages,
+      tracePropagationUrls: tracePropagationUrls,
       appVersion: appVersion,
     );
     _packageBuilder.setConfig(configuration);
@@ -251,6 +254,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     MeasuredWidgetCallbacks.setup(
       willBuildCallback: _viewLoadInstrumentation.willBuildView,
       didBuildCallback: _viewLoadInstrumentation.didBuildView,
+    );
+    HttpHeadersProviderCallbacks.setup(
+      httpRequestHeadersCallback: _requestHeaders,
     );
   }
 
@@ -451,6 +457,45 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _networkSpans.remove(requestId);
     }
     return true;
+  }
+
+  Map<String, String>? _requestHeaders(
+    String url,
+    String requestId,
+  ) {
+    if (!_shouldAddTraceHeader(url)) {
+      return null;
+    }
+    Map<String, String> result = {};
+    final span = _networkSpans[requestId] ?? getCurrentSpanContext();
+    if (span != null && span is BugsnagPerformanceSpanImpl) {
+      result['traceparent'] = _buildTraceparentHeader(
+        traceId: span.encodedTraceId,
+        parentSpanId: span.encodedSpanId,
+        sampled: span.isSampled,
+      );
+    }
+    return result;
+  }
+
+  bool _shouldAddTraceHeader(String url) {
+    final tracePropagationUrls = configuration?.tracePropagationUrls;
+    if (tracePropagationUrls != null && tracePropagationUrls.isNotEmpty) {
+      return tracePropagationUrls.indexWhere((element) {
+            final regex = RegExp(element);
+            return regex.hasMatch(url);
+          }) !=
+          -1;
+    }
+    return true;
+  }
+
+  String _buildTraceparentHeader({
+    required String traceId,
+    required String parentSpanId,
+    required bool sampled,
+  }) {
+    return '00-$traceId-$parentSpanId-${sampled ? '01' : '00'}';
   }
 
   void _onAppBackgrounded() {
