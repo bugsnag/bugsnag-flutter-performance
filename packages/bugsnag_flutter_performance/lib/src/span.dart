@@ -135,7 +135,10 @@ class BugsnagPerformanceSpanImpl
     return endTime == null;
   }
 
+  @override
   String get encodedTraceId => _encodeTraceId(traceId);
+
+  @override
   String get encodedSpanId => _encodeSpanId(spanId);
 }
 
