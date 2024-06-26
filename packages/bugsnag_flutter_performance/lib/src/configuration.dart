@@ -4,6 +4,7 @@ class BugsnagPerformanceConfiguration {
       this.endpoint,
       this.releaseStage,
       this.enabledReleaseStages,
+      this.tracePropagationUrls,
       this.appVersion});
   String? apiKey;
   Uri? endpoint;
@@ -14,6 +15,7 @@ class BugsnagPerformanceConfiguration {
   bool instrumentAppStart = true;
   bool instrumentNavigation = true;
   bool instrumentViewLoad = true;
+  List<RegExp>? tracePropagationUrls;
   String? releaseStage;
   List<String>? enabledReleaseStages;
   String? appVersion;
@@ -44,6 +46,8 @@ class BugsnagPerformanceConfiguration {
       case 'instrumentViewLoad':
         instrumentViewLoad = value;
         break;
+      case 'tracePropagationUrls':
+        tracePropagationUrls = value;
       case 'maxBatchAge':
         maxBatchAge = value;
         break;

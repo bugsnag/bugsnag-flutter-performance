@@ -65,6 +65,19 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HttpCallbackCancelSpanScenario"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "bugsnag.span.category" equals "custom"
 
+  Scenario: Http client trace parent header
+    When I run "HttpClientTraceparentScenario"
+
+    And I wait to receive 1 reflection
+    * the reflection "traceparent" header matches the regex "^00-[A-Fa-f0-9]{32}-[A-Fa-f0-9]{16}-01"
+
+  Scenario: Http client trace propagation urls header
+    When I run "HttpClientTracePropagationUrlsScenario"
+
+    And I wait to receive 2 reflections
+    * the reflection "traceparent" header is not present
+    * I discard the oldest reflection
+    * the reflection "traceparent" header matches the regex "^00-[A-Fa-f0-9]{32}-[A-Fa-f0-9]{16}-01"
 
     #DIO WRAPPER
 
@@ -141,6 +154,12 @@ Feature: Network Spans
     And I wait for 2 spans
     Then the trace "Content-Type" header equals "application/json"
     * the span named "GET" exists
+
+  Scenario: Dart io trace parent header
+    When I run "DartIoTraceparentScenario"
+
+    And I wait to receive 1 reflection
+    * the reflection "traceparent" header matches the regex "^00-[A-Fa-f0-9]{32}-[A-Fa-f0-9]{16}-01"
 
 
 
