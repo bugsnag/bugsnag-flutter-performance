@@ -21,9 +21,8 @@ dependencies:
   uuid: ^4.0.0
   connectivity_plus: ^5.0.2
   bugsnag_bridge:
-    git: # TODO: Replace once bugsnag_bridge is published
+    git:
       url: https://github.com/bugsnag/bugsnag-flutter-common
-      ref: robert/bugsnag-flutter-bridge
       path: packages/bugsnag-flutter-bridge
 
 dev_dependencies:

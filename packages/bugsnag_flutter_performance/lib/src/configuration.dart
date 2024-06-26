@@ -15,7 +15,7 @@ class BugsnagPerformanceConfiguration {
   bool instrumentAppStart = true;
   bool instrumentNavigation = true;
   bool instrumentViewLoad = true;
-  List<String>? tracePropagationUrls;
+  List<RegExp>? tracePropagationUrls;
   String? releaseStage;
   List<String>? enabledReleaseStages;
   String? appVersion;

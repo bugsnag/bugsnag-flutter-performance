@@ -40,6 +40,7 @@ class BugsnagPerformance {
         networkRequestCallback,
     String? releaseStage,
     List<String>? enabledReleaseStages,
+    List<RegExp>? tracePropagationUrls,
     String? appVersion,
   }) {
     _validateApiKey(apiKey);
@@ -49,6 +50,7 @@ class BugsnagPerformance {
       networkRequestCallback: networkRequestCallback,
       releaseStage: releaseStage,
       enabledReleaseStages: enabledReleaseStages,
+      tracePropagationUrls: tracePropagationUrls,
       appVersion: appVersion,
     );
   }

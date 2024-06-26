@@ -131,7 +131,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         networkRequestCallback,
     String? releaseStage,
     List<String>? enabledReleaseStages,
-    List<String>? tracePropagationUrls,
+    List<RegExp>? tracePropagationUrls,
     String? appVersion,
   }) async {
     if (!_isEnabledOnCurrentPlatform()) {
@@ -459,16 +459,17 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     return true;
   }
 
-  Map<String, String>? _requestHeaders(
+  Future<Map<String, String>?> _requestHeaders(
     String url,
     String requestId,
-  ) {
+  ) async {
     if (!_shouldAddTraceHeader(url)) {
-      return null;
+      return Future.value(null);
     }
     Map<String, String> result = {};
     final span = _networkSpans[requestId] ?? getCurrentSpanContext();
     if (span != null && span is BugsnagPerformanceSpanImpl) {
+      await _sampler?.sample(span);
       result['traceparent'] = _buildTraceparentHeader(
         traceId: span.encodedTraceId,
         parentSpanId: span.encodedSpanId,
@@ -481,8 +482,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   bool _shouldAddTraceHeader(String url) {
     final tracePropagationUrls = configuration?.tracePropagationUrls;
     if (tracePropagationUrls != null && tracePropagationUrls.isNotEmpty) {
-      return tracePropagationUrls.indexWhere((element) {
-            final regex = RegExp(element);
+      return tracePropagationUrls.indexWhere((regex) {
             return regex.hasMatch(url);
           }) !=
           -1;
