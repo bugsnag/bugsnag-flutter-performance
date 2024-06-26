@@ -482,10 +482,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   bool _shouldAddTraceHeader(String url) {
     final tracePropagationUrls = configuration?.tracePropagationUrls;
     if (tracePropagationUrls != null && tracePropagationUrls.isNotEmpty) {
-      return tracePropagationUrls.indexWhere((regex) {
-            return regex.hasMatch(url);
-          }) !=
-          -1;
+      return tracePropagationUrls.any((regex) => regex.hasMatch(url));
     }
     return true;
   }
