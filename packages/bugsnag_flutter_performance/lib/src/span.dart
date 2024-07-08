@@ -21,6 +21,8 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
     bool cancelled = false,
     DateTime? endTime,
   });
+  String get encodedTraceId;
+  String get encodedSpanId;
   dynamic toJson();
 }
 
@@ -51,6 +53,7 @@ class BugsnagPerformanceSpanImpl
   final DateTime startTime;
   late final BugsnagPerformanceSpanAttributes attributes;
   DateTime? endTime;
+  var isSampled = false;
   late final void Function(BugsnagPerformanceSpan) onEnded;
   late final void Function(BugsnagPerformanceSpan) onCanceled;
   late final BugsnagClock clock;
@@ -102,8 +105,8 @@ class BugsnagPerformanceSpanImpl
         'name': name,
         if (endTime != null)
           'endTimeUnixNano': endTime!.nanosecondsSinceEpoch.toString(),
-        'traceId': _encodeTraceId(traceId),
-        'spanId': _encodeSpanId(spanId),
+        'traceId': encodedTraceId,
+        'spanId': encodedSpanId,
         'kind': 1,
         if (parentSpanId != null)
           'parentSpanId': _encodeSpanId(parentSpanId ?? BigInt.zero),
@@ -131,6 +134,12 @@ class BugsnagPerformanceSpanImpl
   bool isOpen() {
     return endTime == null;
   }
+
+  @override
+  String get encodedTraceId => _encodeTraceId(traceId);
+
+  @override
+  String get encodedSpanId => _encodeSpanId(spanId);
 }
 
 String _encodeSpanId(SpanId spanId) {

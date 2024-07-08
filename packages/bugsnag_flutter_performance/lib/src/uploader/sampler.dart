@@ -64,6 +64,7 @@ class SamplerImpl implements Sampler {
       (span as BugsnagPerformanceSpanImpl?)
           ?.updateSamplingProbability(samplingProbability);
     }
+    (span as BugsnagPerformanceSpanImpl?)?.isSampled = isSampled;
     return isSampled;
   }
 

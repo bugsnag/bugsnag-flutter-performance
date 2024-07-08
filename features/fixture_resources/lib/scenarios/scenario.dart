@@ -42,6 +42,7 @@ abstract class Scenario {
   Future<void> startBugsnag({
     String? releaseStage,
     List<String>? enabledReleaseStages,
+    List<RegExp>? tracePropagationUrls,
     String? appVersion,
   }) async {
     bugsnag_performance.setExtraConfig("instrumentAppStart", false);
@@ -51,6 +52,7 @@ abstract class Scenario {
       endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
       releaseStage: releaseStage,
       enabledReleaseStages: enabledReleaseStages,
+      tracePropagationUrls: tracePropagationUrls,
       appVersion: appVersion,
     );
   }

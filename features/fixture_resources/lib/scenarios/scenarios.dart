@@ -6,8 +6,12 @@ import 'package:mazerunner/scenarios/auto_instrument_navigation_push_and_pop_sce
 import 'package:mazerunner/scenarios/auto_instrument_view_load_basic_defer_scenario.dart';
 import 'package:mazerunner/scenarios/auto_instrument_view_load_basic_scenario.dart';
 import 'package:mazerunner/scenarios/auto_instrument_view_load_nested_scenario.dart';
+import 'package:mazerunner/scenarios/dart_io_traceparent_scenario.dart';
+import 'package:mazerunner/scenarios/http_client_trace_propagation_urls_scenario.dart';
+import 'package:mazerunner/scenarios/http_client_traceparent_scenario.dart';
 
 import 'auto_instrument_app_starts_scenario.dart';
+import 'auto_instrument_navigation_with_view_load_scenario.dart';
 import 'dio_callback_cancel_span.dart';
 import 'dio_callback_edit_scenario.dart';
 import 'initial_p_scenario.dart';
@@ -104,4 +108,11 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => AutoInstrumentViewLoadBasicDeferScenario()),
   ScenarioInfo('AutoInstrumentViewLoadNestedScenario',
       () => AutoInstrumentViewLoadNestedScenario()),
+  ScenarioInfo('AutoInstrumentNavigationWithViewLoadScenario',
+      () => AutoInstrumentNavigationWithViewLoadScenario()),
+  ScenarioInfo(
+      'HttpClientTraceparentScenario', () => HttpClientTraceparentScenario()),
+  ScenarioInfo('DartIoTraceparentScenario', () => DartIoTraceparentScenario()),
+  ScenarioInfo('HttpClientTracePropagationUrlsScenario',
+      () => HttpClientTracePropagationUrlsScenario()),
 ];

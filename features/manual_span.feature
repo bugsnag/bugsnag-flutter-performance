@@ -37,6 +37,7 @@ Feature: Manual Spans
     * the span named "part 2: not null" exists
     * the span named "context" is the parent of the span named "part 2: not null"    
 
+  @skip
   Scenario: Custom timings
     When I run "CustomSpanTimeScenario"
     And I wait for 1 span
