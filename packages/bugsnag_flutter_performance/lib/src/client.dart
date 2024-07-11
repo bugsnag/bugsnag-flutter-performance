@@ -258,6 +258,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     HttpHeadersProviderCallbacks.setup(
       httpRequestHeadersCallback: _requestHeaders,
     );
+    BugsnagContextProviderCallbacks.setup(
+      currentTraceContextCallback: _currentTraceContext,
+    );
   }
 
   void _sendBatch(SpanBatch batch) async {
@@ -493,6 +496,17 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     required bool sampled,
   }) {
     return '00-$traceId-$parentSpanId-${sampled ? '01' : '00'}';
+  }
+
+  BugsnagTraceContext? _currentTraceContext() {
+    final context = spanContextStackExpando[Zone.current]?.getCurrentContext();
+    if (context != null && context is BugsnagPerformanceSpan) {
+      return BugsnagTraceContext(
+        spanId: context.encodedSpanId,
+        traceId: context.encodedTraceId,
+      );
+    }
+    return null;
   }
 
   void _onAppBackgrounded() {

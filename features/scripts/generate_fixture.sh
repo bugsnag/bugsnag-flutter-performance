@@ -61,6 +61,8 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_dart_io_ht
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" dio
 
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" bugsnag_flutter
+
 echo "update min sdk version in android gradle file"
 
 sed -i '' 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 19/g' "$ANDROID_GRADLE"
