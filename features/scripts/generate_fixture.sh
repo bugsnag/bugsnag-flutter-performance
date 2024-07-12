@@ -83,6 +83,10 @@ echo "Add Android internet permission"
 
 sed -i '' "s/<\/application>/<\/application>\n<uses-permission android:name='android.permission.INTERNET'\/\>/g" "$ANDROID_MANIFEST"
 
+echo "Add Android usesCleartextTraffic value"
+
+sed -i '' "s/android:icon=\"@mipmap\/ic_launcher\"\>/android:icon=\"@mipmap\/ic_launcher\"\n\t\tandroid:usesCleartextTraffic=\"true\"\>/g" "$ANDROID_MANIFEST"
+
 echo "Copy test fixture code"
 
 rm -rf $DART_TEST_LOCATION

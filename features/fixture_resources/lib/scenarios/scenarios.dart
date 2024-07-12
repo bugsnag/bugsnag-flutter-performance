@@ -6,6 +6,7 @@ import 'package:mazerunner/scenarios/auto_instrument_navigation_push_and_pop_sce
 import 'package:mazerunner/scenarios/auto_instrument_view_load_basic_defer_scenario.dart';
 import 'package:mazerunner/scenarios/auto_instrument_view_load_basic_scenario.dart';
 import 'package:mazerunner/scenarios/auto_instrument_view_load_nested_scenario.dart';
+import 'package:mazerunner/scenarios/correlation_null_scenario.dart';
 import 'package:mazerunner/scenarios/correlation_simple_scenario.dart';
 import 'package:mazerunner/scenarios/dart_io_traceparent_scenario.dart';
 import 'package:mazerunner/scenarios/http_client_trace_propagation_urls_scenario.dart';
@@ -117,4 +118,5 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('HttpClientTracePropagationUrlsScenario',
       () => HttpClientTracePropagationUrlsScenario()),
   ScenarioInfo('CorrelationSimpleScenario', () => CorrelationSimpleScenario()),
+  ScenarioInfo('CorrelationNullScenario', () => CorrelationNullScenario()),
 ];
