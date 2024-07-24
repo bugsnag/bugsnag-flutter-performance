@@ -5,6 +5,7 @@ homepage: https://www.bugsnag.com/
 documentation: https://docs.bugsnag.com/performance/flutter/
 repository: https://github.com/bugsnag/bugsnag-flutter-performance
 issue_tracker: https://github.com/bugsnag/bugsnag-flutter-performance/issues
+publish_to: none
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -20,7 +21,8 @@ dependencies:
   path_provider: ^2.0.2
   uuid: ^4.0.0
   connectivity_plus: ^5.0.2
-  bugsnag_bridge: ^2.0.0
+  bugsnag_bridge:
+    path: ../bugsnag-flutter-common/packages/bugsnag_bridge
 
 dev_dependencies:
   flutter_test:

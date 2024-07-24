@@ -9,9 +9,9 @@ FIXTURE_LOCATION=features/fixtures/mazerunner
 
 PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance"
 
-HTTP_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-http-client" 
+HTTP_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-common/packages/bugsnag_http_client"
 
-DART_IO_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-dart-io-http-client" 
+DART_IO_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-common/packages/bugsnag_flutter_dart_io_http_client"
 
 
 
