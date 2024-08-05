@@ -62,11 +62,10 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
           _expireDate = expireDate;
         }
       } catch (e) {
-        // print('Error when reading sampling probability file: $e');
         try {
           await file.delete();
         } catch (error) {
-          // print('Error when deleting sampling probability file: $error');
+          // deliberately ignored
         }
       }
     }
