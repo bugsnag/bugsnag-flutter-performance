@@ -82,7 +82,7 @@ steps:
         upload:
           - "features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
 
-  - label: ':browserstack: Android 12 end-to-end tests 3.10.0'
+  - label: ':bitbar: Android 12 end-to-end tests 3.10.0'
     depends_on: "android-fixture-3-10-0"
     timeout_in_minutes: 20
     env:
@@ -100,12 +100,12 @@ steps:
         service-ports: true
         command:
           - "--app=features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
-          - "--farm=bs"
-          - "--device=ANDROID_12"
+          - "--farm=bb"
+          - "--device=ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13"
           - "--no-tunnel"
           - "--aws-public-ip"
-          - "--appium-version=1.22.0"
           - "--fail-fast"
+          - "--appium-version=1.22"
     concurrency: 25
-    concurrency_group: 'browserstack-app'
+    concurrency_group: 'bitbar'
     concurrency_method: eager

@@ -22,8 +22,6 @@ services:
       BUILDKITE_STEP_KEY:
       MAZE_BUGSNAG_API_KEY:
       MAZE_REPEATER_API_KEY:
-      BROWSER_STACK_USERNAME:
-      BROWSER_STACK_ACCESS_KEY:
     ports:
       - "9000-9499:9339"
     volumes:
