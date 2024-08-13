@@ -22,6 +22,7 @@ endif
 	sed -i '' "s/## TBD/## $(VERSION) ($(shell date '+%Y-%m-%d'))/" CHANGELOG.md
 	sed -i '' "s/^version: .*/version: $(VERSION)/" packages/bugsnag_flutter_performance/pubspec.yaml
 
+BSG_BRIDGE_VERSION:=$(shell grep 'version: ' packages/bugsnag-flutter-common/packages/bugsnag_bridge/pubspec.yaml | grep -o '[0-9].*')
 staging: staging
 	mkdir -p staging/bugsnag_flutter_performance
 	cd packages/bugsnag_flutter_performance && cp -a . ../../staging/bugsnag_flutter_performance
@@ -31,6 +32,8 @@ staging: staging
 	cp LICENSE staging/bugsnag_flutter_performance/.
 	cp CHANGELOG.md staging/bugsnag_flutter_performance/.
 	sed -i '' -e '1,2d' staging/bugsnag_flutter_performance/CHANGELOG.md
+	sed -i '' "s/^  bugsnag_bridge:.*/  bugsnag_bridge: ^$(BSG_BRIDGE_VERSION)/" staging/bugsnag_flutter_performance/pubspec.yaml
+	sed -i '' "s/path:.*/ /;s/publish_to: none/ /" staging/bugsnag_flutter_performance/pubspec.yaml
 
 aar:
 	cd packages/bugsnag_flutter_performance && $(FLUTTER_BIN) build aar --suppress-analytics

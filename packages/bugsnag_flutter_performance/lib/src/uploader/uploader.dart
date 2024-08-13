@@ -45,7 +45,7 @@ class UploaderImpl implements Uploader {
       request.setHeaders(headers);
       request.setBody(package.payload);
       final response = await request.send();
-      sampler.handleResponseHeaders(response.headers);
+      await sampler.handleResponseHeaders(response.headers);
       return _getResult(response.statusCode);
     } on SocketException catch (_) {
       return RequestResult.retriableFailure;

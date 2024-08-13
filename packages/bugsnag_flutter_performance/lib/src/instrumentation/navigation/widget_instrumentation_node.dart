@@ -82,7 +82,7 @@ class WidgetInstrumentationNode {
 
   static WidgetInstrumentationNode of(BuildContext context) {
     final widget = context.dependOnInheritedWidgetOfExactType<
-        NavigationInstrumentationNodeProvider>();
+        WidgetInstrumentationNodeProvider>();
     return widget != null ? widget.node : appRootInstrumentationNode;
   }
 }

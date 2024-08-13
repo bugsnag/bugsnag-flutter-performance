@@ -1,5 +1,5 @@
 import 'package:bugsnag_flutter_performance/src/client.dart';
-import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_node.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_node.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_state.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
@@ -150,14 +150,14 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
     required String triggeredBy,
     String? previousRoute,
   }) {
-    if (!_enabled || state.viewLoadSpan != null) {
+    if (!_enabled || state.navigationSpan != null) {
       return;
     }
-    state.viewLoadSpan = client.startNavigationSpan(
+    state.navigationSpan = client.startNavigationSpan(
       routeName: state.name,
       navigatorName: state.navigatorName,
       previousRoute: previousRoute,
-      parentContext: state.nearestViewLoadSpan(),
+      parentContext: state.nearestNavigationSpan(),
       startTime: state.startTime,
       triggeredBy: triggeredBy,
     );
@@ -170,7 +170,7 @@ class NavigationInstrumentationImpl implements NavigationInstrumentation {
     if (!_enabled) {
       return;
     }
-    final span = state.viewLoadSpan;
+    final span = state.navigationSpan;
     if (span is BugsnagPerformanceSpanImpl) {
       span.attributes.setAttribute(
         'bugsnag.navigation.ended_by',

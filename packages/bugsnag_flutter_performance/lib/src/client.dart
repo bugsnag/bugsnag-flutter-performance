@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bugsnag_bridge/bugsnag_bridge.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/resource_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/app_start/app_start_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/bugsnag_performance_navigator_observer_callbacks.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/measured_widget_callbacks.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/view_load_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
@@ -58,6 +61,19 @@ abstract class BugsnagPerformanceClient {
     DateTime? startTime,
   });
 
+  BugsnagPerformanceSpan startViewLoadSpan({
+    required String viewName,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  });
+
+  BugsnagPerformanceSpan startViewLoadPhaseSpan({
+    required String viewName,
+    required String phase,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  });
+
   BugsnagPerformanceSpanContext? getCurrentSpanContext();
 
   dynamic networkInstrumentation(dynamic);
@@ -78,6 +94,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   late final SamplingProbabilityStore _probabilityStore;
   late final AppStartInstrumentation _appStartInstrumentation;
   late final NavigationInstrumentation _navigationInstrumentation;
+  late final ViewLoadInstrumentation _viewLoadInstrumentation;
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
   BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
       _networkRequestCallback;
@@ -100,6 +117,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       client: this,
       clock: _clock,
     );
+    _viewLoadInstrumentation = ViewLoadInstrumentationImpl(
+      client: this,
+      clock: _clock,
+    );
   }
 
   @override
@@ -110,6 +131,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         networkRequestCallback,
     String? releaseStage,
     List<String>? enabledReleaseStages,
+    List<RegExp>? tracePropagationUrls,
     String? appVersion,
   }) async {
     if (!_isEnabledOnCurrentPlatform()) {
@@ -124,6 +146,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
       releaseStage: releaseStage ?? getDeploymentEnvironment(),
       enabledReleaseStages: enabledReleaseStages,
+      tracePropagationUrls: tracePropagationUrls,
       appVersion: appVersion,
     );
     _packageBuilder.setConfig(configuration);
@@ -134,6 +157,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         .setEnabled(configuration?.instrumentAppStart ?? false);
     _navigationInstrumentation
         .setEnabled(configuration?.instrumentNavigation ?? false);
+    _viewLoadInstrumentation
+        .setEnabled(configuration?.instrumentViewLoad ?? false);
     _setup();
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
@@ -225,6 +250,16 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       didReplaceRouteCallback: _navigationInstrumentation.didReplaceRoute,
       didRemoveRouteCallback: _navigationInstrumentation.didRemoveRoute,
       didPopRouteCallback: _navigationInstrumentation.didPopRoute,
+    );
+    MeasuredWidgetCallbacks.setup(
+      willBuildCallback: _viewLoadInstrumentation.willBuildView,
+      didBuildCallback: _viewLoadInstrumentation.didBuildView,
+    );
+    HttpHeadersProviderCallbacks.setup(
+      httpRequestHeadersCallback: _requestHeaders,
+    );
+    BugsnagContextProviderCallbacks.setup(
+      currentTraceContextCallback: _currentTraceContext,
     );
   }
 
@@ -348,6 +383,48 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   @override
+  BugsnagPerformanceSpan startViewLoadSpan({
+    required String viewName,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  }) {
+    return startSpan(
+      '[ViewLoad]FlutterWidget/$viewName',
+      parentContext: parentContext,
+      startTime: startTime,
+      attributes: BugsnagPerformanceSpanAttributes(
+        category: 'view_load',
+        additionalAttributes: {
+          'bugsnag.view.type': 'FlutterWidget',
+          'bugsnag.view.name': viewName,
+        },
+      ),
+    );
+  }
+
+  @override
+  BugsnagPerformanceSpan startViewLoadPhaseSpan({
+    required String viewName,
+    required String phase,
+    BugsnagPerformanceSpanContext? parentContext,
+    DateTime? startTime,
+  }) {
+    return startSpan(
+      '[ViewLoadPhase]FlutterWidget/$viewName/$phase',
+      parentContext: parentContext,
+      startTime: startTime,
+      attributes: BugsnagPerformanceSpanAttributes(
+        category: 'view_load_phase',
+        phase: phase,
+        additionalAttributes: {
+          'bugsnag.view.type': 'FlutterWidget',
+          'bugsnag.view.name': viewName,
+        },
+      ),
+    );
+  }
+
+  @override
   dynamic networkInstrumentation(dynamic data) {
     if (data is! Map<String, dynamic>) return true;
     String status = data["status"];
@@ -383,6 +460,53 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _networkSpans.remove(requestId);
     }
     return true;
+  }
+
+  Future<Map<String, String>?> _requestHeaders(
+    String url,
+    String requestId,
+  ) async {
+    if (!_shouldAddTraceHeader(url)) {
+      return Future.value(null);
+    }
+    Map<String, String> result = {};
+    final span = _networkSpans[requestId] ?? getCurrentSpanContext();
+    if (span != null && span is BugsnagPerformanceSpanImpl) {
+      await _sampler?.sample(span);
+      result['traceparent'] = _buildTraceparentHeader(
+        traceId: span.encodedTraceId,
+        parentSpanId: span.encodedSpanId,
+        sampled: span.isSampled,
+      );
+    }
+    return result;
+  }
+
+  bool _shouldAddTraceHeader(String url) {
+    final tracePropagationUrls = configuration?.tracePropagationUrls;
+    if (tracePropagationUrls != null && tracePropagationUrls.isNotEmpty) {
+      return tracePropagationUrls.any((regex) => regex.hasMatch(url));
+    }
+    return true;
+  }
+
+  String _buildTraceparentHeader({
+    required String traceId,
+    required String parentSpanId,
+    required bool sampled,
+  }) {
+    return '00-$traceId-$parentSpanId-${sampled ? '01' : '00'}';
+  }
+
+  BugsnagTraceContext? _currentTraceContext() {
+    final context = spanContextStackExpando[Zone.current]?.getCurrentContext();
+    if (context != null && context is BugsnagPerformanceSpan) {
+      return BugsnagTraceContext(
+        spanId: context.encodedSpanId,
+        traceId: context.encodedTraceId,
+      );
+    }
+    return null;
   }
 
   void _onAppBackgrounded() {
