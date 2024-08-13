@@ -106,7 +106,6 @@ steps:
           - "--aws-public-ip"
           - "--appium-version=1.22.0"
           - "--fail-fast"
-          - "--appium-version=1.22"
     concurrency: 25
     concurrency_group: 'browserstack-app'
     concurrency_method: eager
