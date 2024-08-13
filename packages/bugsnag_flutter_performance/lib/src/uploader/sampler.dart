@@ -10,7 +10,7 @@ abstract class Sampler {
   Future<bool> sample(BugsnagPerformanceSpan span);
   Future<List<BugsnagPerformanceSpan>> sampled(
       List<BugsnagPerformanceSpan> spans);
-  void handleResponseHeaders(HttpHeaders headers);
+  Future<void> handleResponseHeaders(HttpHeaders headers);
 }
 
 class SamplerImpl implements Sampler {
@@ -69,7 +69,7 @@ class SamplerImpl implements Sampler {
   }
 
   @override
-  void handleResponseHeaders(HttpHeaders headers) async {
+  Future<void> handleResponseHeaders(HttpHeaders headers) async {
     final samplingProbabilityHeader =
         headers.value('Bugsnag-Sampling-Probability');
     if (samplingProbabilityHeader == null) {
