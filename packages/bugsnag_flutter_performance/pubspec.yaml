@@ -5,7 +5,6 @@ homepage: https://www.bugsnag.com/
 documentation: https://docs.bugsnag.com/performance/flutter/
 repository: https://github.com/bugsnag/bugsnag-flutter-performance
 issue_tracker: https://github.com/bugsnag/bugsnag-flutter-performance/issues
-publish_to: none #TODO: This makes the package temporarily unpublishable. Remove once bugsnag_bridge is released
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -21,10 +20,7 @@ dependencies:
   path_provider: ^2.0.2
   uuid: ^4.0.0
   connectivity_plus: ^5.0.2
-  bugsnag_bridge:
-    git: #TODO: Remove once bugsnag_bridge is released to pub.dev
-      url: https://github.com/bugsnag/bugsnag-flutter-common
-      path: packages/bugsnag-flutter-bridge
+  bugsnag_bridge: ^2.0.0
 
 dev_dependencies:
   flutter_test:

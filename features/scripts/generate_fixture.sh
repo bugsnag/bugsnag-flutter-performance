@@ -9,9 +9,9 @@ FIXTURE_LOCATION=features/fixtures/mazerunner
 
 PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance"
 
-HTTP_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-http-client" 
+HTTP_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-common/packages/bugsnag_http_client"
 
-DART_IO_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-dart-io-http-client" 
+DART_IO_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-common/packages/bugsnag_flutter_dart_io_http_client"
 
 
 
@@ -55,11 +55,15 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" http
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" native_flutter_proxy
 
-$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_http_client:{'path':'$HTTP_WRAPPER_PACKAGE_PATH'}"
+#$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_http_client:{'path':'$HTTP_WRAPPER_PACKAGE_PATH'}"
+#$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_dart_io_http_client:{'path':'$DART_IO_WRAPPER_PACKAGE_PATH'}"
 
-$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_dart_io_http_client:{'path':'$DART_IO_WRAPPER_PACKAGE_PATH'}"
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" bugsnag_http_client
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" bugsnag_flutter_dart_io_http_client
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" dio
+
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" bugsnag_flutter
 
 echo "update min sdk version in android gradle file"
 
@@ -80,6 +84,10 @@ sed -i '' "s/<key>CFBundleDevelopmentRegion<\/key>/<key>NSAppTransportSecurity<\
 echo "Add Android internet permission"
 
 sed -i '' "s/<\/application>/<\/application>\n<uses-permission android:name='android.permission.INTERNET'\/\>/g" "$ANDROID_MANIFEST"
+
+echo "Add Android usesCleartextTraffic value"
+
+sed -i '' "s/android:icon=\"@mipmap\/ic_launcher\"\>/android:icon=\"@mipmap\/ic_launcher\"\n\t\tandroid:usesCleartextTraffic=\"true\"\>/g" "$ANDROID_MANIFEST"
 
 echo "Copy test fixture code"
 

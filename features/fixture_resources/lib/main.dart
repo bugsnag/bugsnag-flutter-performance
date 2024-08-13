@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bugsnag_flutter/bugsnag_flutter.dart';
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:flutter/material.dart';
 import 'package:native_flutter_proxy/custom_proxy.dart';
@@ -270,6 +271,10 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     }
 
     scenario.extraConfig = _extraConfigController.value.text;
+    scenario.endpointConfiguration = BugsnagEndpointConfiguration(
+      _notifyEndpointController.value.text,
+      _sessionEndpointController.value.text,
+    );
 
     log('Running scenario');
     _currentScenario = scenario;
