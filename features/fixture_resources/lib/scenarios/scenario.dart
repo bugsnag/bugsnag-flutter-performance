@@ -62,6 +62,7 @@ abstract class Scenario {
       await bugsnag.start(
         apiKey: '12312312312312312312312312312312',
         endpoints: endpointConfiguration!,
+        autoDetectErrors: false,
       );
     }
   }
