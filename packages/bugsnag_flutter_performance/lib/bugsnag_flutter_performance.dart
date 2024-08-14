@@ -18,6 +18,7 @@ export 'src/widgets/bugsnag_navigation_container.dart'
     show BugsnagNavigationContainer;
 export 'src/instrumentation/navigation/bugsnag_performance_navigator_observer.dart'
     show BugsnagPerformanceNavigatorObserver;
+export 'src/widgets/measured_widget.dart' show MeasuredWidget;
 
 class InvalidBugsnagApiKeyException implements Exception {
   String message;
@@ -39,6 +40,7 @@ class BugsnagPerformance {
         networkRequestCallback,
     String? releaseStage,
     List<String>? enabledReleaseStages,
+    List<RegExp>? tracePropagationUrls,
     String? appVersion,
   }) {
     _validateApiKey(apiKey);
@@ -48,6 +50,7 @@ class BugsnagPerformance {
       networkRequestCallback: networkRequestCallback,
       releaseStage: releaseStage,
       enabledReleaseStages: enabledReleaseStages,
+      tracePropagationUrls: tracePropagationUrls,
       appVersion: appVersion,
     );
   }

@@ -13,12 +13,12 @@ class WidgetInstrumentationState {
   final String? navigatorName;
 
   final DateTime startTime;
-  BugsnagPerformanceSpan? viewLoadSpan;
+  BugsnagPerformanceSpan? navigationSpan;
 
-  BugsnagPerformanceSpan? nearestViewLoadSpan() {
-    if (viewLoadSpan != null && viewLoadSpan!.isOpen()) {
-      return viewLoadSpan;
+  BugsnagPerformanceSpan? nearestNavigationSpan() {
+    if (navigationSpan != null && navigationSpan!.isOpen()) {
+      return navigationSpan;
     }
-    return parent?.nearestViewLoadSpan();
+    return parent?.nearestNavigationSpan();
   }
 }

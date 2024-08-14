@@ -1,4 +1,4 @@
-import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_node.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_node.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_state.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:bugsnag_flutter_performance/src/widgets/widget_instrumentation_node_provider.dart';
@@ -34,7 +34,7 @@ class _BugsnagNavigationContainerState
     );
     _currentNode = newNode;
     parentNode.addChild(newNode);
-    return NavigationInstrumentationNodeProvider(
+    return WidgetInstrumentationNodeProvider(
       node: newNode,
       child: widget.child,
     );

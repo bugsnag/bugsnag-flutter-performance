@@ -54,11 +54,19 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
     }
     final file = await _getFile();
     if (file.existsSync()) {
-      final content = jsonDecode(await file.readAsString());
-      final expireDate = DateTime.tryParse(content['expireDate']);
-      if (expireDate != null && expireDate.isAfter(clock.now())) {
-        _samplingProbability = double.tryParse(content['value']);
-        _expireDate = expireDate;
+      try {
+        final content = jsonDecode(await file.readAsString());
+        final expireDate = DateTime.tryParse(content['expireDate']);
+        if (expireDate != null && expireDate.isAfter(clock.now())) {
+          _samplingProbability = double.tryParse(content['value']);
+          _expireDate = expireDate;
+        }
+      } catch (e) {
+        try {
+          await file.delete();
+        } catch (error) {
+          // deliberately ignored
+        }
       }
     }
 
@@ -70,10 +78,13 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
     DateTime expireDate,
   ) async {
     final file = await _getFile();
-    await file.writeAsString(jsonEncode({
-      'value': samplingProbability.toString(),
-      'expireDate': expireDate.toIso8601String(),
-    }));
+    await file.writeAsString(
+      jsonEncode({
+        'value': samplingProbability.toString(),
+        'expireDate': expireDate.toIso8601String(),
+      }),
+      flush: true,
+    );
   }
 
   Future<File> _getFile() async {

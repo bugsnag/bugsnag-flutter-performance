@@ -20,3 +20,7 @@ end
 Before('@ios_only') do |_scenario|
   skip_this_scenario('Skipping scenario') unless Maze::Helper.get_current_platform == 'ios'
 end
+
+Before('@skip') do |_scenario|
+  skip_this_scenario('Skipping scenario')
+end

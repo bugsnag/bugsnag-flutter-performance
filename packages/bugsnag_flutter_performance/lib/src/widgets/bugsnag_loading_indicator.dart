@@ -1,4 +1,4 @@
-import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navigation_instrumentation_node.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/widget_instrumentation_node.dart';
 import 'package:flutter/widgets.dart';
 
 class BugsnagLoadingIndicator extends StatefulWidget {

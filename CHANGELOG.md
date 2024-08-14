@@ -1,6 +1,23 @@
 Changelog
 =========
 
+## 1.1.0 (2024-08-14)
+
+### Enhancements
+
+* View load instrumentation
+  [65](https://github.com/bugsnag/bugsnag-flutter-performance/pull/65)
+  
+* Replaced the dependency on `device_info` with the new `device_info_plus` package [72](https://github.com/bugsnag/bugsnag-flutter-performance/pull/72)
+  
+* Auto-inject traceparent headers into HTTP requests [73](https://github.com/bugsnag/bugsnag-flutter-performance/pull/73)
+
+* Provide the correlation trace ID and span ID through `bugsnag_bridge` for `bugsnag_flutter` to add them to events [74](https://github.com/bugsnag/bugsnag-flutter-performance/pull/74)
+
+### Bug fixes
+
+* Fixed FormatException thrown when the data in sampling probability cache file is corrupted [75](https://github.com/bugsnag/bugsnag-flutter-performance/pull/75)
+
 ## 1.0.0 (2024-04-11)
 
 Initial release
