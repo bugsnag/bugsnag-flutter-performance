@@ -133,6 +133,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     List<String>? enabledReleaseStages,
     List<RegExp>? tracePropagationUrls,
     String? appVersion,
+    double? samplingProbability,
   }) async {
     if (!_isEnabledOnCurrentPlatform()) {
       _appStartInstrumentation.setEnabled(false);
@@ -148,6 +149,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       enabledReleaseStages: enabledReleaseStages,
       tracePropagationUrls: tracePropagationUrls,
       appVersion: appVersion,
+      samplingProbability: samplingProbability,
     );
     _packageBuilder.setConfig(configuration);
     _initialExtraConfig.forEach((key, value) {
@@ -159,6 +161,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         .setEnabled(configuration?.instrumentNavigation ?? false);
     _viewLoadInstrumentation
         .setEnabled(configuration?.instrumentViewLoad ?? false);
+    _probabilityStore.setFixedProbability(samplingProbability);
     _setup();
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
@@ -288,6 +291,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   Future<void> _updateSamplingProbabilityIfNeeded({
     bool force = false,
   }) async {
+    if (configuration!.samplingProbability != null) {
+      return;
+    }
     if (await _sampler?.hasValidSamplingProbabilityValue() ?? true) {
       return;
     }

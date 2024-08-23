@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* A fixed `samplingProbability` can now be set on `start` [78](https://github.com/bugsnag/bugsnag-flutter-performance/pull/78)
+
 ## 1.1.0 (2024-08-14)
 
 ### Enhancements

@@ -1,11 +1,13 @@
 class BugsnagPerformanceConfiguration {
-  BugsnagPerformanceConfiguration(
-      {this.apiKey,
-      this.endpoint,
-      this.releaseStage,
-      this.enabledReleaseStages,
-      this.tracePropagationUrls,
-      this.appVersion});
+  BugsnagPerformanceConfiguration({
+    this.apiKey,
+    this.endpoint,
+    this.releaseStage,
+    this.enabledReleaseStages,
+    this.tracePropagationUrls,
+    this.appVersion,
+    this.samplingProbability,
+  });
   String? apiKey;
   Uri? endpoint;
   int maxBatchSize = 100;
@@ -19,6 +21,7 @@ class BugsnagPerformanceConfiguration {
   String? releaseStage;
   List<String>? enabledReleaseStages;
   String? appVersion;
+  double? samplingProbability;
 
   bool releaseStageEnabled() {
     return releaseStage == null ||
