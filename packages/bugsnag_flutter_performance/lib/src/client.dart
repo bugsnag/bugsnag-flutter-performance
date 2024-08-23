@@ -291,7 +291,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   Future<void> _updateSamplingProbabilityIfNeeded({
     bool force = false,
   }) async {
-    if (configuration!.samplingProbability != null) {
+    if (configuration != null && configuration!.samplingProbability != null) {
       return;
     }
     if (await _sampler?.hasValidSamplingProbabilityValue() ?? true) {
