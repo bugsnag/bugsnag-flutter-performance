@@ -10,7 +10,6 @@ abstract class SamplingProbabilityStore {
     double samplingProbability,
     DateTime expireDate,
   );
-  void setFixedProbability(double? samplingProbability);
 }
 
 class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
@@ -20,7 +19,6 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
   final BugsnagClock clock;
 
   double? _samplingProbability;
-  double? _fixedSamplingProbability;
   DateTime? _expireDate;
   var _isInitialized = false;
 
@@ -30,9 +28,6 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
 
   @override
   Future<double?> get samplingProbability async {
-    if (_fixedSamplingProbability != null) {
-      return _fixedSamplingProbability!;
-    }
     await _initializeIfNeeded();
     if (_expireDate != null && _expireDate!.isBefore(clock.now())) {
       return null;
@@ -45,9 +40,6 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
     double samplingProbability,
     DateTime expireDate,
   ) async {
-    if (_fixedSamplingProbability != null) {
-      return;
-    }
     await _initializeIfNeeded();
     if (_samplingProbability != null &&
         _samplingProbability! < samplingProbability) {
@@ -83,11 +75,6 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
     _isInitialized = true;
   }
 
-  @override
-  void setFixedProbability(double? samplingProbability) {
-    _fixedSamplingProbability = samplingProbability;
-  }
-
   Future<void> _writeToFile(
     double samplingProbability,
     DateTime expireDate,
@@ -114,4 +101,16 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
     final appCacheDir = await getApplicationSupportDirectory();
     return Directory('${appCacheDir.path}/$_cacheDirectoryName');
   }
+}
+
+class FixedSamplingProbabilityStore implements SamplingProbabilityStore {
+  final double _fixedSamplingProbability;
+
+  FixedSamplingProbabilityStore(this._fixedSamplingProbability);
+
+  @override
+  Future<double?> get samplingProbability async => _fixedSamplingProbability;
+
+  @override
+  Future<void> store(double samplingProbability, DateTime expireDate) async {}
 }
