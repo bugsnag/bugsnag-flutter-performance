@@ -108,7 +108,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       attributesProvider: ResourceAttributesProviderImpl(),
     );
     _clock = BugsnagClockImpl.instance;
-    _probabilityStore = SamplingProbabilityStoreImpl(_clock);
     _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
     BugsnagLifecycleListenerImpl.ensureInitialized();
     _lifecycleListener =
@@ -133,6 +132,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     List<String>? enabledReleaseStages,
     List<RegExp>? tracePropagationUrls,
     String? appVersion,
+    double? samplingProbability,
   }) async {
     if (!_isEnabledOnCurrentPlatform()) {
       _appStartInstrumentation.setEnabled(false);
@@ -148,6 +148,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       enabledReleaseStages: enabledReleaseStages,
       tracePropagationUrls: tracePropagationUrls,
       appVersion: appVersion,
+      samplingProbability: samplingProbability,
     );
     _packageBuilder.setConfig(configuration);
     _initialExtraConfig.forEach((key, value) {
@@ -159,7 +160,14 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         .setEnabled(configuration?.instrumentNavigation ?? false);
     _viewLoadInstrumentation
         .setEnabled(configuration?.instrumentViewLoad ?? false);
-    _setup();
+    if (samplingProbability != null) {
+      _probabilityStore = FixedSamplingProbabilityStore(samplingProbability);
+    } else {
+      _probabilityStore = SamplingProbabilityStoreImpl(_clock);
+    }
+    _setup(
+      shouldUpdateSamplingProbabilityPeriodically: samplingProbability == null,
+    );
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
     _lifecycleListener?.startObserving(onAppBackgrounded: _onAppBackgrounded);
@@ -224,7 +232,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     }
   }
 
-  void _setup() {
+  void _setup({
+    required bool shouldUpdateSamplingProbabilityPeriodically,
+  }) {
     _sampler = SamplerImpl(
       configuration: configuration!,
       probabilityStore: _probabilityStore,
@@ -240,11 +250,13 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       );
       _retryQueue = retryQueueBuilder.build(_uploader!);
     }
-    Timer.periodic(
-        Duration(milliseconds: configuration!.probabilityRequestsPause),
-        (timer) {
-      _updateSamplingProbabilityIfNeeded(force: true);
-    });
+    if (shouldUpdateSamplingProbabilityPeriodically) {
+      Timer.periodic(
+          Duration(milliseconds: configuration!.probabilityRequestsPause),
+          (timer) {
+        _updateSamplingProbabilityIfNeeded(force: true);
+      });
+    }
     BugsnagPerformanceNavigatorObserverCallbacks.setup(
       didPushNewRouteCallback: _navigationInstrumentation.didPushNewRoute,
       didReplaceRouteCallback: _navigationInstrumentation.didReplaceRoute,
@@ -288,6 +300,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   Future<void> _updateSamplingProbabilityIfNeeded({
     bool force = false,
   }) async {
+    if (configuration != null && configuration!.samplingProbability != null) {
+      return;
+    }
     if (await _sampler?.hasValidSamplingProbabilityValue() ?? true) {
       return;
     }

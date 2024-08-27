@@ -22,7 +22,9 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
   DateTime? _expireDate;
   var _isInitialized = false;
 
-  SamplingProbabilityStoreImpl(this.clock);
+  SamplingProbabilityStoreImpl(
+    this.clock,
+  );
 
   @override
   Future<double?> get samplingProbability async {
@@ -99,4 +101,16 @@ class SamplingProbabilityStoreImpl implements SamplingProbabilityStore {
     final appCacheDir = await getApplicationSupportDirectory();
     return Directory('${appCacheDir.path}/$_cacheDirectoryName');
   }
+}
+
+class FixedSamplingProbabilityStore implements SamplingProbabilityStore {
+  final double _fixedSamplingProbability;
+
+  FixedSamplingProbabilityStore(this._fixedSamplingProbability);
+
+  @override
+  Future<double?> get samplingProbability async => _fixedSamplingProbability;
+
+  @override
+  Future<void> store(double samplingProbability, DateTime expireDate) async {}
 }
