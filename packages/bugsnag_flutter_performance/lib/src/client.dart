@@ -37,6 +37,7 @@ abstract class BugsnagPerformanceClient {
         networkRequestCallback,
     String? releaseStage,
     List<String>? enabledReleaseStages,
+    String? serviceName,
     String? appVersion,
   });
 
@@ -131,6 +132,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     List<RegExp>? tracePropagationUrls,
+    String? serviceName,
     String? appVersion,
     double? samplingProbability,
   }) async {
@@ -147,6 +149,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       releaseStage: releaseStage ?? getDeploymentEnvironment(),
       enabledReleaseStages: enabledReleaseStages,
       tracePropagationUrls: tracePropagationUrls,
+      serviceName: serviceName,
       appVersion: appVersion,
       samplingProbability: samplingProbability,
     );

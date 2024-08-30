@@ -5,6 +5,7 @@ class BugsnagPerformanceConfiguration {
     this.releaseStage,
     this.enabledReleaseStages,
     this.tracePropagationUrls,
+    this.serviceName,
     this.appVersion,
     this.samplingProbability,
   });
@@ -20,6 +21,7 @@ class BugsnagPerformanceConfiguration {
   List<RegExp>? tracePropagationUrls;
   String? releaseStage;
   List<String>? enabledReleaseStages;
+  String? serviceName;
   String? appVersion;
   double? samplingProbability;
 

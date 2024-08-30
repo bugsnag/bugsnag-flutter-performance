@@ -18,6 +18,15 @@ Feature: Resource Attributes
     * every span field "name" equals "CustomEnabledReleaseStageScenario"
     * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "CustomEnabledReleaseStageScenario"
 
+  Scenario: Custom service name
+    When I run "CustomServiceNameScenario"
+    And I wait for 1 span
+    Then the trace "Content-Type" header equals "application/json"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
+    * every span field "name" equals "CustomServiceNameScenario"
+    * the trace payload field "resourceSpans.0.resource" string attribute "service.name" equals "com.custom.serviceName"
+
   Scenario: Custom app version
     When I run "CustomAppVersionScenario"
     And I wait for 1 span
@@ -46,6 +55,7 @@ Feature: Resource Attributes
     * the trace payload field "resourceSpans.0.resource" string attribute "telemetry.sdk.name" equals "bugsnag.performance.flutter"
     * the trace payload field "resourceSpans.0.resource" string attribute "telemetry.sdk.version" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "device.model.identifier" exists
+    * the trace payload field "resourceSpans.0.resource" string attribute "service.name" equals "com.bugsnag.mazerunner"
     * the trace payload field "resourceSpans.0.resource" string attribute "service.version" equals "1.0.0"
     * the trace payload field "resourceSpans.0.resource" string attribute "device.manufacturer" exists
     * the trace payload field "resourceSpans.0.resource" string attribute "host.arch" exists
