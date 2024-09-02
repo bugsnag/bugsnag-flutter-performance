@@ -27,7 +27,8 @@ import 'bugsnag_network_request_info.dart';
 import 'configuration.dart';
 import 'span.dart';
 
-const _defaultEndpoint = 'https://otlp.bugsnag.com/v1/traces';
+String _defaultEndpoint(String? apiKey) =>
+    'https://${apiKey != null ? '$apiKey.' : ''}otlp.bugsnag.com/v1/traces';
 
 abstract class BugsnagPerformanceClient {
   Future<void> start({
@@ -143,7 +144,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _networkRequestCallback = networkRequestCallback;
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
-      endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
+      endpoint: endpoint ?? Uri.parse(_defaultEndpoint(apiKey)),
       releaseStage: releaseStage ?? getDeploymentEnvironment(),
       enabledReleaseStages: enabledReleaseStages,
       tracePropagationUrls: tracePropagationUrls,
