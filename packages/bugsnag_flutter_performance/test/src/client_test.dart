@@ -42,6 +42,10 @@ class MockLifecycleListener implements BugsnagLifecycleListener {
 void main() {
   const apiKey = 'TestApiKey';
   final endpoint = Uri.tryParse('https://bugsnag.com')!;
+  final defaultEndpointWithoutApiKey =
+      Uri.tryParse('https://otlp.bugsnag.com/v1/traces');
+  final defaultEndpointWithApiKey =
+      Uri.tryParse('https://$apiKey.otlp.bugsnag.com/v1/traces');
   BugsnagClockImpl.ensureInitialized();
   group('BugsnagPerformanceClient', () {
     late BugsnagPerformanceClientImpl client;
@@ -56,6 +60,23 @@ void main() {
         await client.start(apiKey: apiKey, endpoint: endpoint);
         expect(client.configuration!.apiKey, equals(apiKey));
         expect(client.configuration!.endpoint, equals(endpoint));
+      });
+
+      test(
+          'should set configuration with the correct default endpoint when apiKey is present',
+          () async {
+        await client.start(apiKey: apiKey);
+        expect(client.configuration!.apiKey, equals(apiKey));
+        expect(
+            client.configuration!.endpoint, equals(defaultEndpointWithApiKey));
+      });
+
+      test(
+          'should set configuration with the correct default endpoint when apiKey is not present',
+          () async {
+        await client.start();
+        expect(client.configuration!.endpoint,
+            equals(defaultEndpointWithoutApiKey));
       });
     });
 
