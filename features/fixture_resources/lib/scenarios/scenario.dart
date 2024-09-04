@@ -45,6 +45,7 @@ abstract class Scenario {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     List<RegExp>? tracePropagationUrls,
+    String? serviceName,
     String? appVersion,
     bool shouldUseNotifier = false,
     double? samplingProbability,
@@ -57,6 +58,7 @@ abstract class Scenario {
       releaseStage: releaseStage,
       enabledReleaseStages: enabledReleaseStages,
       tracePropagationUrls: tracePropagationUrls,
+      serviceName: serviceName,
       appVersion: appVersion,
       samplingProbability: samplingProbability,
     );

@@ -41,6 +41,7 @@ class BugsnagPerformance {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     List<RegExp>? tracePropagationUrls,
+    String? serviceName,
     String? appVersion,
     double? samplingProbability,
   }) {
@@ -52,6 +53,7 @@ class BugsnagPerformance {
       releaseStage: releaseStage,
       enabledReleaseStages: enabledReleaseStages,
       tracePropagationUrls: tracePropagationUrls,
+      serviceName: serviceName,
       appVersion: appVersion,
       samplingProbability: samplingProbability,
     );

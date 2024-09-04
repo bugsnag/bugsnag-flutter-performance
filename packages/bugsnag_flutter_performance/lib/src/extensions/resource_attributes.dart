@@ -83,6 +83,12 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
         }
       },
       {
+        "key": "service.name",
+        "value": {
+          "stringValue": config?.serviceName ?? packageInfo.packageName,
+        }
+      },
+      {
         "key": "service.version",
         "value": {
           "stringValue": config?.appVersion ?? packageInfo.version,
