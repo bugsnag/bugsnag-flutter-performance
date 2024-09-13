@@ -65,12 +65,12 @@ class FileRetryQueue implements RetryQueue {
       return;
     }
     _isFlushing = true;
-    try {
-      final files = cacheDirectory.listSync().cast<File>()
-        ..sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
+    final files = cacheDirectory.listSync().cast<File>()
+      ..sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
 
-      final now = BugsnagClockImpl.instance.now();
-      for (var file in files) {
+    final now = BugsnagClockImpl.instance.now();
+    for (var file in files) {
+      try {
         if (now.difference(file.lastModifiedSync()) > _maxAge) {
           file.deleteSync();
         } else {
@@ -82,9 +82,13 @@ class FileRetryQueue implements RetryQueue {
             file.deleteSync();
           }
         }
+      } catch (error) {
+        try {
+          file.deleteSync();
+        } catch (_) {
+          // deliberately ignored
+        }
       }
-    } catch (error) {
-      // deliberately ignored
     }
     _isFlushing = false;
   }
