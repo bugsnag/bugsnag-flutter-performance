@@ -7,6 +7,10 @@ Changelog
 
 * A fixed `samplingProbability` can now be set on `start` [78](https://github.com/bugsnag/bugsnag-flutter-performance/pull/78)
 
+### Bug fixes
+
+* The correct package version is reported in the `telemetry.sdk.version` attribute [83](https://github.com/bugsnag/bugsnag-flutter-performance/pull/83)
+
 ## 1.1.0 (2024-08-14)
 
 ### Enhancements
