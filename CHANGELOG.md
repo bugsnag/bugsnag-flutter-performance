@@ -9,6 +9,8 @@ Changelog
 
 ### Bug fixes
 
+* Fixed PathNotFoundException thrown when retry queue flush is triggered multiple times [82](https://github.com/bugsnag/bugsnag-flutter-performance/pull/82)
+
 * The correct package version is reported in the `telemetry.sdk.version` attribute [83](https://github.com/bugsnag/bugsnag-flutter-performance/pull/83)
 
 ## 1.1.0 (2024-08-14)
