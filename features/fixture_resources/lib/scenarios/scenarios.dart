@@ -8,7 +8,10 @@ import 'package:mazerunner/scenarios/auto_instrument_view_load_basic_scenario.da
 import 'package:mazerunner/scenarios/auto_instrument_view_load_nested_scenario.dart';
 import 'package:mazerunner/scenarios/correlation_null_scenario.dart';
 import 'package:mazerunner/scenarios/correlation_simple_scenario.dart';
+import 'package:mazerunner/scenarios/custom_service_name_scenario.dart';
 import 'package:mazerunner/scenarios/dart_io_traceparent_scenario.dart';
+import 'package:mazerunner/scenarios/fixed_sampling_probability_one_scenario.dart';
+import 'package:mazerunner/scenarios/fixed_sampling_probability_zero_scenario.dart';
 import 'package:mazerunner/scenarios/http_client_trace_propagation_urls_scenario.dart';
 import 'package:mazerunner/scenarios/http_client_traceparent_scenario.dart';
 
@@ -119,4 +122,9 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => HttpClientTracePropagationUrlsScenario()),
   ScenarioInfo('CorrelationSimpleScenario', () => CorrelationSimpleScenario()),
   ScenarioInfo('CorrelationNullScenario', () => CorrelationNullScenario()),
+  ScenarioInfo('FixedSamplingProbabilityOneScenario',
+      () => FixedSamplingProbabilityOneScenario()),
+  ScenarioInfo('FixedSamplingProbabilityZeroScenario',
+      () => FixedSamplingProbabilityZeroScenario()),
+  ScenarioInfo('CustomServiceNameScenario', () => CustomServiceNameScenario()),
 ];

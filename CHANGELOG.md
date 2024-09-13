@@ -1,6 +1,23 @@
 Changelog
 =========
 
+## 1.2.0 (2024-09-13)
+
+### Enhancements
+
+* A fixed `samplingProbability` can now be set on `start` [78](https://github.com/bugsnag/bugsnag-flutter-performance/pull/78)
+
+* `service.name` can now be set on `start` [80](https://github.com/bugsnag/bugsnag-flutter-performance/pull/80)
+
+* Updated default url
+  [81](https://github.com/bugsnag/bugsnag-flutter-performance/pull/81)
+
+### Bug fixes
+
+* Fixed PathNotFoundException thrown when retry queue flush is triggered multiple times [82](https://github.com/bugsnag/bugsnag-flutter-performance/pull/82)
+
+* The correct package version is reported in the `telemetry.sdk.version` attribute [83](https://github.com/bugsnag/bugsnag-flutter-performance/pull/83)
+
 ## 1.1.0 (2024-08-14)
 
 ### Enhancements

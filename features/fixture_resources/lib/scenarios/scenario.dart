@@ -45,8 +45,10 @@ abstract class Scenario {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     List<RegExp>? tracePropagationUrls,
+    String? serviceName,
     String? appVersion,
     bool shouldUseNotifier = false,
+    double? samplingProbability,
   }) async {
     bugsnag_performance.setExtraConfig("instrumentAppStart", false);
     bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 1000);
@@ -56,7 +58,9 @@ abstract class Scenario {
       releaseStage: releaseStage,
       enabledReleaseStages: enabledReleaseStages,
       tracePropagationUrls: tracePropagationUrls,
+      serviceName: serviceName,
       appVersion: appVersion,
+      samplingProbability: samplingProbability,
     );
     if (shouldUseNotifier && endpointConfiguration != null) {
       await bugsnag.start(

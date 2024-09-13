@@ -27,7 +27,8 @@ import 'bugsnag_network_request_info.dart';
 import 'configuration.dart';
 import 'span.dart';
 
-const _defaultEndpoint = 'https://otlp.bugsnag.com/v1/traces';
+String _defaultEndpoint(String? apiKey) =>
+    'https://${apiKey != null ? '$apiKey.' : ''}otlp.bugsnag.com/v1/traces';
 
 abstract class BugsnagPerformanceClient {
   Future<void> start({
@@ -37,6 +38,7 @@ abstract class BugsnagPerformanceClient {
         networkRequestCallback,
     String? releaseStage,
     List<String>? enabledReleaseStages,
+    String? serviceName,
     String? appVersion,
   });
 
@@ -108,7 +110,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       attributesProvider: ResourceAttributesProviderImpl(),
     );
     _clock = BugsnagClockImpl.instance;
-    _probabilityStore = SamplingProbabilityStoreImpl(_clock);
     _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
     BugsnagLifecycleListenerImpl.ensureInitialized();
     _lifecycleListener =
@@ -132,7 +133,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     List<RegExp>? tracePropagationUrls,
+    String? serviceName,
     String? appVersion,
+    double? samplingProbability,
   }) async {
     if (!_isEnabledOnCurrentPlatform()) {
       _appStartInstrumentation.setEnabled(false);
@@ -143,11 +146,13 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _networkRequestCallback = networkRequestCallback;
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
-      endpoint: endpoint ?? Uri.parse(_defaultEndpoint),
+      endpoint: endpoint ?? Uri.parse(_defaultEndpoint(apiKey)),
       releaseStage: releaseStage ?? getDeploymentEnvironment(),
       enabledReleaseStages: enabledReleaseStages,
       tracePropagationUrls: tracePropagationUrls,
+      serviceName: serviceName,
       appVersion: appVersion,
+      samplingProbability: samplingProbability,
     );
     _packageBuilder.setConfig(configuration);
     _initialExtraConfig.forEach((key, value) {
@@ -159,7 +164,14 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
         .setEnabled(configuration?.instrumentNavigation ?? false);
     _viewLoadInstrumentation
         .setEnabled(configuration?.instrumentViewLoad ?? false);
-    _setup();
+    if (samplingProbability != null) {
+      _probabilityStore = FixedSamplingProbabilityStore(samplingProbability);
+    } else {
+      _probabilityStore = SamplingProbabilityStoreImpl(_clock);
+    }
+    _setup(
+      shouldUpdateSamplingProbabilityPeriodically: samplingProbability == null,
+    );
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
     _lifecycleListener?.startObserving(onAppBackgrounded: _onAppBackgrounded);
@@ -224,7 +236,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     }
   }
 
-  void _setup() {
+  void _setup({
+    required bool shouldUpdateSamplingProbabilityPeriodically,
+  }) {
     _sampler = SamplerImpl(
       configuration: configuration!,
       probabilityStore: _probabilityStore,
@@ -240,11 +254,13 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       );
       _retryQueue = retryQueueBuilder.build(_uploader!);
     }
-    Timer.periodic(
-        Duration(milliseconds: configuration!.probabilityRequestsPause),
-        (timer) {
-      _updateSamplingProbabilityIfNeeded(force: true);
-    });
+    if (shouldUpdateSamplingProbabilityPeriodically) {
+      Timer.periodic(
+          Duration(milliseconds: configuration!.probabilityRequestsPause),
+          (timer) {
+        _updateSamplingProbabilityIfNeeded(force: true);
+      });
+    }
     BugsnagPerformanceNavigatorObserverCallbacks.setup(
       didPushNewRouteCallback: _navigationInstrumentation.didPushNewRoute,
       didReplaceRouteCallback: _navigationInstrumentation.didReplaceRoute,
@@ -281,13 +297,16 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     if (result == RequestResult.retriableFailure) {
       _retryQueue?.enqueue(headers: package.headers, body: package.payload);
     } else if (result == RequestResult.success) {
-      _retryQueue?.flush();
+      await _retryQueue?.flush();
     }
   }
 
   Future<void> _updateSamplingProbabilityIfNeeded({
     bool force = false,
   }) async {
+    if (configuration != null && configuration!.samplingProbability != null) {
+      return;
+    }
     if (await _sampler?.hasValidSamplingProbabilityValue() ?? true) {
       return;
     }

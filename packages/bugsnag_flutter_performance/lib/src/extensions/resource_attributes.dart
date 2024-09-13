@@ -73,13 +73,19 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
       {
         'key': 'telemetry.sdk.version',
         'value': {
-          'stringValue': '0.0.1',
+          'stringValue': _getSDKVersion,
         }
       },
       {
         "key": "device.model.identifier",
         "value": {
           "stringValue": await getDeviceModel(deviceInfo),
+        }
+      },
+      {
+        "key": "service.name",
+        "value": {
+          "stringValue": config?.serviceName ?? packageInfo.packageName,
         }
       },
       {
@@ -189,4 +195,6 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
     }
     return "Unknown";
   }
+
+  static String get _getSDKVersion => '1.2.0';
 }

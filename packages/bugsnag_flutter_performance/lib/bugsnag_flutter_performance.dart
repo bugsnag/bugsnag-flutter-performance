@@ -41,7 +41,9 @@ class BugsnagPerformance {
     String? releaseStage,
     List<String>? enabledReleaseStages,
     List<RegExp>? tracePropagationUrls,
+    String? serviceName,
     String? appVersion,
+    double? samplingProbability,
   }) {
     _validateApiKey(apiKey);
     return _client.start(
@@ -51,7 +53,9 @@ class BugsnagPerformance {
       releaseStage: releaseStage,
       enabledReleaseStages: enabledReleaseStages,
       tracePropagationUrls: tracePropagationUrls,
+      serviceName: serviceName,
       appVersion: appVersion,
+      samplingProbability: samplingProbability,
     );
   }
 

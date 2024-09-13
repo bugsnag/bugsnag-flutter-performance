@@ -43,6 +43,7 @@ class FileRetryQueue implements RetryQueue {
   static const Duration _maxAge = Duration(hours: 24);
 
   final Uploader? _uploader;
+  var _isFlushing = false;
 
   FileRetryQueue(Uploader uploader) : _uploader = uploader;
 
@@ -60,27 +61,36 @@ class FileRetryQueue implements RetryQueue {
   @override
   Future<void> flush() async {
     final cacheDirectory = await _getCacheDirectory();
-    if (!cacheDirectory.existsSync()) {
+    if (_isFlushing || !cacheDirectory.existsSync()) {
       return;
     }
-
+    _isFlushing = true;
     final files = cacheDirectory.listSync().cast<File>()
       ..sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
 
     final now = BugsnagClockImpl.instance.now();
     for (var file in files) {
-      if (now.difference(file.lastModifiedSync()) > _maxAge) {
-        file.deleteSync();
-      } else {
-        final payload = await file.readAsString();
-        final cachedPayloadModel =
-            CachedPayloadModel.fromJson(jsonDecode(payload));
-        final success = await _sendPayload(cachedPayloadModel);
-        if (success) {
+      try {
+        if (now.difference(file.lastModifiedSync()) > _maxAge) {
           file.deleteSync();
+        } else {
+          final payload = await file.readAsString();
+          final cachedPayloadModel =
+              CachedPayloadModel.fromJson(jsonDecode(payload));
+          final success = await _sendPayload(cachedPayloadModel);
+          if (success) {
+            file.deleteSync();
+          }
+        }
+      } catch (error) {
+        try {
+          file.deleteSync();
+        } catch (_) {
+          // deliberately ignored
         }
       }
     }
+    _isFlushing = false;
   }
 
   Future<bool> _sendPayload(CachedPayloadModel payloadModel) async {

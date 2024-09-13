@@ -27,8 +27,11 @@ doc/api/
 .flutter-plugins-dependencies
 
 Package.resolved
+Gemfile.lock
 Podfile.lock
 maze_output/
+.idea/
+bugsnag-flutter-performance.iml
 
 # ignored as fixtures are generated
 features/fixtures

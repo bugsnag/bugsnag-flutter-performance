@@ -89,7 +89,8 @@ class PackageBuilderImpl implements PackageBuilder {
       'Content-Type': 'application/json',
       'Bugsnag-Integrity': _integrityDigestForData(payload: payload),
       'Bugsnag-Uncompressed-Content-Length': payload.length.toString(),
-      'Bugsnag-Span-Sampling': _samplingHeaderValue(spans: spans),
+      if (_config?.samplingProbability == null)
+        'Bugsnag-Span-Sampling': _samplingHeaderValue(spans: spans),
       if (isZipped) 'Content-Encoding': 'gzip'
     };
   }
