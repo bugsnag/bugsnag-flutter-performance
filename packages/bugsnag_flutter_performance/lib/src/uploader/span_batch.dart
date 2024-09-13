@@ -17,7 +17,7 @@ class SpanBatchImpl implements SpanBatch {
   int _maxBatchSize = 0;
   int _maxBatchAge = 0;
   bool _drainIsAllowed = false;
-  final DateTime _creationTime = DateTime.now();
+  DateTime _creationTime = DateTime.now();
 
   @override
   void Function(SpanBatch batch) onBatchFull = (_) {};
@@ -53,6 +53,8 @@ class SpanBatchImpl implements SpanBatch {
     }
     final spans = _spans.toList();
     _spans.clear();
+    _creationTime = DateTime.now();
+    _drainIsAllowed = false;
     return spans;
   }
 
@@ -75,6 +77,9 @@ class SpanBatchImpl implements SpanBatch {
   bool get _isFull => _spans.length >= _maxBatchSize;
 
   void _checkForMaxBatchAge() {
+    if (_isFull) {
+      return;
+    }
     if (DateTime.now().difference(_creationTime).inMilliseconds >
         _maxBatchAge) {
       _drainIsAllowed = true;

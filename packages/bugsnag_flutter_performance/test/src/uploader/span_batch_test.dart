@@ -202,6 +202,56 @@ void main() {
             equals([span]),
           );
         });
+
+        test(
+            'should return empty list again if the batch was previously drained, is not full and it is not forced',
+            () {
+          batch.add(
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now()));
+          batch.add(
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now()));
+          batch.add(
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now()));
+          batch.add(
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now()));
+          batch.drain();
+
+          batch.add(
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now()));
+          expect(batch.drain().length, equals(0));
+        });
+
+        test(
+            'should return all spans if the batch was drained and is full again',
+            () {
+          batch.add(
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now()));
+          batch.add(
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now()));
+          batch.add(
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now()));
+          batch.add(
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now()));
+          batch.drain();
+
+          final span1 =
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now());
+          final span2 =
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now());
+          final span3 =
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now());
+          final span4 =
+              BugsnagPerformanceSpanImpl(name: '', startTime: DateTime.now());
+          batch.add(span1);
+          batch.add(span2);
+          batch.add(span3);
+          batch.add(span4);
+
+          expect(
+            batch.drain(),
+            equals([span1, span2, span3, span4]),
+          );
+        });
       });
     });
   });
