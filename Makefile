@@ -23,6 +23,7 @@ endif
 	@echo $(VERSION) > VERSION
 	sed -i '' "s/## TBD/## $(VERSION) ($(shell date '+%Y-%m-%d'))/" CHANGELOG.md
 	sed -i '' "s/^version: .*/version: $(VERSION)/" packages/bugsnag_flutter_performance/pubspec.yaml
+	sed -i '' "s/^  static String get _getSDKVersion => .*/  static String get _getSDKVersion => '$(VERSION)';/" packages/bugsnag_flutter_performance/lib/src/extensions/resource_attributes.dart
 	
 publish_dry:
 	cd staging/bugsnag_flutter_performance && $(FLUTTER_BIN) pub publish --dry-run
@@ -61,7 +62,7 @@ ifeq ($(VERSION),)
 endif
 	rm -rf staging
 	@git checkout -b release-v$(VERSION)
-	@git add packages/bugsnag_flutter_performance/pubspec.yaml CHANGELOG.md VERSION
+	@git add packages/bugsnag_flutter_performance/pubspec.yaml packages/bugsnag_flutter_performance/lib/src/extensions/resource_attributes.dart CHANGELOG.md VERSION
 	@git diff --exit-code || (echo "you have unstaged changes - Makefile may need updating to `git add` some more files"; exit 1)
 	@git commit -m "Release v$(VERSION)"
 	@git push origin release-v$(VERSION)

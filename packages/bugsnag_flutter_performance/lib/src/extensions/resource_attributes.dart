@@ -73,7 +73,7 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
       {
         'key': 'telemetry.sdk.version',
         'value': {
-          'stringValue': '0.0.1',
+          'stringValue': _getSDKVersion,
         }
       },
       {
@@ -195,4 +195,6 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
     }
     return "Unknown";
   }
+
+  static String get _getSDKVersion => '1.1.0';
 }
