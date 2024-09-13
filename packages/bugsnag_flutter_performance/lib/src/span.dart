@@ -114,7 +114,7 @@ class BugsnagPerformanceSpanImpl
       };
 
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       other is BugsnagPerformanceSpan &&
       other.spanId == spanId &&
       other.traceId == traceId;
