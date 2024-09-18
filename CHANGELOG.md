@@ -1,11 +1,11 @@
 Changelog
 =========
 
-## TBD
+## 1.2.1 (2024-09-18)
 
 ### Bug fixes
 
-* Fixed an exception thrown when no source of cryptographically secure random numbers is available [85](https://github.com/bugsnag/bugsnag-flutter-performance/pull/85)
+* Fixed an exception thrown when no source of cryptographically secure random numbers is available [86](https://github.com/bugsnag/bugsnag-flutter-performance/pull/86)
 
 ## 1.2.0 (2024-09-13)
 

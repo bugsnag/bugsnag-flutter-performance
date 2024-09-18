@@ -1,6 +1,6 @@
 name: bugsnag_flutter_performance
 description: BugSnag performance monitoring tool for Flutter apps
-version: 1.2.0
+version: 1.2.1
 homepage: https://www.bugsnag.com/
 documentation: https://docs.bugsnag.com/performance/flutter/
 repository: https://github.com/bugsnag/bugsnag-flutter-performance
