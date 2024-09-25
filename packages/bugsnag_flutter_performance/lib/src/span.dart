@@ -4,6 +4,7 @@ import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:bugsnag_flutter_performance/src/util/random.dart';
+import 'package:flutter/foundation.dart';
 
 typedef TraceId = BigInt;
 typedef SpanId = BigInt;
@@ -45,6 +46,7 @@ class BugsnagPerformanceSpanImpl
     this.onCanceled = onCanceled ?? _onCanceled;
     this.attributes = attributes ?? BugsnagPerformanceSpanAttributes();
   }
+  @override
   final String name;
   @override
   late final TraceId traceId;
@@ -89,9 +91,15 @@ class BugsnagPerformanceSpanImpl
     onEnded(this);
   }
 
+  @override
   void setAttribute(String key, dynamic value) {
     if (_isMutable) {
       attributes.setAttribute(key, value);
+    } else {
+      if (kDebugMode) {
+        print(
+            'Span attribute "$key" in span $name was dropped as the span is no longer open');
+      }
     }
   }
 

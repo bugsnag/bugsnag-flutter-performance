@@ -93,6 +93,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   RetryQueue? _retryQueue;
   Sampler? _sampler;
   DateTime? _lastSamplingProbabilityRefreshDate;
+  List<OnSpanEndCallback> _onSpanEndCallbacks = [];
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
   late final BugsnagLifecycleListener? _lifecycleListener;
@@ -104,7 +105,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
   BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
       _networkRequestCallback;
-  late final List<OnSpanEndCallback> _onSpanEndCallbacks;
   final Map<SpanId, BugsnagPerformanceSpan> _potentiallyOpenSpans = {};
   final spanContextStackExpando = Expando<BugsnagPerformanceSpanContextStack>();
 
