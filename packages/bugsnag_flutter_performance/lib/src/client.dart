@@ -27,6 +27,8 @@ import 'bugsnag_network_request_info.dart';
 import 'configuration.dart';
 import 'span.dart';
 
+typedef OnSpanEndCallback = Future<bool> Function(BugsnagPerformanceSpan);
+
 String _defaultEndpoint(String? apiKey) =>
     'https://${apiKey != null ? '$apiKey.' : ''}otlp.bugsnag.com/v1/traces';
 
@@ -40,6 +42,8 @@ abstract class BugsnagPerformanceClient {
     List<String>? enabledReleaseStages,
     String? serviceName,
     String? appVersion,
+    double? samplingProbability,
+    List<OnSpanEndCallback>? onSpanEndCallbacks,
   });
 
   Future<void> measureRunApp(FutureOr<void> Function() runApp);
@@ -100,6 +104,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   final Map<String, BugsnagPerformanceSpan> _networkSpans = {};
   BugsnagNetworkRequestInfo? Function(BugsnagNetworkRequestInfo)?
       _networkRequestCallback;
+  late final List<OnSpanEndCallback> _onSpanEndCallbacks;
   final Map<SpanId, BugsnagPerformanceSpan> _potentiallyOpenSpans = {};
   final spanContextStackExpando = Expando<BugsnagPerformanceSpanContextStack>();
 
@@ -136,6 +141,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     String? serviceName,
     String? appVersion,
     double? samplingProbability,
+    List<OnSpanEndCallback>? onSpanEndCallbacks,
   }) async {
     if (!_isEnabledOnCurrentPlatform()) {
       _appStartInstrumentation.setEnabled(false);
@@ -144,6 +150,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     }
     WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
+    _onSpanEndCallbacks = onSpanEndCallbacks ?? [];
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint(apiKey)),
@@ -200,7 +207,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       startTime: startTime ?? _clock.now(),
       onEnded: (endedSpan) async {
         await _updateSamplingProbabilityIfNeeded();
-        if (await _sampler?.sample(endedSpan) ?? true) {
+        if ((await _sampler?.sample(endedSpan) ?? true) &&
+            (await _callOnSpanEndedCallbacks(endedSpan))) {
           _currentBatch?.add(endedSpan);
         }
         _potentiallyOpenSpans.remove(endedSpan.spanId);
@@ -539,5 +547,29 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
   bool _isEnabledOnCurrentPlatform() {
     return !kIsWeb;
+  }
+
+  Future<bool> _callOnSpanEndedCallbacks(BugsnagPerformanceSpan span) async {
+    if (span is BugsnagPerformanceSpanImpl) {
+      span.makeMutable(true);
+    }
+    for (OnSpanEndCallback callback in _onSpanEndCallbacks) {
+      try {
+        if (!(await callback(span))) {
+          if (span is BugsnagPerformanceSpanImpl) {
+            span.makeMutable(false);
+          }
+          return false;
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('onSpanEnd callback threw exception: $e');
+        }
+      }
+    }
+    if (span is BugsnagPerformanceSpanImpl) {
+      span.makeMutable(false);
+    }
+    return true;
   }
 }

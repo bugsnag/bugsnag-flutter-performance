@@ -49,6 +49,7 @@ abstract class Scenario {
     String? appVersion,
     bool shouldUseNotifier = false,
     double? samplingProbability,
+    List<Future<bool> Function(BugsnagPerformanceSpan)>? onSpanEndCallbacks,
   }) async {
     bugsnag_performance.setExtraConfig("instrumentAppStart", false);
     bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 1000);
@@ -61,6 +62,7 @@ abstract class Scenario {
       serviceName: serviceName,
       appVersion: appVersion,
       samplingProbability: samplingProbability,
+      onSpanEndCallbacks: onSpanEndCallbacks,
     );
     if (shouldUseNotifier && endpointConfiguration != null) {
       await bugsnag.start(

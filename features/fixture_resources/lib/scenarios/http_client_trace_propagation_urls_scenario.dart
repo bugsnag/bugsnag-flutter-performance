@@ -11,7 +11,7 @@ class HttpClientTracePropagationUrlsScenario extends Scenario {
     http.addSubscriber(bugsnag_performance.networkInstrumentation);
     http.get(
         Uri.parse('${FixtureConfig.MAZE_HOST.toString()}/reflect?dontsend'));
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     http.get(Uri.parse('${FixtureConfig.MAZE_HOST.toString()}/reflect?dosend'));
   }
 }

@@ -44,6 +44,7 @@ class BugsnagPerformance {
     String? serviceName,
     String? appVersion,
     double? samplingProbability,
+    List<Future<bool> Function(BugsnagPerformanceSpan)>? onSpanEndCallbacks,
   }) {
     _validateApiKey(apiKey);
     return _client.start(
@@ -56,6 +57,7 @@ class BugsnagPerformance {
       serviceName: serviceName,
       appVersion: appVersion,
       samplingProbability: samplingProbability,
+      onSpanEndCallbacks: onSpanEndCallbacks,
     );
   }
 

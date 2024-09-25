@@ -26,6 +26,8 @@ class BugsnagPerformanceSpanAttributes {
   void setAttribute(String key, dynamic value) {
     if (value != null) {
       attributes[key] = value;
+    } else {
+      attributes.remove(key);
     }
   }
 

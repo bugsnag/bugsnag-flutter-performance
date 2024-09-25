@@ -23,6 +23,8 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
   });
   String get encodedTraceId;
   String get encodedSpanId;
+  String get name;
+  void setAttribute(String key, dynamic value);
   dynamic toJson();
 }
 
@@ -54,6 +56,7 @@ class BugsnagPerformanceSpanImpl
   late final BugsnagPerformanceSpanAttributes attributes;
   DateTime? endTime;
   var isSampled = false;
+  var _isMutable = true;
   late final void Function(BugsnagPerformanceSpan) onEnded;
   late final void Function(BugsnagPerformanceSpan) onCanceled;
   late final BugsnagClock clock;
@@ -70,6 +73,7 @@ class BugsnagPerformanceSpanImpl
       return;
     }
     this.endTime = endTime ?? clock.now();
+    makeMutable(false);
     if (cancelled) {
       onCanceled(this);
       return;
@@ -83,6 +87,12 @@ class BugsnagPerformanceSpanImpl
       attributes.responseContentLength = responseContentLength;
     }
     onEnded(this);
+  }
+
+  void setAttribute(String key, dynamic value) {
+    if (_isMutable) {
+      attributes.setAttribute(key, value);
+    }
   }
 
   BugsnagPerformanceSpanImpl.fromJson(Map<String, dynamic> json,
@@ -140,6 +150,10 @@ class BugsnagPerformanceSpanImpl
 
   @override
   String get encodedSpanId => _encodeSpanId(spanId);
+
+  void makeMutable(bool mutable) {
+    _isMutable = mutable;
+  }
 }
 
 String _encodeSpanId(SpanId spanId) {

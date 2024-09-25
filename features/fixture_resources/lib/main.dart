@@ -84,7 +84,7 @@ class Command {
 }
 
 class MazeRunnerFlutterApp extends StatelessWidget {
-  const MazeRunnerFlutterApp({Key? key}) : super(key: key);
+  const MazeRunnerFlutterApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -151,9 +151,9 @@ class MazeRunnerHomePage extends StatefulWidget {
   final String mazerunnerUrl;
 
   const MazeRunnerHomePage({
-    Key? key,
+    super.key,
     required this.mazerunnerUrl,
-  }) : super(key: key);
+  });
 
   @override
   State<MazeRunnerHomePage> createState() => _HomePageState();
@@ -332,9 +332,9 @@ class _HomePageState extends State<MazeRunnerHomePage> {
                 height: 400.0,
                 width: double.infinity,
                 child: TextButton(
-                  child: const Text("Run Command"),
                   onPressed: () => _onRunCommand(context),
                   key: const Key("runCommand"),
+                  child: const Text("Run Command"),
                 ),
               ),
               TextField(
@@ -373,14 +373,14 @@ class _HomePageState extends State<MazeRunnerHomePage> {
                 ),
               ),
               TextButton(
-                child: const Text("Start Bugsnag"),
                 onPressed: _onStartBugsnag,
                 key: const Key("startBugsnag"),
+                child: const Text("Start Bugsnag"),
               ),
               TextButton(
-                child: const Text("Run Scenario"),
                 onPressed: () => _onRunScenario(context),
                 key: const Key("startScenario"),
+                child: const Text("Run Scenario"),
               ),
             ],
           ),

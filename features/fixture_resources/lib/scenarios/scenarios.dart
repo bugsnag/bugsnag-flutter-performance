@@ -9,6 +9,7 @@ import 'package:mazerunner/scenarios/auto_instrument_view_load_nested_scenario.d
 import 'package:mazerunner/scenarios/correlation_null_scenario.dart';
 import 'package:mazerunner/scenarios/correlation_simple_scenario.dart';
 import 'package:mazerunner/scenarios/custom_service_name_scenario.dart';
+import 'package:mazerunner/scenarios/custom_span_attributes_scenario.dart';
 import 'package:mazerunner/scenarios/dart_io_traceparent_scenario.dart';
 import 'package:mazerunner/scenarios/fixed_sampling_probability_one_scenario.dart';
 import 'package:mazerunner/scenarios/fixed_sampling_probability_zero_scenario.dart';
@@ -127,4 +128,6 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('FixedSamplingProbabilityZeroScenario',
       () => FixedSamplingProbabilityZeroScenario()),
   ScenarioInfo('CustomServiceNameScenario', () => CustomServiceNameScenario()),
+  ScenarioInfo(
+      'CustomSpanAttributesScenario', () => CustomSpanAttributesScenario())
 ];
