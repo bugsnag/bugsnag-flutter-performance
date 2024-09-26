@@ -56,6 +56,8 @@ steps:
           - "--farm=bb"
           - "--device=IOS_14|IOS_15|IOS_16"
           - "--fail-fast"
+          - "--no-tunnel"
+          - "--aws-public-ip"
           - "--appium-version=1.22"
       test-collector#v1.10.2:
         files: "reports/TEST-*.xml"
@@ -105,6 +107,8 @@ steps:
           - "--farm=bb"
           - "--device=ANDROID_10|ANDROID_11|ANDROID_12|ANDROID_13"
           - "--fail-fast"
+          - "--no-tunnel"
+          - "--aws-public-ip"
           - "--appium-version=1.22"
       test-collector#v1.10.2:
         files: "reports/TEST-*.xml"
