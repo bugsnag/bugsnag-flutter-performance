@@ -44,8 +44,11 @@ class FileRetryQueue implements RetryQueue {
 
   final Uploader? _uploader;
   var _isFlushing = false;
+  final Directory? _cacheDirectory;
 
-  FileRetryQueue(Uploader uploader) : _uploader = uploader;
+  FileRetryQueue(Uploader uploader, {Directory? cacheDirectory})
+      : _uploader = uploader,
+        _cacheDirectory = cacheDirectory;
 
   @override
   Future<void> enqueue({
@@ -53,14 +56,14 @@ class FileRetryQueue implements RetryQueue {
     required Uint8List body,
   }) async {
     final payload =
-        jsonEncode(CachedPayloadModel(headers: headers, body: body));
+    jsonEncode(CachedPayloadModel(headers: headers, body: body));
     final fileName = _generateFileName();
     await _writeToFile(fileName, payload);
   }
 
   @override
   Future<void> flush() async {
-    final cacheDirectory = await _getCacheDirectory();
+    final cacheDirectory = _cacheDirectory ?? await _getCacheDirectory();
     if (_isFlushing || !cacheDirectory.existsSync()) {
       return;
     }
@@ -122,3 +125,4 @@ class FileRetryQueue implements RetryQueue {
     return Directory('${appCacheDir.path}/$_cacheDirectoryName');
   }
 }
+
