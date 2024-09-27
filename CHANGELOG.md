@@ -1,12 +1,6 @@
 Changelog
 =========
 
-## TBD
-
-### Bug fixes
-
-* Fixed an issue where errors were not safely handled while flushing the Bugsnag cache [90](https://github.com/bugsnag/bugsnag-flutter-performance/pull/90)
-
 ## 1.2.1 (2024-09-18)
 
 ### Bug fixes
