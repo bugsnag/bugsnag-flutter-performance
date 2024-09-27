@@ -56,7 +56,7 @@ class FileRetryQueue implements RetryQueue {
     required Uint8List body,
   }) async {
     final payload =
-    jsonEncode(CachedPayloadModel(headers: headers, body: body));
+        jsonEncode(CachedPayloadModel(headers: headers, body: body));
     final fileName = _generateFileName();
     await _writeToFile(fileName, payload);
   }
@@ -125,4 +125,3 @@ class FileRetryQueue implements RetryQueue {
     return Directory('${appCacheDir.path}/$_cacheDirectoryName');
   }
 }
-

@@ -40,7 +40,8 @@ void main() {
       final mockCachePath = '${supportDir.path}/bugsnag-performance/v1/batches';
       mockCacheDirectory = Directory(mockCachePath);
       await mockCacheDirectory.create(recursive: true);
-      retryQueue = FileRetryQueue(mockUploader, cacheDirectory: mockCacheDirectory);
+      retryQueue =
+          FileRetryQueue(mockUploader, cacheDirectory: mockCacheDirectory);
     });
 
     tearDown(() async {
@@ -63,7 +64,8 @@ void main() {
 
     test('should delete files older than 24 hours', () async {
       // Create a file older than 24 hours
-      final oldTimestamp = BugsnagClockImpl.instance.now().subtract(Duration(hours: 25));
+      final oldTimestamp =
+          BugsnagClockImpl.instance.now().subtract(Duration(hours: 25));
       final fileName = '${mockCacheDirectory.path}/old_payload.json';
       final file = File(fileName);
       await file.writeAsString('{"headers": {}, "body": ""}');
@@ -74,6 +76,5 @@ void main() {
       // Ensure the file is deleted after flush
       expect(file.existsSync(), isFalse);
     });
-    
   });
 }
