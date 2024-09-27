@@ -1,14 +1,20 @@
 import 'dart:io';
+import 'package:bugsnag_flutter_performance/src/uploader/model/otlp_package.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/uploader.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
 
-// Mock classes
-class MockUploader extends Mock implements Uploader {}
+class TestUploader implements Uploader {
+  final RequestResult resultToReturn;
+  TestUploader({this.resultToReturn = RequestResult.success});
+  @override
+  Future<RequestResult> upload({required OtlpPackage package}) async {
+    return resultToReturn;
+  }
+}
 
 class MockPathProviderPlatform extends PathProviderPlatform {
   @override
@@ -23,13 +29,13 @@ void main() {
 
   group('FileRetryQueue', () {
     late FileRetryQueue retryQueue;
-    late MockUploader mockUploader;
+    late TestUploader mockUploader;
     late Directory mockCacheDirectory;
 
     setUp(() async {
       BugsnagClockImpl.ensureInitialized();
       PathProviderPlatform.instance = MockPathProviderPlatform();
-      mockUploader = MockUploader();
+      mockUploader = TestUploader();
       final supportDir = await getApplicationSupportDirectory();
       final mockCachePath = '${supportDir.path}/bugsnag-performance/v1/batches';
       mockCacheDirectory = Directory(mockCachePath);
@@ -68,7 +74,6 @@ void main() {
       // Ensure the file is deleted after flush
       expect(file.existsSync(), isFalse);
     });
-
-
+    
   });
 }
