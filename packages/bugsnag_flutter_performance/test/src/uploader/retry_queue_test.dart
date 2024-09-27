@@ -64,8 +64,7 @@ void main() {
 
     test('should delete files older than 24 hours', () async {
       // Create a file older than 24 hours
-      final oldTimestamp =
-          BugsnagClockImpl.instance.now().subtract(Duration(hours: 25));
+      final oldTimestamp = BugsnagClockImpl.instance.now().subtract(const Duration(hours: 25));
       final fileName = '${mockCacheDirectory.path}/old_payload.json';
       final file = File(fileName);
       await file.writeAsString('{"headers": {}, "body": ""}');
