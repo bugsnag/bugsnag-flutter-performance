@@ -44,8 +44,11 @@ class FileRetryQueue implements RetryQueue {
 
   final Uploader? _uploader;
   var _isFlushing = false;
+  final Directory? _cacheDirectory;
 
-  FileRetryQueue(Uploader uploader) : _uploader = uploader;
+  FileRetryQueue(Uploader uploader, {Directory? cacheDirectory})
+      : _uploader = uploader,
+        _cacheDirectory = cacheDirectory;
 
   @override
   Future<void> enqueue({
@@ -60,7 +63,7 @@ class FileRetryQueue implements RetryQueue {
 
   @override
   Future<void> flush() async {
-    final cacheDirectory = await _getCacheDirectory();
+    final cacheDirectory = _cacheDirectory ?? await _getCacheDirectory();
     if (_isFlushing || !cacheDirectory.existsSync()) {
       return;
     }
