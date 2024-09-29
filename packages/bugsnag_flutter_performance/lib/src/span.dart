@@ -25,6 +25,8 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
   String get encodedTraceId;
   String get encodedSpanId;
   String get name;
+  DateTime get startTime;
+  DateTime? get endTime;
   void setAttribute(String key, dynamic value);
   dynamic toJson();
 }
@@ -54,14 +56,18 @@ class BugsnagPerformanceSpanImpl
   late final SpanId spanId;
   @override
   SpanId? parentSpanId;
+  @override
   final DateTime startTime;
   late final BugsnagPerformanceSpanAttributes attributes;
-  DateTime? endTime;
+  DateTime? _endTime;
   var isSampled = false;
   var _isMutable = true;
   late final void Function(BugsnagPerformanceSpan) onEnded;
   late final void Function(BugsnagPerformanceSpan) onCanceled;
   late final BugsnagClock clock;
+
+  @override
+  DateTime? get endTime => _endTime;
 
   @override
   void end({
@@ -74,7 +80,7 @@ class BugsnagPerformanceSpanImpl
     if (!isOpen()) {
       return;
     }
-    this.endTime = endTime ?? clock.now();
+    _endTime = endTime ?? clock.now();
     makeMutable(false);
     if (cancelled) {
       onCanceled(this);
@@ -107,7 +113,7 @@ class BugsnagPerformanceSpanImpl
       [void Function(BugsnagPerformanceSpan)? onEnded])
       : startTime = int.parse(json['startTimeUnixNano']).timeFromNanos,
         name = json['name'] as String,
-        endTime = json['endTimeUnixNano'] != null
+        _endTime = json['endTimeUnixNano'] != null
             ? int.parse(json['endTimeUnixNano']).timeFromNanos
             : null,
         traceId = _decodeTraceId(json['traceId'] as String?) ?? randomTraceId(),
@@ -121,8 +127,8 @@ class BugsnagPerformanceSpanImpl
   dynamic toJson() => {
         'startTimeUnixNano': startTime.nanosecondsSinceEpoch.toString(),
         'name': name,
-        if (endTime != null)
-          'endTimeUnixNano': endTime!.nanosecondsSinceEpoch.toString(),
+        if (_endTime != null)
+          'endTimeUnixNano': _endTime!.nanosecondsSinceEpoch.toString(),
         'traceId': encodedTraceId,
         'spanId': encodedSpanId,
         'kind': 1,
@@ -150,7 +156,7 @@ class BugsnagPerformanceSpanImpl
 
   @override
   bool isOpen() {
-    return endTime == null;
+    return _endTime == null;
   }
 
   @override

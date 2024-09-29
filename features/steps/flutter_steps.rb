@@ -208,3 +208,56 @@ Then('no span named {string} exists') do |span_name|
 
   Maze.check.true(spans_with_name.length() == 0);
 end
+
+Then('a span array attribute {string} contains the string value {string} at index {int}') do |attribute, expected, index|
+  value = get_array_value_at_index(attribute, index, 'stringValue')
+  Maze.check.true(value == expected)
+end
+
+Then('a span array attribute {string} contains the integer value {int} at index {int}') do |attribute, expected, index|
+  value = get_array_value_at_index(attribute, index, 'intValue')
+  Maze.check.true(value.to_i == expected)
+end
+
+Then('a span array attribute {string} contains the double value {float} at index {int}') do |attribute, expected, index|
+  value = get_array_value_at_index(attribute, index, 'doubleValue')
+  Maze.check.true(value == expected)
+end
+
+Then('a span array attribute {string} contains the value true at index {int}') do |attribute, index|
+  value = get_array_value_at_index(attribute, index, 'boolValue')
+  Maze.check.true(value == true)
+end
+
+Then('a span array attribute {string} contains the value false at index {int}') do |attribute, index|
+  value = get_array_value_at_index(attribute, index, 'boolValue')
+  Maze.check.true(value == false)
+end
+
+Then('a span array attribute {string} contains {int} items') do |attribute, length|
+  array = get_array_attribute_contents(attribute)
+  Maze.check.true(array.length() == length)
+end
+
+Then('a span array attribute {string} is empty') do |attribute|
+  array_contents = get_array_attribute_contents(attribute)
+  Maze.check.true(array_contents.empty?)
+end
+
+def get_array_value_at_index(attribute, index, type)
+  array = get_array_attribute_contents(attribute)
+  Maze.check.true(array.length() > index)
+  value = array[index]
+  Maze.check.true(value.has_key?(type))
+  return value[type]
+end
+
+def get_array_attribute_contents(attribute)
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) &&
+                                                                         a['value'].has_key?('arrayValue') &&
+                                                                         a['value']['arrayValue'].has_key?('values') } }.compact
+  array_attributes = selected_attributes.map { |a| a['value']['arrayValue']['values'] }
+  Maze.check.false(array_attributes.empty?)
+  return array_attributes[0]
+end

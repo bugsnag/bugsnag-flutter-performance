@@ -87,6 +87,11 @@ Feature: Manual Spans
     * every span string attribute "customAttribute2" does not exist
     * a span integer attribute "customAttribute3" equals 3
     * a span double attribute "customAttribute4" equals 42.0
-    * every span string attribute "customAttribute5" does not exist
+    * a span array attribute "customAttribute5" contains 4 items
+    * a span array attribute "customAttribute5" contains the string value "customString" at index 0
+    * a span array attribute "customAttribute5" contains the integer value 42 at index 1
+    * a span array attribute "customAttribute5" contains the value true at index 2
+    * a span array attribute "customAttribute5" contains the double value 43.0 at index 3
+    * every span string attribute "customAttribute6" does not exist
 
 

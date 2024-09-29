@@ -127,6 +127,19 @@ void main() {
               'key': 'custom',
               'value': {'stringValue': 'value'}
             },
+            {
+              'key': 'customArray',
+              'value': {
+                'arrayValue': {
+                  'values': [
+                    {'stringValue': 'testValue'},
+                    {'intValue': '1'},
+                    {'doubleValue': 4.2},
+                    {'boolValue': true},
+                  ]
+                }
+              }
+            },
           ],
         };
         final span = BugsnagPerformanceSpanImpl.fromJson(json);
@@ -147,6 +160,14 @@ void main() {
             span.parentSpanId,
             equals(
                 BigInt.tryParse(json['parentSpanId'] as String, radix: 16)!));
+        expect(
+            span.attributes.attributes['customArray'],
+            equals([
+              'testValue',
+              1,
+              4.2,
+              true,
+            ]));
       });
 
       test('should decode a running span', () {
@@ -185,6 +206,14 @@ void main() {
           parentSpanId: randomSpanId(),
         );
         span.clock = BugsnagClockImpl.instance;
+        span.setAttribute('customString', 'testValue');
+        span.setAttribute('customInt', 2);
+        span.setAttribute('list', [
+          42,
+          43.0,
+          'testString',
+          false,
+        ]);
         span.end();
         final json = span.toJson();
         expect(json['name'], equals(span.name));
@@ -199,6 +228,37 @@ void main() {
             equals(span.spanId.toRadixString(16).padLeft(16, '0')));
         expect(json['parentSpanId'],
             equals(span.parentSpanId!.toRadixString(16).padLeft(16, '0')));
+        final attributes = json['attributes'] as List<Map<String, dynamic>>;
+        expect(
+          attributes[0],
+          equals({
+            'key': 'customString',
+            'value': {'stringValue': 'testValue'},
+          }),
+        );
+        expect(
+          attributes[1],
+          equals({
+            'key': 'customInt',
+            'value': {'intValue': '2'},
+          }),
+        );
+        expect(
+          attributes[2],
+          equals({
+            'key': 'list',
+            'value': {
+              'arrayValue': {
+                'values': [
+                  {'intValue': '42'},
+                  {'doubleValue': 43.0},
+                  {'stringValue': 'testString'},
+                  {'boolValue': false},
+                ],
+              }
+            },
+          }),
+        );
       });
 
       test('should encode a running span', () {

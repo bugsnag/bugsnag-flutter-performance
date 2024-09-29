@@ -18,7 +18,7 @@ class CustomSpanAttributesScenario extends Scenario {
     span.setAttribute('customAttribute2', 'Test');
     span.setAttribute('customAttribute3', 1);
     span.end();
-    span.setAttribute('customAttribute5', 'T');
+    span.setAttribute('customAttribute6', 'T');
   }
 
   Future<bool> _setAttributesAndThrow(BugsnagPerformanceSpan span) async {
@@ -38,6 +38,12 @@ class CustomSpanAttributesScenario extends Scenario {
     span.setAttribute('customAttribute3', 3);
     span.setAttribute('customAttribute2', null);
     span.setAttribute('customAttribute4', 42.0);
+    span.setAttribute('customAttribute5', [
+      'customString',
+      42,
+      true,
+      43.0,
+    ]);
     return true;
   }
 }
