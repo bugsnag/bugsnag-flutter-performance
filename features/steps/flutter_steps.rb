@@ -209,6 +209,17 @@ Then('no span named {string} exists') do |span_name|
   Maze.check.true(spans_with_name.length() == 0);
 end
 
+Then('every span field {string} does not exist') do |key|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  spans.map { |span| Maze.check.nil span[key] }
+end
+
+Then('every span field {string} equals {int}') do |key, expected|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_keys = spans.map { |span| span[key] == expected }
+  Maze.check.not_includes selected_keys, false
+end
+
 Then('a span array attribute {string} contains the string value {string} at index {int}') do |attribute, expected, index|
   value = get_array_value_at_index(attribute, index, 'stringValue')
   Maze.check.true(value == expected)

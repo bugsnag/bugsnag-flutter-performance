@@ -18,6 +18,7 @@ import 'package:mazerunner/scenarios/http_client_traceparent_scenario.dart';
 
 import 'auto_instrument_app_starts_scenario.dart';
 import 'auto_instrument_navigation_with_view_load_scenario.dart';
+import 'custom_span_attributes_with_limits_scenario.dart';
 import 'dio_callback_cancel_span.dart';
 import 'dio_callback_edit_scenario.dart';
 import 'initial_p_scenario.dart';
@@ -129,5 +130,7 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => FixedSamplingProbabilityZeroScenario()),
   ScenarioInfo('CustomServiceNameScenario', () => CustomServiceNameScenario()),
   ScenarioInfo(
-      'CustomSpanAttributesScenario', () => CustomSpanAttributesScenario())
+      'CustomSpanAttributesScenario', () => CustomSpanAttributesScenario()),
+  ScenarioInfo('CustomSpanAttributesWithLimitsScenario',
+      () => CustomSpanAttributesWithLimitsScenario())
 ];

@@ -44,6 +44,9 @@ class BugsnagPerformance {
     String? serviceName,
     String? appVersion,
     double? samplingProbability,
+    int? attributeCountLimit,
+    int? attributeStringValueLimit,
+    int? attributeArrayLengthLimit,
     List<Future<bool> Function(BugsnagPerformanceSpan)>? onSpanEndCallbacks,
   }) {
     _validateApiKey(apiKey);
@@ -57,6 +60,9 @@ class BugsnagPerformance {
       serviceName: serviceName,
       appVersion: appVersion,
       samplingProbability: samplingProbability,
+      attributeCountLimit: attributeCountLimit,
+      attributeStringValueLimit: attributeStringValueLimit,
+      attributeArrayLengthLimit: attributeArrayLengthLimit,
       onSpanEndCallbacks: onSpanEndCallbacks,
     );
   }

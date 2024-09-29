@@ -49,6 +49,9 @@ abstract class Scenario {
     String? appVersion,
     bool shouldUseNotifier = false,
     double? samplingProbability,
+    int? attributeCountLimit,
+    int? attributeStringValueLimit,
+    int? attributeArrayLengthLimit,
     List<Future<bool> Function(BugsnagPerformanceSpan)>? onSpanEndCallbacks,
   }) async {
     bugsnag_performance.setExtraConfig("instrumentAppStart", false);
@@ -62,6 +65,9 @@ abstract class Scenario {
       serviceName: serviceName,
       appVersion: appVersion,
       samplingProbability: samplingProbability,
+      attributeCountLimit: attributeCountLimit,
+      attributeStringValueLimit: attributeStringValueLimit,
+      attributeArrayLengthLimit: attributeArrayLengthLimit,
       onSpanEndCallbacks: onSpanEndCallbacks,
     );
     if (shouldUseNotifier && endpointConfiguration != null) {

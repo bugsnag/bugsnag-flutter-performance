@@ -1,6 +1,8 @@
+import 'package:bugsnag_flutter_performance/src/configuration.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
+import 'package:bugsnag_flutter_performance/src/span_attributes_limits.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:bugsnag_flutter_performance/src/util/random.dart';
@@ -28,7 +30,9 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
   DateTime get startTime;
   DateTime? get endTime;
   void setAttribute(String key, dynamic value);
-  dynamic toJson();
+  dynamic toJson({
+    BugsnagPerformanceConfiguration? config,
+  });
 }
 
 class BugsnagPerformanceSpanImpl
@@ -41,13 +45,19 @@ class BugsnagPerformanceSpanImpl
       TraceId? traceId,
       SpanId? spanId,
       this.parentSpanId,
+      int? attributeCountLimit,
       BugsnagPerformanceSpanAttributes? attributes}) {
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
     this.onCanceled = onCanceled ?? _onCanceled;
+    this.attributeCountLimit = attributeCountLimit ?? globalAttributeCountLimit;
     this.attributes = attributes ?? BugsnagPerformanceSpanAttributes();
   }
+
+  static int globalAttributeCountLimit = SpanAttributesLimits.limitValue(
+      type: SpanAttributesLimitType.attributeCountLimit);
+
   @override
   final String name;
   @override
@@ -65,9 +75,10 @@ class BugsnagPerformanceSpanImpl
   late final void Function(BugsnagPerformanceSpan) onEnded;
   late final void Function(BugsnagPerformanceSpan) onCanceled;
   late final BugsnagClock clock;
-
+  late final int attributeCountLimit;
   @override
   DateTime? get endTime => _endTime;
+  var _droppedAttributesCountBeforeEncoding = 0;
 
   @override
   void end({
@@ -99,14 +110,25 @@ class BugsnagPerformanceSpanImpl
 
   @override
   void setAttribute(String key, dynamic value) {
-    if (_isMutable) {
-      attributes.setAttribute(key, value);
-    } else {
+    if (!_isMutable) {
       if (kDebugMode) {
         print(
             'Span attribute "$key" in span $name was dropped as the span is no longer open');
       }
+      return;
     }
+    if (!attributes.hasAttribute(key) &&
+        value != null &&
+        attributes.count >= attributeCountLimit) {
+      _droppedAttributesCountBeforeEncoding++;
+      if (kDebugMode) {
+        print(
+            'Span attribute "$key" in span $name was dropped as the number of attributes exceeds the $attributeCountLimit attribute limit set by AttributeCountLimit.');
+      }
+      return;
+    }
+
+    attributes.setAttribute(key, value);
   }
 
   BugsnagPerformanceSpanImpl.fromJson(Map<String, dynamic> json,
@@ -124,18 +146,27 @@ class BugsnagPerformanceSpanImpl
             BugsnagPerformanceSpanAttributes.fromJson(json['attributes']);
 
   @override
-  dynamic toJson() => {
-        'startTimeUnixNano': startTime.nanosecondsSinceEpoch.toString(),
-        'name': name,
-        if (_endTime != null)
-          'endTimeUnixNano': _endTime!.nanosecondsSinceEpoch.toString(),
-        'traceId': encodedTraceId,
-        'spanId': encodedSpanId,
-        'kind': 1,
-        if (parentSpanId != null)
-          'parentSpanId': _encodeSpanId(parentSpanId ?? BigInt.zero),
-        'attributes': attributes.toJson(),
-      };
+  dynamic toJson({
+    BugsnagPerformanceConfiguration? config,
+  }) {
+    final attributesEncodingResult = attributes.toJson(config: config);
+    final droppedAttributesCount = _droppedAttributesCountBeforeEncoding +
+        attributesEncodingResult.droppedAttributesCount;
+    return {
+      'startTimeUnixNano': startTime.nanosecondsSinceEpoch.toString(),
+      'name': name,
+      if (_endTime != null)
+        'endTimeUnixNano': _endTime!.nanosecondsSinceEpoch.toString(),
+      'traceId': encodedTraceId,
+      'spanId': encodedSpanId,
+      'kind': 1,
+      if (parentSpanId != null)
+        'parentSpanId': _encodeSpanId(parentSpanId ?? BigInt.zero),
+      'attributes': attributesEncodingResult.jsonValue,
+      if (droppedAttributesCount > 0)
+        'droppedAttributesCount': droppedAttributesCount,
+    };
+  }
 
   @override
   bool operator ==(Object other) =>
