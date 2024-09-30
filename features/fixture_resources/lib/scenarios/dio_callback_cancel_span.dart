@@ -1,5 +1,4 @@
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
-import 'package:bugsnag_http_client/bugsnag_http_client.dart';
 import 'package:dio/io.dart';
 import '../main.dart';
 import 'scenario.dart';

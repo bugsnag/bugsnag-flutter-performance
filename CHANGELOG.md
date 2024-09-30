@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Custom attributes can now be set on a span, including as lists of primitives (int, double, bool, String) [88](https://github.com/bugsnag/bugsnag-flutter-performance/pull/88)
+
+* Introduced OnSpanEndCallbacks that allow changes to spans when their end() method is called, but before they are sent [88](https://github.com/bugsnag/bugsnag-flutter-performance/pull/88)
+
 ## 1.2.1 (2024-09-18)
 
 ### Bug fixes

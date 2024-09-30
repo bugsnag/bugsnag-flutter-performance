@@ -1,6 +1,5 @@
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:flutter/material.dart';
-import 'package:mazerunner/main.dart';
 
 import 'scenario.dart';
 
@@ -68,7 +67,7 @@ class _AutoInstrumentNavigationBasicDeferScenarioScreenState
         onTap: () => widget.runCommandCallback(),
       );
     }
-    return Text('AutoInstrumentNavigationBasicDeferScenarioScreen');
+    return const Text('AutoInstrumentNavigationBasicDeferScenarioScreen');
   }
 
   void setStage(int stage) {

@@ -10,6 +10,7 @@ import 'package:bugsnag_flutter_performance/src/instrumentation/navigation/navig
 import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/measured_widget_callbacks.dart';
 import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/view_load_instrumentation.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
+import 'package:bugsnag_flutter_performance/src/span_attributes_limits.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
@@ -27,6 +28,8 @@ import 'bugsnag_network_request_info.dart';
 import 'configuration.dart';
 import 'span.dart';
 
+typedef OnSpanEndCallback = Future<bool> Function(BugsnagPerformanceSpan);
+
 String _defaultEndpoint(String? apiKey) =>
     'https://${apiKey != null ? '$apiKey.' : ''}otlp.bugsnag.com/v1/traces';
 
@@ -40,6 +43,8 @@ abstract class BugsnagPerformanceClient {
     List<String>? enabledReleaseStages,
     String? serviceName,
     String? appVersion,
+    double? samplingProbability,
+    List<OnSpanEndCallback>? onSpanEndCallbacks,
   });
 
   Future<void> measureRunApp(FutureOr<void> Function() runApp);
@@ -89,6 +94,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   RetryQueue? _retryQueue;
   Sampler? _sampler;
   DateTime? _lastSamplingProbabilityRefreshDate;
+  List<OnSpanEndCallback> _onSpanEndCallbacks = [];
   late final PackageBuilder _packageBuilder;
   late final BugsnagClock _clock;
   late final BugsnagLifecycleListener? _lifecycleListener;
@@ -136,6 +142,10 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     String? serviceName,
     String? appVersion,
     double? samplingProbability,
+    int? attributeCountLimit,
+    int? attributeStringValueLimit,
+    int? attributeArrayLengthLimit,
+    List<OnSpanEndCallback>? onSpanEndCallbacks,
   }) async {
     if (!_isEnabledOnCurrentPlatform()) {
       _appStartInstrumentation.setEnabled(false);
@@ -144,6 +154,12 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     }
     WidgetsFlutterBinding.ensureInitialized();
     _networkRequestCallback = networkRequestCallback;
+    _onSpanEndCallbacks = onSpanEndCallbacks ?? [];
+    BugsnagPerformanceSpanImpl.globalAttributeCountLimit =
+        SpanAttributesLimits.limitValue(
+      type: SpanAttributesLimitType.attributeCountLimit,
+      providedValue: attributeCountLimit,
+    );
     configuration = BugsnagPerformanceConfiguration(
       apiKey: apiKey,
       endpoint: endpoint ?? Uri.parse(_defaultEndpoint(apiKey)),
@@ -153,7 +169,21 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       serviceName: serviceName,
       appVersion: appVersion,
       samplingProbability: samplingProbability,
+      attributeCountLimit: SpanAttributesLimits.limitValue(
+        type: SpanAttributesLimitType.attributeCountLimit,
+        providedValue: attributeCountLimit,
+      ),
+      attributeStringValueLimit: SpanAttributesLimits.limitValue(
+        type: SpanAttributesLimitType.stringValueLimit,
+        providedValue: attributeStringValueLimit,
+      ),
+      attributeArrayLengthLimit: SpanAttributesLimits.limitValue(
+        type: SpanAttributesLimitType.arrayLengthLimit,
+        providedValue: attributeArrayLengthLimit,
+      ),
     );
+    BugsnagPerformanceSpanImpl.globalAttributeCountLimit =
+        configuration!.attributeCountLimit;
     _packageBuilder.setConfig(configuration);
     _initialExtraConfig.forEach((key, value) {
       setExtraConfig(key, value);
@@ -200,7 +230,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       startTime: startTime ?? _clock.now(),
       onEnded: (endedSpan) async {
         await _updateSamplingProbabilityIfNeeded();
-        if (await _sampler?.sample(endedSpan) ?? true) {
+        if ((await _sampler?.sample(endedSpan) ?? true) &&
+            (await _callOnSpanEndedCallbacks(endedSpan))) {
           _currentBatch?.add(endedSpan);
         }
         _potentiallyOpenSpans.remove(endedSpan.spanId);
@@ -211,6 +242,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       parentSpanId: parent?.spanId,
       traceId: parent?.traceId,
       attributes: attributes,
+      attributeCountLimit: configuration?.attributeCountLimit,
     );
     span.clock = _clock;
     if (configuration != null) {
@@ -539,5 +571,29 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
 
   bool _isEnabledOnCurrentPlatform() {
     return !kIsWeb;
+  }
+
+  Future<bool> _callOnSpanEndedCallbacks(BugsnagPerformanceSpan span) async {
+    if (span is BugsnagPerformanceSpanImpl) {
+      span.makeMutable(true);
+    }
+    try {
+      for (OnSpanEndCallback callback in _onSpanEndCallbacks) {
+        try {
+          if (!(await callback(span))) {
+            return false;
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('onSpanEnd callback threw exception: $e');
+          }
+        }
+      }
+    } finally {
+      if (span is BugsnagPerformanceSpanImpl) {
+        span.makeMutable(false);
+      }
+    }
+    return true;
   }
 }
