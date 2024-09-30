@@ -93,7 +93,7 @@ class BugsnagPerformanceSpanAttributes {
   factory BugsnagPerformanceSpanAttributes.fromJson(
       List<Map<String, dynamic>> json) {
     final attributes = <String, dynamic>{};
-    for (var element in json) {
+    for (final element in json) {
       final key = element['key'];
       dynamic value = _decodeAttributeValue(element['value']);
 
@@ -117,7 +117,7 @@ class BugsnagPerformanceSpanAttributes {
       final arrayValue = valueMap['arrayValue'];
       if (arrayValue is Map<String, List> && arrayValue.containsKey('values')) {
         List result = [];
-        for (var element in arrayValue['values']!) {
+        for (final element in arrayValue['values']!) {
           dynamic decodedValue = _decodeAttributeValue(element);
           if (decodedValue != null) {
             result.add(decodedValue);
@@ -208,7 +208,10 @@ class BugsnagPerformanceSpanAttributesEncoder {
     if (value is List) {
       return _encodeListAttributeValue(key, value);
     }
-    return value;
+    if (value is double || value is bool) {
+      return value;
+    }
+    return value.toString();
   }
 
   dynamic _encodeListAttributeValue(
@@ -216,7 +219,7 @@ class BugsnagPerformanceSpanAttributesEncoder {
     List listAttribute,
   ) {
     List result = [];
-    for (var (index, value) in listAttribute.indexed) {
+    for (final (index, value) in listAttribute.indexed) {
       final runtimeType = value.runtimeType;
       if (_typeMap[runtimeType] != null) {
         result.add(_encodeAttributeValue(key, value));

@@ -577,22 +577,22 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     if (span is BugsnagPerformanceSpanImpl) {
       span.makeMutable(true);
     }
-    for (OnSpanEndCallback callback in _onSpanEndCallbacks) {
-      try {
-        if (!(await callback(span))) {
-          if (span is BugsnagPerformanceSpanImpl) {
-            span.makeMutable(false);
+    try {
+      for (OnSpanEndCallback callback in _onSpanEndCallbacks) {
+        try {
+          if (!(await callback(span))) {
+            return false;
           }
-          return false;
-        }
-      } catch (e) {
-        if (kDebugMode) {
-          print('onSpanEnd callback threw exception: $e');
+        } catch (e) {
+          if (kDebugMode) {
+            print('onSpanEnd callback threw exception: $e');
+          }
         }
       }
-    }
-    if (span is BugsnagPerformanceSpanImpl) {
-      span.makeMutable(false);
+    } finally {
+      if (span is BugsnagPerformanceSpanImpl) {
+        span.makeMutable(false);
+      }
     }
     return true;
   }

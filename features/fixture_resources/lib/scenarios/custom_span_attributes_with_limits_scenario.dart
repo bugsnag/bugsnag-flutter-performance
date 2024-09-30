@@ -15,8 +15,7 @@ class CustomSpanAttributesWithLimitsScenario extends Scenario {
     setMaxBatchSize(1);
     final span = bugsnag_performance
         .startSpan('CustomSpanAttributesWithLimitsScenarioSpan');
-    const tooLongKey =
-        'trberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwc';
+    final tooLongKey = 'a' * 129;
     span.setAttribute('customAttribute1', 42);
     span.setAttribute(tooLongKey, 'Test');
     span.setAttribute('customAttribute2', 1);

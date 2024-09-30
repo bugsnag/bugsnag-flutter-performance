@@ -111,7 +111,7 @@ Feature: Manual Spans
     * every span string attribute "bugsnag.span.category" equals "custom"
     * a span double attribute "bugsnag.sampling.p" equals 1.0
     * a span integer attribute "customAttribute1" equals 42
-    * every span string attribute "trberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwc" does not exist
+    * every span string attribute "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" does not exist
     * a span string attribute "customAttribute2" equals "NotDropped"
     * a span array attribute "customAttribute3" contains 6 items
     * a span array attribute "customAttribute3" contains the integer value 1 at index 0
