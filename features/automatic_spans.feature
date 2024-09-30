@@ -169,7 +169,7 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.phase" equals "building"
     * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicScenarioWidget/appearing"
     * a span string attribute "bugsnag.phase" equals "appearing"
-    * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicScenarioWidget/loading" exists
+    * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicScenarioWidget/loading content" exists
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
     * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
@@ -190,12 +190,13 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.phase" equals "appearing"
     * a span string attribute "bugsnag.span.category" equals "view_load_phase"
     * no span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget" exists
-    * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/loading" exists
+    * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/loading content" exists
     And I invoke "step2"
     And I wait for 4 spans
     * a span field "name" equals "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget"
     * a span string attribute "bugsnag.span.category" equals "view_load"
-    * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/loading"
+    * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/loading content"
+    * a span string attribute "bugsnag.phase" equals "loading content"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
     * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
@@ -203,7 +204,7 @@ Feature: Automatic instrumentation spans
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/building"
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/appearing"
-    * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/loading"
+    * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/loading content"
 
   Scenario: AutoInstrumentViewLoadNestedScenario
     Given I run "AutoInstrumentViewLoadNestedScenario"
@@ -219,16 +220,17 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.phase" equals "appearing"
     * a span string attribute "bugsnag.span.category" equals "view_load_phase"
     * no span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget" exists
-    * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/loading" exists
+    * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/loading content" exists
     * no span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget" exists
-    * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/loading" exists
+    * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/loading content" exists
     And I invoke "step2"
     And I wait for 8 spans
     * a span field "name" equals "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget"
     * a span field "name" equals "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget"
     * a span string attribute "bugsnag.span.category" equals "view_load"
-    * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/loading"
-    * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/loading"
+    * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/loading content"
+    * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/loading content"
+    * a span string attribute "bugsnag.phase" equals "loading content"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
     * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
@@ -236,10 +238,10 @@ Feature: Automatic instrumentation spans
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/building"
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/appearing"
-    * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/loading"
+    * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/loading content"
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/building"
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/appearing"
-    * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/loading"
+    * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/loading content"
 
   Scenario: AutoInstrumentNavigationWithViewLoadScenario
     Given I run "AutoInstrumentNavigationWithViewLoadScenario"
@@ -269,7 +271,7 @@ Feature: Automatic instrumentation spans
     * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/appearing"
     * a span string attribute "bugsnag.phase" equals "appearing"
     * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/loading"
-    * a span string attribute "bugsnag.phase" equals "loading"
+    * a span string attribute "bugsnag.phase" equals "loading content"
     * a span string attribute "bugsnag.span.category" equals "view_load_phase"
     * a span field "name" equals "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget"
     * a span string attribute "bugsnag.span.category" equals "view_load"
@@ -280,5 +282,6 @@ Feature: Automatic instrumentation spans
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/building"
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/appearing"
-    * the span named "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/loading"
+    * the span named "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/loading content"
     * the span named "[Navigation]navigation_view_load_scenario" is the parent of the span named "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget"
+
