@@ -1,4 +1,3 @@
-import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'scenario.dart';
 
 class DisableCustomReleaseStageScenario extends Scenario {

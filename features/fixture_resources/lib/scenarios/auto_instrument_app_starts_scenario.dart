@@ -10,8 +10,8 @@ class AutoInstrumentAppStartsScenario extends Scenario {
     bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 1000);
     bugsnag_performance.start(
         apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
-    bugsnag_performance.measureRunApp(() async => await Duration(seconds: 1));
+        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
+    bugsnag_performance.measureRunApp(() async => const Duration(seconds: 1));
     setMaxBatchSize(4);
   }
 }

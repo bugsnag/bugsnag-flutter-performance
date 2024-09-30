@@ -8,6 +8,9 @@ class BugsnagPerformanceConfiguration {
     this.serviceName,
     this.appVersion,
     this.samplingProbability,
+    required this.attributeCountLimit,
+    required this.attributeStringValueLimit,
+    required this.attributeArrayLengthLimit,
   });
   String? apiKey;
   Uri? endpoint;
@@ -24,6 +27,9 @@ class BugsnagPerformanceConfiguration {
   String? serviceName;
   String? appVersion;
   double? samplingProbability;
+  int attributeCountLimit;
+  int attributeStringValueLimit;
+  int attributeArrayLengthLimit;
 
   bool releaseStageEnabled() {
     return releaseStage == null ||

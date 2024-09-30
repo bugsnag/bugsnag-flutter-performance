@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:mazerunner/main.dart';
 
 import 'scenario.dart';
-import 'package:http/http.dart' as http;
 
 class InitialPScenario extends Scenario {
   @override
@@ -15,7 +12,7 @@ class InitialPScenario extends Scenario {
     bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 25000);
     bugsnag_performance.start(
         apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse(FixtureConfig.MAZE_HOST.toString() + '/traces'));
+        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
     setMaxBatchSize(1);
     doSimpleSpan('First');
   }

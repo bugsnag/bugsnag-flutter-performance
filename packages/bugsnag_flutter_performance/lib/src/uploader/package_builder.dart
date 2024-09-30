@@ -61,7 +61,7 @@ class PackageBuilderImpl implements PackageBuilder {
   Future<List<int>> _buildPayload({
     required List<BugsnagPerformanceSpan> spans,
   }) async {
-    final jsonList = spans.map((span) => span.toJson()).toList();
+    final jsonList = spans.map((span) => span.toJson(config: _config)).toList();
     final jsonRequest = {
       'resourceSpans': [
         {

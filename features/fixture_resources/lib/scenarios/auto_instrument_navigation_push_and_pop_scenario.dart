@@ -1,6 +1,4 @@
-import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:flutter/material.dart';
-import 'package:mazerunner/main.dart';
 
 import 'scenario.dart';
 
@@ -62,8 +60,8 @@ class AutoInstrumentNavigationPushAndPopScenarioScreenState
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
-        child: Text('AutoInstrumentNavigationPushAndPopScenarioScreen'),
         color: Colors.white,
+        child: Text('AutoInstrumentNavigationPushAndPopScenarioScreen'),
       ),
       onTap: () => widget.runCommandCallback(),
     );

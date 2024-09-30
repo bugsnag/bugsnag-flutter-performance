@@ -1,5 +1,6 @@
 import 'package:bugsnag_flutter_performance/src/configuration.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
+import 'package:bugsnag_flutter_performance/src/span_attributes_limits.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/span_batch.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -32,7 +33,14 @@ void main() {
 
       setUp(() {
         batch.configure(
-          BugsnagPerformanceConfiguration()..maxBatchSize = batchSize,
+          BugsnagPerformanceConfiguration(
+            attributeCountLimit: SpanAttributesLimits.limitValue(
+                type: SpanAttributesLimitType.attributeCountLimit),
+            attributeStringValueLimit: SpanAttributesLimits.limitValue(
+                type: SpanAttributesLimitType.stringValueLimit),
+            attributeArrayLengthLimit: SpanAttributesLimits.limitValue(
+                type: SpanAttributesLimitType.arrayLengthLimit),
+          )..maxBatchSize = batchSize,
         );
       });
 

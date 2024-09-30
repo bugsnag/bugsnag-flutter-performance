@@ -1,3 +1,4 @@
+import 'package:bugsnag_flutter_performance/src/configuration.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/bugsnag_lifecycle_listener.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
@@ -127,6 +128,19 @@ void main() {
               'key': 'custom',
               'value': {'stringValue': 'value'}
             },
+            {
+              'key': 'customArray',
+              'value': {
+                'arrayValue': {
+                  'values': [
+                    {'stringValue': 'testValue'},
+                    {'intValue': '1'},
+                    {'doubleValue': 4.2},
+                    {'boolValue': true},
+                  ]
+                }
+              }
+            },
           ],
         };
         final span = BugsnagPerformanceSpanImpl.fromJson(json);
@@ -147,6 +161,14 @@ void main() {
             span.parentSpanId,
             equals(
                 BigInt.tryParse(json['parentSpanId'] as String, radix: 16)!));
+        expect(
+            span.attributes.attributes['customArray'],
+            equals([
+              'testValue',
+              1,
+              4.2,
+              true,
+            ]));
       });
 
       test('should decode a running span', () {
@@ -185,6 +207,9 @@ void main() {
           parentSpanId: randomSpanId(),
         );
         span.clock = BugsnagClockImpl.instance;
+        span.setAttribute('customString', 'testValue');
+        span.setAttribute('customInt', 2);
+        span.setAttribute('list', [42, 43.0, 'testString', false, true, 1]);
         span.end();
         final json = span.toJson();
         expect(json['name'], equals(span.name));
@@ -199,6 +224,40 @@ void main() {
             equals(span.spanId.toRadixString(16).padLeft(16, '0')));
         expect(json['parentSpanId'],
             equals(span.parentSpanId!.toRadixString(16).padLeft(16, '0')));
+        final attributes = json['attributes'] as List<Map<String, dynamic>>;
+        expect(
+          attributes[0],
+          equals({
+            'key': 'customString',
+            'value': {'stringValue': 'testValue'},
+          }),
+        );
+        expect(
+          attributes[1],
+          equals({
+            'key': 'customInt',
+            'value': {'intValue': '2'},
+          }),
+        );
+        expect(
+          attributes[2],
+          equals({
+            'key': 'list',
+            'value': {
+              'arrayValue': {
+                'values': [
+                  {'intValue': '42'},
+                  {'doubleValue': 43.0},
+                  {'stringValue': 'testString'},
+                  {'boolValue': false},
+                  {'boolValue': true},
+                  {'intValue': '1'},
+                ],
+              }
+            },
+          }),
+        );
+        expect(json['droppedAttributesCount'], isNull);
       });
 
       test('should encode a running span', () {
@@ -212,6 +271,117 @@ void main() {
         expect(int.parse(json['startTimeUnixNano']),
             equals(span.startTime.nanosecondsSinceEpoch));
         expect(json['endTimeUnixNano'], isNull);
+        expect(json['droppedAttributesCount'], isNull);
+      });
+
+      test('should drop attributes with too long keys', () {
+        const tooLongKey =
+            'trberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwc';
+        const tooLongKey2 =
+            'Atrbesfsdffrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwc';
+        final span = BugsnagPerformanceSpanImpl(
+            name: 'Test name',
+            startTime: DateTime.fromMillisecondsSinceEpoch(
+                millisecondsSinceEpoch,
+                isUtc: true));
+        span.clock = BugsnagClockImpl.instance;
+        span.setAttribute(tooLongKey, 'test');
+        span.setAttribute(tooLongKey2, 'test2');
+        span.setAttribute('TestBool', false);
+        span.end();
+        final json = span.toJson();
+        final attributes = json['attributes'] as List<Map<String, dynamic>>;
+        expect(attributes.length, equals(1));
+        expect(
+            attributes[0],
+            equals({
+              'key': 'TestBool',
+              'value': {'boolValue': false},
+            }));
+        expect(json['droppedAttributesCount'], equals(2));
+      });
+
+      test(
+          'should include attributes added over limit along with those with too long keys in droppedAttributesCount',
+          () {
+        const tooLongKey =
+            'trberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwc';
+        const tooLongKey2 =
+            'Atrbesfsdffrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwctrberwfqfrefwefrgrewfrfwefwftvrvwreqwcwc';
+        final span = BugsnagPerformanceSpanImpl(
+          name: 'Test name',
+          startTime: DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch,
+              isUtc: true),
+          attributeCountLimit: 3,
+        );
+        span.clock = BugsnagClockImpl.instance;
+        span.setAttribute('TestInt', 1);
+        span.setAttribute(tooLongKey, 'test');
+        span.setAttribute(tooLongKey2, 'test2');
+        span.setAttribute('TestBool', false);
+        span.setAttribute('TestBool2', true);
+        span.setAttribute('TestInt', 2);
+        span.setAttribute('TestInt', 3);
+        span.end();
+        final json = span.toJson();
+        final attributes = json['attributes'] as List<Map<String, dynamic>>;
+        expect(attributes.length, equals(1));
+        expect(
+            attributes[0],
+            equals({
+              'key': 'TestInt',
+              'value': {'intValue': '3'},
+            }));
+        expect(json['droppedAttributesCount'], equals(4));
+      });
+
+      test('should truncate strings and arrays that go over the limits', () {
+        final span = BugsnagPerformanceSpanImpl(
+          name: 'Test name',
+          startTime: DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch,
+              isUtc: true),
+        );
+        span.clock = BugsnagClockImpl.instance;
+        span.setAttribute('TestString', 'test');
+        span.setAttribute('LongTestString', 'This is a very long string');
+        span.setAttribute('TestArray', [true, '2', 3.0, 4, '5', 6.0, 7]);
+        span.end();
+        final config = BugsnagPerformanceConfiguration(
+          attributeCountLimit: 100,
+          attributeStringValueLimit: 10,
+          attributeArrayLengthLimit: 4,
+        );
+        final json = span.toJson(config: config);
+        final attributes = json['attributes'] as List<Map<String, dynamic>>;
+        expect(attributes.length, equals(3));
+        expect(
+            attributes[0],
+            equals({
+              'key': 'TestString',
+              'value': {'stringValue': 'test'},
+            }));
+        expect(
+            attributes[1],
+            equals({
+              'key': 'LongTestString',
+              'value': {'stringValue': 'This is a *** 16 CHARS TRUNCATED'},
+            }));
+        expect(
+            attributes[2],
+            equals({
+              'key': 'TestArray',
+              'value': {
+                'arrayValue': {
+                  'values': [
+                    {'boolValue': true},
+                    {'stringValue': '2'},
+                    {'doubleValue': 3.0},
+                    {'intValue': '4'}
+                  ],
+                }
+              },
+            }));
+        expect(json['droppedAttributesCount'], isNull);
       });
     });
   });
