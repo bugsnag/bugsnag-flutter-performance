@@ -8,7 +8,7 @@
   <h1>Performance monitoring for Flutter</h1>
 </div>
 
-[![Documentation](https://img.shields.io/badge/documentation-latest-blue.svg)](https://docs.bugsnag.com/performance/flutter/)
+[![Documentation](https://img.shields.io/badge/documentation-latest-blue.svg)](https://docs.bugsnag.com/performance/integration-guides/flutter/)
 [![Build status](https://badge.buildkite.com/700ab6c9d7b51c72fa52459ad023b503692bde8bf5337b93a0.svg?branch=main)](https://buildkite.com/bugsnag/bugsnag-flutter-performance)
 
 Monitor the start-up, navigation and network requests of Flutter apps running on iOS and Android and see the results in your [BugSnag](https://www.bugsnag.com) dashboard.
@@ -21,11 +21,11 @@ Monitor the start-up, navigation and network requests of Flutter apps running on
 
 ## Getting started
 
-For integration instructions, see our online docs: [docs.bugsnag.com/performance/flutter](https://docs.bugsnag.com/performance/flutter/)
+For integration instructions, see our online docs: [docs.bugsnag.com/performance/integration-guides/flutter/](https://docs.bugsnag.com/performance/integration-guides/flutter/)
 
 ## Support
 
-* [Read the integration guide](https://docs.bugsnag.com/performance/flutter/)
+* [Read the integration guide](https://docs.bugsnag.com/performance/integration-guides/flutter/)
 * [Search open and closed issues](https://github.com/bugsnag/bugsnag-flutter-performance/issues?utf8=✓&q=is%3Aissue) for similar problems
 * [Report a bug or request a feature](https://github.com/bugsnag/bugsnag-flutter-performance/issues/new)
 
