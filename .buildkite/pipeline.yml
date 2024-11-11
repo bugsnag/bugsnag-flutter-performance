@@ -6,14 +6,14 @@ steps:
   - label: ":test_tube: 3.10.0"
     timeout_in_minutes: 10
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.10.0"
     commands:
       - make test
 
   - label: ":lint-roller: 3.10.0"
     timeout_in_minutes: 10
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.10.0"
     commands:
       - make lint
 
@@ -24,7 +24,7 @@ steps:
     key: "ios-fixture-3-10-0"
     timeout_in_minutes: 20
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.10.0"
     commands:
       - bundle install
       - pod repo update trunk
@@ -39,7 +39,7 @@ steps:
     depends_on: "ios-fixture-3-10-0"
     timeout_in_minutes: 20
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.10.0"
     agents:
       queue: opensource
     plugins:
@@ -75,7 +75,7 @@ steps:
     key: "android-fixture-3-10-0"
     timeout_in_minutes: 20
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.10.0"
       JAVA_VERSION: "11"
     commands:
       - bundle install
@@ -90,7 +90,7 @@ steps:
     depends_on: "android-fixture-3-10-0"
     timeout_in_minutes: 20
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.10.0"
     agents:
       queue: opensource
     plugins:
