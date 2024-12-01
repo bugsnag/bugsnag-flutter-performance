@@ -24,7 +24,7 @@ steps:
     key: "ios-fixture-3-10-0"
     timeout_in_minutes: 20
     agents:
-      queue: macos-12-arm
+      queue: macos-14
     env:
       FLUTTER_VERSION: "3.10.0"
     commands:
