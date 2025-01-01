@@ -28,12 +28,12 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
   }
 
   Future<void> _addNetworkStatus() async {
-    var status = "unavailable";
+    var status = 'unavailable';
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile) {
-      status = "cell";
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      status = "wifi";
+    if (connectivityResult.contains(ConnectivityResult.wifi)) {
+      status = 'wifi';
+    } else if (connectivityResult.contains(ConnectivityResult.mobile)) {
+      status = 'cell';
     }
 
     Map<String, Object> networkStatusAttribute = {
