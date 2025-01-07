@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:bugsnag_flutter_performance/src/device_id_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
