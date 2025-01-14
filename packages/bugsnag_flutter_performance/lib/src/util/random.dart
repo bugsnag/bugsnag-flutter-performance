@@ -36,7 +36,7 @@ class _Random {
   int nextInt(int max) {
     try {
       if (_secureRandom != null) {
-        return _secureRandom!.nextInt(max);
+        return _secureRandom.nextInt(max);
       }
     } catch (_) {
       // When the system runs out of entropy, we fall back on a less secure random number source
