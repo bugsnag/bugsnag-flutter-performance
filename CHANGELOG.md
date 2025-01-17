@@ -1,6 +1,22 @@
 Changelog
 =========
 
+## 1.4.0 (2025-01-17)
+
+### Changes
+
+* Bumped min Dart SDK version to 3.3.0 and min Flutter SDK version to 3.19.0 [94](https://github.com/bugsnag/bugsnag-flutter-performance/pull/94)
+
+### Enhancements
+
+* Upgraded the `connectivity_plus` dependency version to 6.0.5 [94](https://github.com/bugsnag/bugsnag-flutter-performance/pull/94)
+
+* Replaced the dependency on `package_info` with the new `package_info_plus` package [94](https://github.com/bugsnag/bugsnag-flutter-performance/pull/94)
+
+### Bug fixes
+
+* Changed `loading` view load phase name to `loading content` [67](https://github.com/bugsnag/bugsnag-flutter-performance/pull/67)
+
 ## 1.3.0 (2024-09-30)
 
 ### Enhancements
