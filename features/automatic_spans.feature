@@ -271,7 +271,7 @@ Feature: Automatic instrumentation spans
     * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/appearing"
     * a span string attribute "bugsnag.phase" equals "appearing"
     * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/loading content"
-    * a span string attribute "bugsnag.phase" equals "loading"
+    * a span string attribute "bugsnag.phase" equals "loading content"
     * a span string attribute "bugsnag.span.category" equals "view_load_phase"
     * a span field "name" equals "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget"
     * a span string attribute "bugsnag.span.category" equals "view_load"
