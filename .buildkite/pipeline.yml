@@ -1,19 +1,19 @@
 agents:
-  queue: macos-12-arm
+  queue: macos-14
 
 steps:
 
-  - label: ":test_tube: 3.10.0"
+  - label: ":test_tube: 3.19.0"
     timeout_in_minutes: 10
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.19.0"
     commands:
       - make test
 
-  - label: ":lint-roller: 3.10.0"
+  - label: ":lint-roller: 3.19.0"
     timeout_in_minutes: 10
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.19.0"
     commands:
       - make lint
 
@@ -23,8 +23,10 @@ steps:
   - label: Build iOS Test Fixture
     key: "ios-fixture-3-10-0"
     timeout_in_minutes: 20
+    agents:
+      queue: macos-14
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.19.0"
     commands:
       - bundle install
       - pod repo update trunk
@@ -39,7 +41,7 @@ steps:
     depends_on: "ios-fixture-3-10-0"
     timeout_in_minutes: 20
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.19.0"
     agents:
       queue: opensource
     plugins:
@@ -75,8 +77,8 @@ steps:
     key: "android-fixture-3-10-0"
     timeout_in_minutes: 20
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
-      JAVA_VERSION: "11"
+      FLUTTER_VERSION: "3.19.0"
+      JAVA_VERSION: "17"
     commands:
       - bundle install
       - features/scripts/generate_fixture.sh
@@ -86,11 +88,11 @@ steps:
         upload:
           - "features/fixtures/mazerunner/build/app/outputs/flutter-apk/app-release.apk"
 
-  - label: ':bitbar: Android 12 end-to-end tests 3.10.0'
+  - label: ':bitbar: Android 12 end-to-end tests 3.19.0'
     depends_on: "android-fixture-3-10-0"
     timeout_in_minutes: 20
     env:
-      FLUTTER_BIN: "/opt/flutter/3.10.0/bin/flutter"
+      FLUTTER_VERSION: "3.19.0"
     agents:
       queue: opensource
     plugins:

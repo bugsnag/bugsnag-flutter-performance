@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:bugsnag_flutter_performance/src/device_id_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
@@ -28,12 +28,12 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
   }
 
   Future<void> _addNetworkStatus() async {
-    var status = "unavailable";
+    var status = 'unavailable';
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile) {
-      status = "cell";
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      status = "wifi";
+    if (connectivityResult.contains(ConnectivityResult.wifi)) {
+      status = 'wifi';
+    } else if (connectivityResult.contains(ConnectivityResult.mobile)) {
+      status = 'cell';
     }
 
     Map<String, Object> networkStatusAttribute = {
@@ -196,5 +196,5 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
     return "Unknown";
   }
 
-  static String get _getSDKVersion => '1.3.0';
+  static String get _getSDKVersion => '1.4.0';
 }

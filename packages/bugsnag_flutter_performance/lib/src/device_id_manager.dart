@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
 
