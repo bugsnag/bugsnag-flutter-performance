@@ -53,8 +53,7 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" path_provider
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" http
 
-$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" native_flutter_proxy --version 0.1.15
-
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.1.15"
 #$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_http_client:{'path':'$HTTP_WRAPPER_PACKAGE_PATH'}"
 #$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_dart_io_http_client:{'path':'$DART_IO_WRAPPER_PACKAGE_PATH'}"
 
