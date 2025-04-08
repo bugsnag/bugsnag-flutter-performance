@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 1.4.1 (2025-04-07)
+
+### Changes
+
+* Relaxed the device_info_plus dep to allow any version between 9.1.0 and 12.0.0 [100](https://github.com/bugsnag/bugsnag-flutter-performance/pull/100)
+
 ## 1.4.0 (2025-01-17)
 
 ### Changes

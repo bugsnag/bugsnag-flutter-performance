@@ -1,6 +1,6 @@
 name: bugsnag_flutter_performance
 description: BugSnag performance monitoring tool for Flutter apps
-version: 1.4.0
+version: 1.4.1
 homepage: https://www.bugsnag.com/
 documentation: https://docs.bugsnag.com/performance/flutter/
 repository: https://github.com/bugsnag/bugsnag-flutter-performance
@@ -15,7 +15,7 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-  device_info_plus: ^9.1.0
+  device_info_plus: '>=9.1.0 <12.0.0'
   package_info_plus: ^8.0.0
   path_provider: ^2.0.2
   uuid: ^4.0.0

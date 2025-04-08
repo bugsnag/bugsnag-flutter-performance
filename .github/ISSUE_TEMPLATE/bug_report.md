@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- Before raising, please check if somebody else has already reported your issue. -->
+<!-- Before raising, please check whether somebody else has already reported your issue. -->
 
 ### Describe the bug
 A clear and concise description of what the bug is.
@@ -19,8 +19,8 @@ A clear and concise description of what the bug is.
 4. See error
 
 ### Environment
-* Bugsnag Performance library version:
- * Bugsnag Error Monitoring library version (if any):
+* BugSnag Performance library version:
+ * BugSnag Error Monitoring library version (if any):
  * Flutter version:
 * Flutter app or native app with flutter module:
 * iOS/Android version:
