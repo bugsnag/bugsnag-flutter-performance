@@ -9,7 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _MockRetryQueue implements RetryQueue {
   @override
-  Future<void> enqueue({required Map<String, String> headers, required Uint8List body}) async {}
+  Future<void> enqueue(
+      {required Map<String, String> headers, required Uint8List body}) async {}
   @override
   Future<void> flush() async {}
 }
@@ -20,27 +21,27 @@ class _MockRetryQueueBuilder implements RetryQueueBuilder {
 }
 
 class _MockLifecycleListener implements BugsnagLifecycleListener {
-  void Function()? _handler;
   @override
   void startObserving({void Function()? onAppBackgrounded}) {
-    _handler = onAppBackgrounded;
   }
 }
 
 void main() {
-
-  const validKey  = 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6';
-  const hubKey    = '00000deadbeefdeadbeefdeadbeef00';
+  const validKey = 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6';
+  const hubKey = '00000deadbeefdeadbeefdeadbeef00';
   final explicitEndpoint = Uri.parse('https://example.com/otel');
-  final defaultBugsnag   = Uri.parse('https://otlp.bugsnag.com/v1/traces');
-  final defaultWithKey   = Uri.parse('https://$validKey.otlp.bugsnag.com/v1/traces');
-  final defaultHubHost   = Uri.parse('https://$hubKey.otlp.insighthub.smartbear.com/v1/traces');
+  final defaultBugsnag = Uri.parse('https://otlp.bugsnag.com/v1/traces');
+  final defaultWithKey =
+      Uri.parse('https://$validKey.otlp.bugsnag.com/v1/traces');
+  final defaultHubHost =
+      Uri.parse('https://$hubKey.otlp.insighthub.smartbear.com/v1/traces');
 
   BugsnagPerformanceClientImpl freshClient(_MockLifecycleListener listener) {
     final c = BugsnagPerformanceClientImpl(lifecycleListener: listener);
     c.retryQueueBuilder = _MockRetryQueueBuilder();
     return c;
   }
+
   BugsnagClockImpl.ensureInitialized();
 
   group('Endpoint selection', () {
@@ -62,7 +63,8 @@ void main() {
       expect(client.configuration!.endpoint, explicitEndpoint);
     });
 
-    test('prefixes hub subdomain when InsightHub key (00000…) supplied', () async {
+    test('prefixes hub subdomain when InsightHub key (00000…) supplied',
+        () async {
       final client = freshClient(_MockLifecycleListener());
       await client.start(apiKey: hubKey);
       expect(client.configuration!.endpoint, defaultHubHost);
