@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## TBD
+
+### Changes
+
+* Set default endpoints based on API key [#107](https://github.com/bugsnag/bugsnag-flutter-performance/pull/107)
+
 ## 1.4.1 (2025-04-07)
 
 ### Changes
