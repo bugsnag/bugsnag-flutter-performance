@@ -1,6 +1,6 @@
 Feature: Persistence
 
-Background:
+  Background:
     Given I clear the Bugsnag cache
 
   Scenario: Device Id Persists Between Launches

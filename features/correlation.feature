@@ -1,5 +1,8 @@
 Feature: Error correlation
 
+  Background:
+    Given I clear the Bugsnag cache
+
   Scenario: CorrelationSimpleScenario
     When I run "CorrelationSimpleScenario"
     * I wait to receive an error
