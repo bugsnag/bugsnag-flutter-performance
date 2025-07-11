@@ -1,5 +1,8 @@
 Feature: Manual Spans
 
+  Background:
+    Given I clear the Bugsnag cache
+
   Scenario: Manual Span
     When I run "ManualSpanScenario"
     And I wait for 1 span
