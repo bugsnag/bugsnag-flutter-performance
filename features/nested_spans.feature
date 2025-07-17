@@ -1,5 +1,8 @@
 Feature: Nested Spans
 
+  Background:
+    Given I clear the Bugsnag cache
+
   Scenario: Simple Nested Span
     When I run "SimpleNestedSpanScenario"
     * I wait for 2 spans

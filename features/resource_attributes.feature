@@ -1,5 +1,8 @@
 Feature: Resource Attributes
 
+  Background:
+    Given I clear the Bugsnag cache
+
   Scenario: Custom release stage
     When I run "CustomReleaseStageScenario"
     And I wait for 1 span

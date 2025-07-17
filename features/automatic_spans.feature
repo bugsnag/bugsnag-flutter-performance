@@ -1,5 +1,8 @@
 Feature: Automatic instrumentation spans
 
+  Background:
+    Given I clear the Bugsnag cache
+
   Scenario: AutoInstrumentAppStartsScenario
     Given I run "AutoInstrumentAppStartsScenario"
     And I wait for 4 spans

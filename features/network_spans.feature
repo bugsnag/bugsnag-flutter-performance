@@ -1,6 +1,7 @@
 Feature: Network Spans
 
-  #HTTP WRAPPER
+  Background:
+    Given I clear the Bugsnag cache
 
   Scenario: HTTP Get
     When I run "HttpGetScenario"

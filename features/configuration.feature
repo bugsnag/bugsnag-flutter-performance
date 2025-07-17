@@ -1,5 +1,8 @@
 Feature: Configuration overrides
 
+  Background:
+    Given I clear the Bugsnag cache
+
   Scenario: Setting fixed sampling probability of 1 with dynamic probability of 0 should send all spans
     Given I set the sampling probability for the next traces to "0"
     And I enter unmanaged traces mode

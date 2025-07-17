@@ -1,5 +1,8 @@
 Feature: Initial P values
 
+  Background:
+    Given I clear the Bugsnag cache
+
   Scenario: Initial P value of 0
     Given I set the sampling probability for the next traces to "0"
     And I run "InitialPScenario"
