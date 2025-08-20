@@ -46,6 +46,8 @@ import 'custom_app_version_scenario.dart';
 import 'manual_span_isfirstclass_false_scenario.dart';
 import 'get_current_context_scenario.dart';
 import 'check_network_callback_type_scenario.dart';
+import 'clear_custom_app_start_name_scenario.dart';
+import 'custom_app_start_name_scenario.dart';
 import 'custom_span_time_scenario.dart';
 import 'span_with_no_parent_scenario.dart';
 import 'scenario.dart';
@@ -132,5 +134,7 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo(
       'CustomSpanAttributesScenario', () => CustomSpanAttributesScenario()),
   ScenarioInfo('CustomSpanAttributesWithLimitsScenario',
-      () => CustomSpanAttributesWithLimitsScenario())
+      () => CustomSpanAttributesWithLimitsScenario()),
+  ScenarioInfo('CustomAppStartNameScenario', () => CustomAppStartNameScenario()),
+  ScenarioInfo('ClearCustomAppStartNameScenario', () => ClearCustomAppStartNameScenario())
 ];
