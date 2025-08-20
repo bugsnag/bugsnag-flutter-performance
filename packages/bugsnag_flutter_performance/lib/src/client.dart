@@ -12,6 +12,7 @@ import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/view_l
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes_limits.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
+import 'package:bugsnag_flutter_performance/src/span_controls.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';
@@ -90,6 +91,8 @@ abstract class BugsnagPerformanceClient {
   BugsnagPerformanceSpanContext? getCurrentSpanContext();
 
   dynamic networkInstrumentation(dynamic);
+
+  AppStartSpanControl? getSpanControl(AppStartQuery query);
 }
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
@@ -402,6 +405,18 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   @override
   BugsnagPerformanceSpanContext? getCurrentSpanContext() {
     return _getContextStack()?.getCurrentContext();
+  }
+
+  @override
+  AppStartSpanControl? getSpanControl(AppStartQuery query) {
+    if (query is AppStartQuery) {
+      final appStartImpl = _appStartInstrumentation as AppStartInstrumentationImpl;
+      final span = appStartImpl.flutterInitSpan;
+      if (span != null && span.isOpen() && span is BugsnagPerformanceSpanImpl) {
+        return AppStartSpanControlImpl(span);
+      }
+    }
+    return null;
   }
 
   @override

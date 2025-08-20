@@ -65,6 +65,14 @@ class BugsnagPerformanceSpanAttributes {
     return attributes['bugsnag.sampling.p'];
   }
 
+  set appStartName(String? appStartName) {
+    setAttribute('bugsnag.app_start.name', appStartName);
+  }
+
+  String? get appStartName {
+    return attributes['bugsnag.app_start.name'];
+  }
+
   int get count => attributes.length;
 
   bool hasAttribute(String key) {
