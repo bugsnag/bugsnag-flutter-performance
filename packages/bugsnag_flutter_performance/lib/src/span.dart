@@ -59,7 +59,7 @@ class BugsnagPerformanceSpanImpl
       type: SpanAttributesLimitType.attributeCountLimit);
 
   @override
-  final String name;
+  String name;
   @override
   late final TraceId traceId;
   @override

@@ -8,6 +8,7 @@ abstract class AppStartInstrumentation {
   void willExecuteRunApp();
   void didExecuteRunApp();
   void setEnabled(bool enabled);
+  BugsnagPerformanceSpan? getRootSpan();
 }
 
 class AppStartInstrumentationImpl implements AppStartInstrumentation {
@@ -98,5 +99,10 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
       runAppPhaseSpan = null;
       uiInitPhaseSpan = null;
     }
+  }
+
+  @override
+  BugsnagPerformanceSpan? getRootSpan() {
+   return flutterInitSpan;
   }
 }
