@@ -3,18 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:bugsnag_flutter_performance/src/span_controls.dart';
 import 'package:bugsnag_flutter_performance/src/span.dart';
 
-class MockSpan extends BugsnagPerformanceSpanImpl {
-  bool open;
-  MockSpan({this.open = true}) : super(
-    name: 'test',
-    startTime: DateTime.now(),
-  ) {
-    clock = _MockClock() as BugsnagClock;
-  }
-  @override
-  bool isOpen() => open;
-}
-
 class _MockClock implements BugsnagClock {
   @override
   DateTime now() => DateTime.now();
