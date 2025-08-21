@@ -8,7 +8,7 @@ Feature: span control
     And I wait for 4 spans
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:4"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\dZ$"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * a span field "name" equals "[AppStart/FlutterInit]FirstOpen"
     * a span field "name" equals "[AppStartPhase/pre runApp()]"
     * a span field "name" equals "[AppStartPhase/runApp()]"
@@ -34,7 +34,7 @@ Feature: span control
     And I wait for 4 spans
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:4"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\dZ$"
+    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * a span field "name" equals "[AppStart/FlutterInit]"
     * a span field "name" equals "[AppStartPhase/pre runApp()]"
     * a span field "name" equals "[AppStartPhase/runApp()]"
