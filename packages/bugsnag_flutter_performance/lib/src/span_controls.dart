@@ -8,7 +8,6 @@ abstract class SpanQuery<R> {}
 class AppStartQuery extends SpanQuery<AppStartSpanControl> {
   AppStartQuery();
 }
-AppStartQuery appStart = AppStartQuery();
 class AppStartSpanControlImpl implements AppStartSpanControl {
 
   final BugsnagPerformanceSpan span;
@@ -29,3 +28,4 @@ class AppStartSpanControlImpl implements AppStartSpanControl {
   }
 }
 
+AppStartQuery appStart = AppStartQuery();

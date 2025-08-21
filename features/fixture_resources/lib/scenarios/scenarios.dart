@@ -15,7 +15,8 @@ import 'package:mazerunner/scenarios/fixed_sampling_probability_one_scenario.dar
 import 'package:mazerunner/scenarios/fixed_sampling_probability_zero_scenario.dart';
 import 'package:mazerunner/scenarios/http_client_trace_propagation_urls_scenario.dart';
 import 'package:mazerunner/scenarios/http_client_traceparent_scenario.dart';
-
+import 'clear_custom_app_start_name_scenario.dart';
+import 'custom_app_start_name_scenario.dart';
 import 'auto_instrument_app_starts_scenario.dart';
 import 'auto_instrument_navigation_with_view_load_scenario.dart';
 import 'custom_span_attributes_with_limits_scenario.dart';
@@ -132,5 +133,7 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo(
       'CustomSpanAttributesScenario', () => CustomSpanAttributesScenario()),
   ScenarioInfo('CustomSpanAttributesWithLimitsScenario',
-      () => CustomSpanAttributesWithLimitsScenario())
+      () => CustomSpanAttributesWithLimitsScenario()),
+  ScenarioInfo('CustomAppStartNameScenario', () => CustomAppStartNameScenario()),
+  ScenarioInfo('ClearCustomAppStartNameScenario', () => ClearCustomAppStartNameScenario())
 ];

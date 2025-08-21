@@ -6,7 +6,8 @@ import 'package:bugsnag_flutter_performance/src/bugsnag_network_request_info.dar
 import 'package:bugsnag_flutter_performance/src/client.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_controls.dart';
-
+export 'package:bugsnag_flutter_performance/src/span_controls.dart'
+  show appStart;
 import 'bugsnag_flutter_performance.dart';
 export 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart'
     show bugsnag_performance;
