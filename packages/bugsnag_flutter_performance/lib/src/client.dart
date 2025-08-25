@@ -14,6 +14,7 @@ import 'package:bugsnag_flutter_performance/src/span_attributes_limits.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/span_control/span_control.dart';
 import 'package:bugsnag_flutter_performance/src/span_control/span_control_provider.dart';
+import 'package:bugsnag_flutter_performance/src/span_control/span_query.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';
@@ -93,7 +94,8 @@ abstract class BugsnagPerformanceClient {
 
   dynamic networkInstrumentation(dynamic);
 
-  R? getSpanControl<R>(SpanQuery<R> key);
+  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}});
+
 }
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
@@ -609,8 +611,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     return true;
   }
 
+
+
   @override
-  R? getSpanControl<R>(SpanQuery<R> key) {
-    return _spanControlProvider.getSpanControl(key);
+  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
+    SpanQuery<R> query = SpanQuery<R>(params);
+    return _spanControlProvider.getSpanControl(query);
   }
 }
