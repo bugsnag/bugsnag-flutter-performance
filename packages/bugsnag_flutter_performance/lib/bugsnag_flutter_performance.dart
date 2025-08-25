@@ -5,7 +5,8 @@ import 'dart:async';
 import 'package:bugsnag_flutter_performance/src/bugsnag_network_request_info.dart';
 import 'package:bugsnag_flutter_performance/src/client.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
-
+export 'src/span_control/span_control.dart' show SpanQuery, SpanControlProvider;
+export 'src/span_control/span_types.dart' show AppStart, AppStartSpanControl;
 import 'bugsnag_flutter_performance.dart';
 export 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart'
     show bugsnag_performance;
@@ -128,6 +129,10 @@ class BugsnagPerformance {
 
   BugsnagPerformanceSpanContext? getCurrentSpanContext() {
     return _client.getCurrentSpanContext();
+  }
+
+  R? getSpanControl<R>(SpanQuery<R> key) {
+    return _client.getSpanControl(key);
   }
 }
 
