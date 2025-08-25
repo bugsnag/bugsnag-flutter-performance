@@ -13,7 +13,7 @@ import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes_limits.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/span_control/span_control.dart';
-import 'package:bugsnag_flutter_performance/src/span_control/span_control_provider_impl.dart';
+import 'package:bugsnag_flutter_performance/src/span_control/span_control_provider.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';

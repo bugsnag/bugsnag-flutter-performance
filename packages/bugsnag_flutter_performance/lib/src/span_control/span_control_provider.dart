@@ -1,6 +1,9 @@
 import 'package:bugsnag_flutter_performance/src/client.dart';
 import 'package:bugsnag_flutter_performance/src/span_control/span_control.dart';
-import 'package:bugsnag_flutter_performance/src/span_control/span_types.dart';
+
+abstract class SpanControlProvider {
+  R? getSpanControl<R>(SpanQuery<R> key);
+}
 
 class SpanControlProviderImpl implements SpanControlProvider {
   final BugsnagPerformanceClientImpl _client;

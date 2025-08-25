@@ -3,7 +3,19 @@ abstract class SpanQuery<R> {
   const SpanQuery();
 }
 
-/// Provider interface for accessing span controls
-abstract class SpanControlProvider {
-  R? getSpanControl<R>(SpanQuery<R> key);
+sealed class SpanType<R> extends SpanQuery<R> {
+  const SpanType();
 }
+
+// AppStart span type and control interface
+class _AppStartSpanType extends SpanType<AppStartSpanControl> {
+  const _AppStartSpanType._();
+}
+
+abstract class AppStartSpanControl {
+  void setType(String? name);
+  void clearType();
+}
+
+const AppStart = _AppStartSpanType._();
+

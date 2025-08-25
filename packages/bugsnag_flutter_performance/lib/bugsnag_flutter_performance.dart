@@ -5,8 +5,8 @@ import 'dart:async';
 import 'package:bugsnag_flutter_performance/src/bugsnag_network_request_info.dart';
 import 'package:bugsnag_flutter_performance/src/client.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
-export 'src/span_control/span_control.dart' show SpanQuery, SpanControlProvider;
-export 'src/span_control/span_types.dart' show AppStart, AppStartSpanControl;
+import 'package:bugsnag_flutter_performance/src/span_control/span_control.dart';
+export 'src/span_control/span_control.dart' show AppStart;
 import 'bugsnag_flutter_performance.dart';
 export 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart'
     show bugsnag_performance;
