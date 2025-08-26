@@ -27,6 +27,7 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
   String get encodedTraceId;
   String get encodedSpanId;
   String get name;
+  void updateName(String newName);
   DateTime get startTime;
   DateTime? get endTime;
   void setAttribute(String key, dynamic value);
@@ -38,7 +39,7 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
 class BugsnagPerformanceSpanImpl
     implements BugsnagPerformanceSpan, BugsnagPerformanceSpanContext {
   BugsnagPerformanceSpanImpl(
-      {required this.name,
+      {required String name,
       required this.startTime,
       void Function(BugsnagPerformanceSpan)? onEnded,
       void Function(BugsnagPerformanceSpan)? onCanceled,
@@ -46,7 +47,8 @@ class BugsnagPerformanceSpanImpl
       SpanId? spanId,
       this.parentSpanId,
       int? attributeCountLimit,
-      BugsnagPerformanceSpanAttributes? attributes}) {
+      BugsnagPerformanceSpanAttributes? attributes})
+      :_name = name {
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
@@ -54,12 +56,12 @@ class BugsnagPerformanceSpanImpl
     this.attributeCountLimit = attributeCountLimit ?? globalAttributeCountLimit;
     this.attributes = attributes ?? BugsnagPerformanceSpanAttributes();
   }
-
+  String _name;
   static int globalAttributeCountLimit = SpanAttributesLimits.limitValue(
       type: SpanAttributesLimitType.attributeCountLimit);
 
   @override
-  final String name;
+  String get name => _name;
   @override
   late final TraceId traceId;
   @override
@@ -134,7 +136,7 @@ class BugsnagPerformanceSpanImpl
   BugsnagPerformanceSpanImpl.fromJson(Map<String, dynamic> json,
       [void Function(BugsnagPerformanceSpan)? onEnded])
       : startTime = int.parse(json['startTimeUnixNano']).timeFromNanos,
-        name = json['name'] as String,
+        _name = json['name'] as String,
         _endTime = json['endTimeUnixNano'] != null
             ? int.parse(json['endTimeUnixNano']).timeFromNanos
             : null,
@@ -198,6 +200,17 @@ class BugsnagPerformanceSpanImpl
 
   void makeMutable(bool mutable) {
     _isMutable = mutable;
+  }
+
+  @override
+  void updateName(String newName) {
+    if (!_isMutable) {
+      return;
+    }
+    if (newName.isEmpty) {
+      return;
+    }
+    _name = newName;
   }
 }
 
