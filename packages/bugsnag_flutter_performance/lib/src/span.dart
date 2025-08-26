@@ -27,7 +27,7 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
   String get encodedTraceId;
   String get encodedSpanId;
   String get name;
-  void updateName(String newName);
+  void updateAppStartName(String? appStartName);
   DateTime get startTime;
   DateTime? get endTime;
   void setAttribute(String key, dynamic value);
@@ -48,7 +48,7 @@ class BugsnagPerformanceSpanImpl
       this.parentSpanId,
       int? attributeCountLimit,
       BugsnagPerformanceSpanAttributes? attributes})
-      :_name = name {
+      : _name = name, _originalName = name {
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
@@ -62,6 +62,7 @@ class BugsnagPerformanceSpanImpl
 
   @override
   String get name => _name;
+  final String _originalName;
   @override
   late final TraceId traceId;
   @override
@@ -137,6 +138,7 @@ class BugsnagPerformanceSpanImpl
       [void Function(BugsnagPerformanceSpan)? onEnded])
       : startTime = int.parse(json['startTimeUnixNano']).timeFromNanos,
         _name = json['name'] as String,
+        _originalName = json['name'] as String,
         _endTime = json['endTimeUnixNano'] != null
             ? int.parse(json['endTimeUnixNano']).timeFromNanos
             : null,
@@ -203,15 +205,17 @@ class BugsnagPerformanceSpanImpl
   }
 
   @override
-  void updateName(String newName) {
+  void updateAppStartName(String? appStartName) {
     if (!_isMutable) {
       return;
     }
-    if (newName.isEmpty) {
+    if (appStartName == null) {
+      _name = _originalName;
       return;
     }
-    _name = newName;
+    _name = _name + appStartName;
   }
+
 }
 
 String _encodeSpanId(SpanId spanId) {
