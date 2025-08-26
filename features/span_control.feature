@@ -6,7 +6,7 @@ Feature: span control
   Scenario: Custom AppStart span name
     Given I run "SetCustomAppStartNameScenario"
     And I wait for 4 spans
-      * a span field "name" equals "[AppStart/FlutterInit]"
+    * a span field "name" equals "[AppStart/FlutterInit]FirstOpen"
     * a span field "name" equals "[AppStartPhase/pre runApp()]"
     * a span field "name" equals "[AppStartPhase/runApp()]"
     * a span field "name" equals "[AppStartPhase/UI init]"
