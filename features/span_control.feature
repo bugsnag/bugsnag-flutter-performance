@@ -4,7 +4,7 @@ Feature: span control
     Given I clear the Bugsnag cache
 
   Scenario: Custom AppStart span name
-    Given I run "CustomAppStartNameScenario"
+    Given I run "SetCustomAppStartNameScenario"
     And I wait for 4 spans
       * a span field "name" equals "[AppStart/FlutterInit]"
     * a span field "name" equals "[AppStartPhase/pre runApp()]"

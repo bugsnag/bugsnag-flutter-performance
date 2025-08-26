@@ -27,18 +27,15 @@ class PrioritizedStore<T> {
 
     batchBlock((object, priority) {
       if (!batchingInProgress) {
-        print('Warning: Ignoring attempt to add element after batching finished');
         return;
       }
 
       if (_uniqueObjects.contains(object)) {
-        print('Warning: Ignoring attempt to add duplicate element');
         return;
       }
 
       for (final entry in temporaryStore) {
         if (entry.object == object) {
-          print('Warning: Ignoring attempt to add duplicate element');
           return;
         }
       }

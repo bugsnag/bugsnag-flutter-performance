@@ -18,7 +18,7 @@ class CompositeSpanControlProvider implements SpanControlProvider {
   R? getSpanControl<R extends SpanControl>(SpanQuery<R> query) {
     for (final provider in _providers.objects) {
       final control = provider.getSpanControl<R>(query);
-      if (control != null && control is R) {
+      if (control != null) {
         return control;
       }
     }
