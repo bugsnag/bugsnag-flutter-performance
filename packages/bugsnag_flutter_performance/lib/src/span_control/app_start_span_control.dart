@@ -16,7 +16,7 @@ class AppStartSpanControlImpl implements AppStartSpanControl {
     if (_overallSpan.isOpen()) {
       _overallSpan.setAttribute('bugsnag.app_start.type', type);
       _overallSpan
-          .updateName(_overallSpan.name + (type != null ? '($type)' : ''));
+          .updateName(_overallSpan.name + (type ?? ''));
     }
   }
 
