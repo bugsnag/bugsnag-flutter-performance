@@ -14,6 +14,7 @@ import 'package:bugsnag_flutter_performance/src/span_attributes_limits.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
 import 'package:bugsnag_flutter_performance/src/span_control/span_control.dart';
 import 'package:bugsnag_flutter_performance/src/span_control/span_control_provider.dart';
+import 'package:bugsnag_flutter_performance/src/span_control/span_control_provider_impl.dart';
 import 'package:bugsnag_flutter_performance/src/span_control/span_query.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
@@ -96,7 +97,7 @@ abstract class BugsnagPerformanceClient {
 
   R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}});
 
-}
+  }
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   BugsnagPerformanceConfiguration? configuration;
@@ -130,6 +131,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     );
     _clock = BugsnagClockImpl.instance;
     _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
+    _spanControlProvider = SpanControlProviderImpl(_appStartInstrumentation);
     BugsnagLifecycleListenerImpl.ensureInitialized();
     _lifecycleListener =
         lifecycleListener ?? BugsnagLifecycleListenerImpl.instance;
@@ -141,7 +143,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       client: this,
       clock: _clock,
     );
-    _spanControlProvider = SpanControlProviderImpl(this);
+
   }
 
   @override
@@ -616,6 +618,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   @override
   R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
     SpanQuery<R> query = SpanQuery<R>(params);
-    return _spanControlProvider.getSpanControl(query);
+    return _spanControlProvider.getSpanControl<R>(query);
   }
 }

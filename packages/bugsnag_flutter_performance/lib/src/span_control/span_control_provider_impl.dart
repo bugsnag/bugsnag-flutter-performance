@@ -1,5 +1,4 @@
-import 'dart:ffi';
-import '../client.dart';
+import 'package:bugsnag_flutter_performance/src/instrumentation/app_start/app_start_instrumentation.dart';
 import 'span_control_provider.dart';
 import 'span_control.dart';
 import 'span_query.dart';
@@ -7,7 +6,7 @@ import 'composite_span_control_provider.dart';
 import 'app_start_span_control_provider.dart';
 
 class SpanControlProviderImpl implements SpanControlProvider {
-  final BugsnagPerformanceClient _client;
+  final AppStartInstrumentation _appStartInstrumentation;
   final CompositeSpanControlProvider _compositeProvider;
   AppStartSpanControlProvider? _appStartProvider;
 
@@ -16,7 +15,7 @@ class SpanControlProviderImpl implements SpanControlProvider {
   static const int normalPriority = 50000;
   static const int lowPriority = 0;
 
-  SpanControlProviderImpl(this._client)
+  SpanControlProviderImpl(this._appStartInstrumentation)
       : _compositeProvider = CompositeSpanControlProvider(){
     _initialize();
   }
@@ -24,7 +23,7 @@ class SpanControlProviderImpl implements SpanControlProvider {
   void _initialize() {
     _compositeProvider.batchAddProviders((addProvider) {
         _appStartProvider = AppStartSpanControlProvider(
-            clientImpl._appStartInstrumentation
+            _appStartInstrumentation
         );
         addProvider(_appStartProvider!, internalPriority);
     });
