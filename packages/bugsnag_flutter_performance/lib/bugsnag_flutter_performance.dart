@@ -133,8 +133,8 @@ class BugsnagPerformance {
     return _client.getCurrentSpanContext();
   }
 
-  R? getSpanControl<R extends SpanControl>(SpanQuery<R> query) {
-    return _client.getSpanControl<R>(query);
+  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
+    return _client.getSpanControl<R>(params: params);
   }
 }
 

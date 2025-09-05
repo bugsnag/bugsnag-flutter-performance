@@ -94,7 +94,7 @@ abstract class BugsnagPerformanceClient {
 
   dynamic networkInstrumentation(dynamic);
 
-  R? getSpanControl<R extends SpanControl>(SpanQuery<R> query);
+  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}});
 }
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
@@ -611,7 +611,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   @override
-  R? getSpanControl<R extends SpanControl>(SpanQuery<R> query) {
+  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
+    SpanQuery<R> query = SpanQuery<R>(params);
     return _spanControlProvider.getSpanControl<R>(query);
   }
 }
