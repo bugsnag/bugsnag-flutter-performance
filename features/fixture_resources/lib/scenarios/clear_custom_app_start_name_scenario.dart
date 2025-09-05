@@ -16,6 +16,5 @@ class ClearCustomAppStartNameScenario extends Scenario {
     control?.clearType();
     bugsnag_performance.measureRunApp(() async => const Duration(seconds: 1));
     setMaxBatchSize(4);
-
   }
 }
