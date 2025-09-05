@@ -14,13 +14,13 @@ Feature: Persistence
   Scenario: Receive a persisted trace
     When I set the HTTP status code to 408
     * I run "ManualSpanScenario"
-    * I wait for 1 span
+    * I wait to receive at least 1 span
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.spanId" is stored as the value "original_span_id"
     * I wait for requests to persist
     * I discard the oldest trace
     * I set the HTTP status code to 200
     * I relaunch the app
     * I run "StartSdkDefault"
-    * I wait for 1 span
+    * I wait to receive at least 1 span
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.spanId" equals the stored value "original_span_id"
 

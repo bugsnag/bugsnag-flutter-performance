@@ -5,7 +5,7 @@ Feature: Automatic instrumentation spans
 
   Scenario: AutoInstrumentAppStartsScenario
     Given I run "AutoInstrumentAppStartsScenario"
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:4"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -30,7 +30,7 @@ Feature: Automatic instrumentation spans
 
   Scenario: AutoInstrumentNavigationBasicScenario
     Given I run "AutoInstrumentNavigationBasicScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -51,7 +51,7 @@ Feature: Automatic instrumentation spans
     And I wait for 5 seconds
     * no span named "[Navigation]basic_defer_navigation_scenario" exists
     And I invoke "step2"
-    Then I wait for 1 span
+    Then I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -77,7 +77,7 @@ Feature: Automatic instrumentation spans
     And I wait for 3 seconds
     * no span named "[Navigation]complex_defer_navigation_scenario" exists
     Then I invoke "step4"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -97,7 +97,7 @@ Feature: Automatic instrumentation spans
     And I wait for 3 seconds
     * no span named "[Navigation]nested_defer_navigation_scenario_parent" exists
     Then I invoke "step2"
-    And I wait for 2 spans
+    And I wait to receive at least 2 spans
     * a span field "name" equals "[Navigation]nested_defer_navigation_scenario_parent"
     * a span string attribute "bugsnag.navigation.route" equals "nested_defer_navigation_scenario_parent"
     * a span string attribute "bugsnag.navigation.triggered_by" equals "push"
@@ -111,7 +111,7 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.navigation.previous_route" equals "/"
     * a span string attribute "bugsnag.navigation.navigator" equals "nested_scenario_child_navigator"
     Then I invoke "step3"
-    And I wait for 3 spans
+    And I wait to receive at least 3 spans
     * a span field "name" equals "[Navigation]nested_scenario_child_navigator/nested_scenario_child_route_2"
     * a span string attribute "bugsnag.navigation.route" equals "nested_scenario_child_route_2"
     * a span string attribute "bugsnag.navigation.triggered_by" equals "push"
@@ -119,7 +119,7 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.navigation.previous_route" equals "nested_scenario_child_route_initial"
     * a span string attribute "bugsnag.navigation.navigator" equals "nested_scenario_child_navigator"
     Then I invoke "step4"
-    And I wait for 4 span
+    And I wait to receive at least 4 spans
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * a span field "name" equals "[Navigation]nested_scenario_child_navigator/nested_scenario_child_route_3"
@@ -136,14 +136,14 @@ Feature: Automatic instrumentation spans
 
   Scenario: AutoInstrumentNavigationPushAndPopScenario
     Given I run "AutoInstrumentNavigationPushAndPopScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     * a span field "name" equals "[Navigation]push_and_pop_scenario"
     * a span string attribute "bugsnag.navigation.route" equals "push_and_pop_scenario"
     * a span string attribute "bugsnag.navigation.triggered_by" equals "push"
     * a span string attribute "bugsnag.navigation.ended_by" equals "frame_render"
     * a span string attribute "bugsnag.navigation.previous_route" equals "/"
     And I invoke "step2"
-    Then I wait for 2 spans
+    Then I wait to receive at least 2 spans
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -160,7 +160,7 @@ Feature: Automatic instrumentation spans
 
   Scenario: AutoInstrumentViewLoadBasicScenario
     Given I run "AutoInstrumentViewLoadBasicScenario"
-    And I wait for 3 spans
+    And I wait to receive at least 3 spans
     And I wait for 3 seconds
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:3"
@@ -183,7 +183,7 @@ Feature: Automatic instrumentation spans
 
   Scenario: AutoInstrumentViewLoadBasicDeferScenario
     Given I run "AutoInstrumentViewLoadBasicDeferScenario"
-    And I wait for 2 spans
+    And I wait to receive at least 2 spans
     And I wait for 3 seconds
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -195,7 +195,7 @@ Feature: Automatic instrumentation spans
     * no span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget" exists
     * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/loading content" exists
     And I invoke "step2"
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
     * a span field "name" equals "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget"
     * a span string attribute "bugsnag.span.category" equals "view_load"
     * a span field "name" equals "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/loading content"
@@ -211,7 +211,7 @@ Feature: Automatic instrumentation spans
 
   Scenario: AutoInstrumentViewLoadNestedScenario
     Given I run "AutoInstrumentViewLoadNestedScenario"
-    And I wait for 4 spans
+    And I wait to receive at least 4 spans
     And I wait for 3 seconds
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
@@ -227,7 +227,7 @@ Feature: Automatic instrumentation spans
     * no span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget" exists
     * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/loading content" exists
     And I invoke "step2"
-    And I wait for 8 spans
+    And I wait to receive at least 8 spans
     * a span field "name" equals "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget"
     * a span field "name" equals "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget"
     * a span string attribute "bugsnag.span.category" equals "view_load"
@@ -260,7 +260,7 @@ Feature: Automatic instrumentation spans
     * no span named "[Navigation]navigation_view_load_scenario" exists
     * no span named "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget" exists
     Then I invoke "step4"
-    And I wait for 5 spans
+    And I wait to receive at least 5 spans
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"

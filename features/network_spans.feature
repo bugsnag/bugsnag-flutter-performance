@@ -5,7 +5,7 @@ Feature: Network Spans
 
   Scenario: HTTP Get
     When I run "HttpGetScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -19,7 +19,7 @@ Feature: Network Spans
 
   Scenario: HTTP Post
     When I run "HttpPostScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -35,7 +35,7 @@ Feature: Network Spans
     #this is to make sure that mutliple spans wont be created for the same request
   Scenario: HTTP Get Multiple Subscribers
     When I run "HttpGetMultipleSubscribersScenario"
-    And I wait for 1 spans
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -44,7 +44,7 @@ Feature: Network Spans
 
   Scenario: HTTP Callback Url Edit
     When I run "HttpCallbackEditScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -58,7 +58,7 @@ Feature: Network Spans
 
   Scenario: HTTP Callback Cancel Span
     When I run "HttpCallbackCancelSpan"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -84,7 +84,7 @@ Feature: Network Spans
 
   Scenario: DIO Get
     When I run "DIOGetScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -98,7 +98,7 @@ Feature: Network Spans
 
   Scenario: DIO Post
     When I run "DIOPostScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -113,7 +113,7 @@ Feature: Network Spans
 
   Scenario: DIO Callback Url Edit
     When I run "DIOCallbackEditScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -127,7 +127,7 @@ Feature: Network Spans
 
   Scenario: DIO Callback Cancel Span
     When I run "DIOCallbackCancelSpan"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -138,7 +138,7 @@ Feature: Network Spans
     #DART IO WRAPPER
   Scenario: DIO Get
     When I run "DartIoGetScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -152,7 +152,7 @@ Feature: Network Spans
 
   Scenario: Network callback type
     When I run "CheckNetworkCallbackTypeScenario"
-    And I wait for 2 spans
+    And I wait to receive at least 2 spans
     Then the trace "Content-Type" header equals "application/json"
     * the span named "GET" exists
 
