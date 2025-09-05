@@ -612,8 +612,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     return true;
   }
 
-
-
   @override
   R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
     SpanQuery<R> query = SpanQuery<R>(params);
