@@ -37,7 +37,7 @@ String _defaultEndpoint(String? apiKey) {
   // InsightHub keys always begin with 00000…
   final bool isHubKey = apiKey != null && apiKey.startsWith('00000');
   final String host =
-  isHubKey ? 'otlp.insighthub.smartbear.com' : 'otlp.bugsnag.com';
+      isHubKey ? 'otlp.insighthub.smartbear.com' : 'otlp.bugsnag.com';
   final String subdomain = apiKey != null ? '$apiKey.' : '';
   return 'https://$subdomain$host/v1/traces';
 }
@@ -94,9 +94,8 @@ abstract class BugsnagPerformanceClient {
 
   dynamic networkInstrumentation(dynamic);
 
-  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}});
-
-  }
+  R? getSpanControl<R extends SpanControl>(SpanQuery<R> query);
+}
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   BugsnagPerformanceConfiguration? configuration;
@@ -142,7 +141,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       client: this,
       clock: _clock,
     );
-
   }
 
   @override
@@ -612,11 +610,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     return true;
   }
 
-
-
   @override
-  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
-    SpanQuery<R> query = SpanQuery<R>(params);
+  R? getSpanControl<R extends SpanControl>(SpanQuery<R> query) {
     return _spanControlProvider.getSpanControl<R>(query);
   }
 }
