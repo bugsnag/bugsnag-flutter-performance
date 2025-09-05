@@ -7,7 +7,7 @@ import 'app_start_span_control_provider.dart';
 
 class SpanControlProviderImpl implements SpanControlProvider {
   final AppStartInstrumentation _appStartInstrumentation;
-  final CompositeSpanControlProvider _compositeProvider;
+  final CompositeSpanControlProvider _compositeProvider = CompositeSpanControlProvider();
   AppStartSpanControlProvider? _appStartProvider;
 
   static const int internalPriority = 999999;
@@ -15,23 +15,18 @@ class SpanControlProviderImpl implements SpanControlProvider {
   static const int normalPriority = 50000;
   static const int lowPriority = 0;
 
-  SpanControlProviderImpl(this._appStartInstrumentation)
-      : _compositeProvider = CompositeSpanControlProvider(){
+  SpanControlProviderImpl(this._appStartInstrumentation) {
     _initialize();
   }
 
   void _initialize() {
     _compositeProvider.batchAddProviders((addProvider) {
-        _appStartProvider = AppStartSpanControlProvider(
-            _appStartInstrumentation
-        );
-        addProvider(_appStartProvider!, internalPriority);
+      _appStartProvider = AppStartSpanControlProvider(_appStartInstrumentation);
+      addProvider(_appStartProvider!, internalPriority);
     });
   }
 
   @override
-  R? getSpanControl<R extends SpanControl>(SpanQuery<R> query) {
-    return _compositeProvider.getSpanControl<R>(query);
-  }
-
+  R? getSpanControl<R extends SpanControl>(SpanQuery<R> query) =>
+      _compositeProvider.getSpanControl<R>(query);
 }
