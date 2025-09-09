@@ -6,7 +6,7 @@ Feature: Error correlation
   Scenario: CorrelationSimpleScenario
     When I run "CorrelationSimpleScenario"
     * I wait to receive an error
-    * I wait for 1 span
+    * I wait to receive at least 1 span
     * the exception "message" equals "CorrelationSimpleScenario"
 
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.spanId" matches the regex "^[A-Fa-f0-9]{16}$"
@@ -21,7 +21,7 @@ Feature: Error correlation
   Scenario: CorrelationNullScenario
     When I run "CorrelationNullScenario"
     * I wait to receive an error
-    * I wait for 1 span
+    * I wait to receive at least 1 span
     * the exception "message" equals "CorrelationNullScenario"
     * the error payload field "events.0.correlation" is null
 

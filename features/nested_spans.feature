@@ -5,7 +5,7 @@ Feature: Nested Spans
 
   Scenario: Simple Nested Span
     When I run "SimpleNestedSpanScenario"
-    * I wait for 2 spans
+    * I wait to receive at least 2 spans
     * the span named "span1" exists
     * the span named "span2" exists
     * the span named "span1" is the parent of the span named "span2"
@@ -13,7 +13,7 @@ Feature: Nested Spans
 
   Scenario: New Zone New Context
     When I run "NewZoneNewContextScenario"
-    * I wait for 4 spans
+    * I wait to receive at least 4 spans
     * the span named "span1" exists
     * the span named "span2" exists
     * the span named "span3" exists
@@ -27,7 +27,7 @@ Feature: Nested Spans
 
   Scenario: Pass Context To New Zone
     When I run "PassContextToNewZoneScenario"
-    * I wait for 3 spans
+    * I wait to receive at least 3 spans
     * the span named "span1" exists
     * the span named "span2" exists
     * the span named "span3" exists
@@ -39,7 +39,7 @@ Feature: Nested Spans
 
  Scenario: Make Current Context False
     When I run "MakeCurrentContextScenario"
-    * I wait for 3 spans
+    * I wait to receive at least 3 spans
     * the span named "span1" exists
     * the span named "span2" exists
     * the span named "span3" exists
