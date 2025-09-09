@@ -27,7 +27,8 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
   String get encodedTraceId;
   String get encodedSpanId;
   String get name;
-  void updateAppStartName(String? appStartName);
+  String get originalName;
+  void rename(String newName);
   DateTime get startTime;
   DateTime? get endTime;
   void setAttribute(String key, dynamic value);
@@ -57,12 +58,14 @@ class BugsnagPerformanceSpanImpl
     this.attributes = attributes ?? BugsnagPerformanceSpanAttributes();
   }
   String _name;
+  final String _originalName;
   static int globalAttributeCountLimit = SpanAttributesLimits.limitValue(
       type: SpanAttributesLimitType.attributeCountLimit);
 
   @override
   String get name => _name;
-  final String _originalName;
+  @override
+  String get originalName => _originalName;
   @override
   late final TraceId traceId;
   @override
@@ -205,15 +208,11 @@ class BugsnagPerformanceSpanImpl
   }
 
   @override
-  void updateAppStartName(String? appStartName) {
+  void rename(String newName) {
     if (!_isMutable) {
       return;
     }
-    if (appStartName == null) {
-      _name = _originalName;
-      return;
-    }
-    _name = _name + appStartName;
+    _name = newName;
   }
 
 }
