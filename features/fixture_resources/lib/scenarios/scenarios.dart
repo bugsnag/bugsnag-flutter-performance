@@ -49,6 +49,8 @@ import 'check_network_callback_type_scenario.dart';
 import 'custom_span_time_scenario.dart';
 import 'span_with_no_parent_scenario.dart';
 import 'scenario.dart';
+import 'set_custom_app_start_name_scenario.dart';
+import 'clear_custom_app_start_name_scenario.dart';
 
 class ScenarioInfo<T extends Scenario> {
   const ScenarioInfo(this.name, this.init);
@@ -132,5 +134,9 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo(
       'CustomSpanAttributesScenario', () => CustomSpanAttributesScenario()),
   ScenarioInfo('CustomSpanAttributesWithLimitsScenario',
-      () => CustomSpanAttributesWithLimitsScenario())
+      () => CustomSpanAttributesWithLimitsScenario()),
+  ScenarioInfo('SetCustomAppStartNameScenario',
+      () => SetCustomAppStartNameScenario()),
+  ScenarioInfo('ClearCustomAppStartNameScenario',
+      () => ClearCustomAppStartNameScenario()),
 ];
