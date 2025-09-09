@@ -15,7 +15,7 @@ class AppStartSpanControlImpl implements AppStartSpanControl {
   void setType(String? type) {
     if (_overallSpan.isOpen()) {
       _overallSpan.setAttribute('bugsnag.app_start.name', type);
-      if(type != null) {
+      if (type != null) {
         _overallSpan.rename(_overallSpan.originalName + type);
       } else {
         _overallSpan.rename(_overallSpan.originalName);
