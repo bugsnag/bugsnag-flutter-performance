@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 1.6.0 (2025-09-10)
+
+### Changes
+
+* Allow customisation of app start spans via new span control API [#113](https://github.com/bugsnag/bugsnag-flutter-performance/pull/113)
+
 ## 1.5.0 (2025-07-17)
 
 ### Changes
