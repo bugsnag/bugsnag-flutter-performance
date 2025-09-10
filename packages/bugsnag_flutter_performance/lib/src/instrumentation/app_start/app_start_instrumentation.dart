@@ -1,5 +1,6 @@
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:bugsnag_flutter_performance/src/client.dart';
+import 'package:bugsnag_flutter_performance/src/span.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -8,12 +9,13 @@ abstract class AppStartInstrumentation {
   void willExecuteRunApp();
   void didExecuteRunApp();
   void setEnabled(bool enabled);
+  BugsnagPerformanceSpan? getOverallSpan();
 }
 
 class AppStartInstrumentationImpl implements AppStartInstrumentation {
   final BugsnagPerformanceClient client;
 
-  BugsnagPerformanceSpan? flutterInitSpan;
+  BugsnagPerformanceSpan? overallSpan;
   BugsnagPerformanceSpan? preRunAppPhaseSpan;
   BugsnagPerformanceSpan? runAppPhaseSpan;
   BugsnagPerformanceSpan? uiInitPhaseSpan;
@@ -26,17 +28,17 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
     if (!enabled) {
       return;
     }
-    if (flutterInitSpan != null) {
+    if (overallSpan != null) {
       return;
     }
-    flutterInitSpan = client.startSpan(
+    overallSpan = client.startSpan(
       '[AppStart/FlutterInit]',
       attributes: BugsnagPerformanceSpanAttributes(
           category: 'app_start', appStartType: 'FlutterInit'),
     );
     preRunAppPhaseSpan = client.startSpan(
       '[AppStartPhase/pre runApp()]',
-      parentContext: flutterInitSpan,
+      parentContext: overallSpan,
       attributes: BugsnagPerformanceSpanAttributes(
         category: 'app_start_phase',
         phase: 'pre runApp()',
@@ -50,13 +52,13 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
     if (!enabled) {
       return;
     }
-    if (flutterInitSpan == null) {
+    if (overallSpan == null) {
       return;
     }
     preRunAppPhaseSpan?.end();
     runAppPhaseSpan = client.startSpan(
       '[AppStartPhase/runApp()]',
-      parentContext: flutterInitSpan,
+      parentContext: overallSpan,
       attributes: BugsnagPerformanceSpanAttributes(
         category: 'app_start_phase',
         phase: 'runApp()',
@@ -70,13 +72,13 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
     if (!enabled) {
       return;
     }
-    if (flutterInitSpan == null) {
+    if (overallSpan == null) {
       return;
     }
     runAppPhaseSpan?.end();
     uiInitPhaseSpan = client.startSpan(
       '[AppStartPhase/UI init]',
-      parentContext: flutterInitSpan,
+      parentContext: overallSpan,
       attributes: BugsnagPerformanceSpanAttributes(
         category: 'app_start_phase',
         phase: 'UI init',
@@ -85,7 +87,7 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
     );
     SchedulerBinding.instance.addPostFrameCallback((_) {
       uiInitPhaseSpan?.end();
-      flutterInitSpan?.end();
+      overallSpan?.end();
     });
   }
 
@@ -93,10 +95,15 @@ class AppStartInstrumentationImpl implements AppStartInstrumentation {
   void setEnabled(bool enabled) {
     this.enabled = enabled;
     if (!enabled) {
-      flutterInitSpan = null;
+      overallSpan = null;
       preRunAppPhaseSpan = null;
       runAppPhaseSpan = null;
       uiInitPhaseSpan = null;
     }
+  }
+
+  @override
+  BugsnagPerformanceSpan? getOverallSpan() {
+    return overallSpan;
   }
 }

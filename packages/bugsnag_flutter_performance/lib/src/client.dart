@@ -12,6 +12,9 @@ import 'package:bugsnag_flutter_performance/src/instrumentation/view_load/view_l
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes_limits.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
+import 'package:bugsnag_flutter_performance/src/span_control/span_control.dart';
+import 'package:bugsnag_flutter_performance/src/span_control/span_control_provider_impl.dart';
+import 'package:bugsnag_flutter_performance/src/span_control/span_query.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/package_builder.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue.dart';
 import 'package:bugsnag_flutter_performance/src/uploader/retry_queue_builder.dart';
@@ -34,7 +37,7 @@ String _defaultEndpoint(String? apiKey) {
   // InsightHub keys always begin with 00000…
   final bool isHubKey = apiKey != null && apiKey.startsWith('00000');
   final String host =
-  isHubKey ? 'otlp.insighthub.smartbear.com' : 'otlp.bugsnag.com';
+      isHubKey ? 'otlp.insighthub.smartbear.com' : 'otlp.bugsnag.com';
   final String subdomain = apiKey != null ? '$apiKey.' : '';
   return 'https://$subdomain$host/v1/traces';
 }
@@ -90,6 +93,8 @@ abstract class BugsnagPerformanceClient {
   BugsnagPerformanceSpanContext? getCurrentSpanContext();
 
   dynamic networkInstrumentation(dynamic);
+
+  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}});
 }
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
@@ -114,6 +119,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _networkRequestCallback;
   final Map<SpanId, BugsnagPerformanceSpan> _potentiallyOpenSpans = {};
   final spanContextStackExpando = Expando<BugsnagPerformanceSpanContextStack>();
+  late final SpanControlProviderImpl _spanControlProvider;
 
   BugsnagPerformanceClientImpl({BugsnagLifecycleListener? lifecycleListener}) {
     retryQueueBuilder = RetryQueueBuilderImpl();
@@ -123,6 +129,7 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     );
     _clock = BugsnagClockImpl.instance;
     _appStartInstrumentation = AppStartInstrumentationImpl(client: this);
+    _spanControlProvider = SpanControlProviderImpl(_appStartInstrumentation);
     BugsnagLifecycleListenerImpl.ensureInitialized();
     _lifecycleListener =
         lifecycleListener ?? BugsnagLifecycleListenerImpl.instance;
@@ -601,5 +608,11 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       }
     }
     return true;
+  }
+
+  @override
+  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
+    SpanQuery<R> query = SpanQuery<R>(params);
+    return _spanControlProvider.getSpanControl<R>(query);
   }
 }

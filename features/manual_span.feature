@@ -5,7 +5,7 @@ Feature: Manual Spans
 
   Scenario: Manual Span
     When I run "ManualSpanScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -20,14 +20,14 @@ Feature: Manual Spans
 
   Scenario: Manual Span isFirstClass false
     When I run "ManualSpanIsFirstClassFalseScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then every span field "name" equals "ManualSpanIsFirstClassFalseScenario"
     * every span bool attribute "bugsnag.span.first_class" is false
 
 
   Scenario: Max Batch Age
     When I run "MaxBatchAgeScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -35,7 +35,7 @@ Feature: Manual Spans
 
   Scenario: Get Current Context
     When I run "GetCurrentContextScenario"
-    And I wait for 3 spans
+    And I wait to receive at least 3 spans
     * the span named "part 1: null" exists
     * the span named "part 2: not null" exists
     * the span named "context" is the parent of the span named "part 2: not null"    
@@ -43,20 +43,20 @@ Feature: Manual Spans
   @skip
   Scenario: Custom timings
     When I run "CustomSpanTimeScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     * every span field "startTimeUnixNano" equals "473385600000000000"
     * every span field "endTimeUnixNano" equals "504921600000000000"
 
   Scenario: Span With No Parent
     When I run "SpanWithNoParentScenario"
-    And I wait for 2 spans
+    And I wait to receive at least 2 spans
     * the span named "parent" exists
     * the span named "no-parent" exists
     * the span named "no-parent" has no parent
 
   Scenario: Manual Navigation Span
     When I run "ManualNavigationSpanScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -74,7 +74,7 @@ Feature: Manual Spans
 
   Scenario: Custom attributes
     When I run "CustomSpanAttributesScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
@@ -100,7 +100,7 @@ Feature: Manual Spans
 
   Scenario: Custom attributes - limits
     When I run "CustomSpanAttributesWithLimitsScenario"
-    And I wait for 1 span
+    And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
