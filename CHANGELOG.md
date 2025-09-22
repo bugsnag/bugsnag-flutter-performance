@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 1.7.0 (2025-09-22)
+
+### Changes
+
+* Reduced the batch timeout in dev builds to 5 seconds allowing for easier testing and debugging [#119](https://github.com/bugsnag/bugsnag-flutter-performance/pull/119)
+
 ## 1.6.0 (2025-09-10)
 
 ### Changes
