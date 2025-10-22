@@ -34,7 +34,6 @@ import 'span.dart';
 typedef OnSpanEndCallback = Future<bool> Function(BugsnagPerformanceSpan);
 
 String _defaultEndpoint(String? apiKey) {
-  // InsightHub keys always begin with 00000…
   final bool isSecondaryApiKey = apiKey != null && apiKey.startsWith('00000');
   final String host =
       isSecondaryApiKey ? 'otlp.bugsnag.smartbear.com' : 'otlp.bugsnag.com';

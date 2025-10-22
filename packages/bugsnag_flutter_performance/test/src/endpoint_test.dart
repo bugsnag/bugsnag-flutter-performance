@@ -28,13 +28,13 @@ class _MockLifecycleListener implements BugsnagLifecycleListener {
 
 void main() {
   const validKey = 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6';
-  const hubKey = '00000deadbeefdeadbeefdeadbeef00';
+  const secondaryKey = '00000deadbeefdeadbeefdeadbeef00';
   final explicitEndpoint = Uri.parse('https://example.com/otel');
   final defaultBugsnag = Uri.parse('https://otlp.bugsnag.com/v1/traces');
   final defaultWithKey =
       Uri.parse('https://$validKey.otlp.bugsnag.com/v1/traces');
   final defaultSecondaryHost =
-      Uri.parse('https://$hubKey.otlp.bugsnag.smartbear.com/v1/traces');
+      Uri.parse('https://$secondaryKey.otlp.bugsnag.smartbear.com/v1/traces');
 
   BugsnagPerformanceClientImpl freshClient(_MockLifecycleListener listener) {
     final c = BugsnagPerformanceClientImpl(lifecycleListener: listener);
@@ -63,10 +63,10 @@ void main() {
       expect(client.configuration!.endpoint, explicitEndpoint);
     });
 
-    test('prefixes hub subdomain when InsightHub key (00000…) supplied',
+    test('prefixes hub subdomain when secondary key (00000…) supplied',
         () async {
       final client = freshClient(_MockLifecycleListener());
-      await client.start(apiKey: hubKey);
+      await client.start(apiKey: secondaryKey);
       expect(client.configuration!.endpoint, defaultSecondaryHost);
     });
   });
