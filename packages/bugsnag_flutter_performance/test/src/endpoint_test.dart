@@ -33,8 +33,8 @@ void main() {
   final defaultBugsnag = Uri.parse('https://otlp.bugsnag.com/v1/traces');
   final defaultWithKey =
       Uri.parse('https://$validKey.otlp.bugsnag.com/v1/traces');
-  final defaultHubHost =
-      Uri.parse('https://$hubKey.otlp.insighthub.smartbear.com/v1/traces');
+  final defaultSecondaryHost =
+      Uri.parse('https://$hubKey.otlp.bugsnag.smartbear.com/v1/traces');
 
   BugsnagPerformanceClientImpl freshClient(_MockLifecycleListener listener) {
     final c = BugsnagPerformanceClientImpl(lifecycleListener: listener);
@@ -67,7 +67,7 @@ void main() {
         () async {
       final client = freshClient(_MockLifecycleListener());
       await client.start(apiKey: hubKey);
-      expect(client.configuration!.endpoint, defaultHubHost);
+      expect(client.configuration!.endpoint, defaultSecondaryHost);
     });
   });
 }

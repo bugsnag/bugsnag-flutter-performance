@@ -35,9 +35,9 @@ typedef OnSpanEndCallback = Future<bool> Function(BugsnagPerformanceSpan);
 
 String _defaultEndpoint(String? apiKey) {
   // InsightHub keys always begin with 00000…
-  final bool isHubKey = apiKey != null && apiKey.startsWith('00000');
+  final bool isSecondaryApiKey = apiKey != null && apiKey.startsWith('00000');
   final String host =
-      isHubKey ? 'otlp.insighthub.smartbear.com' : 'otlp.bugsnag.com';
+      isSecondaryApiKey ? 'otlp.bugsnag.smartbear.com' : 'otlp.bugsnag.com';
   final String subdomain = apiKey != null ? '$apiKey.' : '';
   return 'https://$subdomain$host/v1/traces';
 }
