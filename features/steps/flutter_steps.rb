@@ -273,3 +273,11 @@ def get_array_attribute_contents(attribute)
   Maze.check.false(array_attributes.empty?)
   return array_attributes[0]
 end
+
+def spans_from_request_list(list)
+  list.remaining
+      .flat_map { |req| req[:body]['resourceSpans'] }
+      .flat_map { |r| r['scopeSpans'] }
+      .flat_map { |s| s['spans'] }
+      .select { |s| !s.nil? }
+end
