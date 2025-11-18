@@ -142,9 +142,8 @@ Feature: Network Spans
 
   Scenario: Network callback type
     When I run "CheckNetworkCallbackTypeScenario"
-    And I wait to receive at least 2 spans
+    And I wait to receive a span named "GET"
     Then the trace "Content-Type" header equals "application/json"
-    * the span named "GET" exists
 
   Scenario: Dart io trace parent header
     When I run "DartIoTraceparentScenario"

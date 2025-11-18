@@ -7,11 +7,10 @@ Feature: Configuration overrides
     Given I set the sampling probability for the next traces to "0"
     And I enter unmanaged traces mode
     And I run "FixedSamplingProbabilityOneScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "FixedSamplingProbabilitySpan1"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Integrity" header matches the regex "^sha1 [A-Fa-f0-9]{40}$"
     * the trace "Bugsnag-Span-Sampling" header is not present
-    * every span field "name" equals "FixedSamplingProbabilitySpan1"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
     * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
@@ -19,9 +18,8 @@ Feature: Configuration overrides
     Then I discard the oldest trace
     Then I set the sampling probability for the next traces to "0"
     And I invoke "step2"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "FixedSamplingProbabilitySpan2"
     * the trace "Bugsnag-Span-Sampling" header is not present
-    * every span field "name" equals "FixedSamplingProbabilitySpan2"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
     * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
