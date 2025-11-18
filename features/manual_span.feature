@@ -41,9 +41,8 @@ Feature: Manual Spans
 
   Scenario: Span With No Parent
     When I run "SpanWithNoParentScenario"
-    And I wait to receive at least 2 spans
-    * the span named "parent" exists
-    * the span named "no-parent" exists
+    And I wait to receive a span named "parent"
+    * I wait to receive a span named "no-parent"
     * the span named "no-parent" has no parent
 
   Scenario: Manual Navigation Span
