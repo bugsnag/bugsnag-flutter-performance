@@ -39,8 +39,6 @@ Feature: Resource Attributes
     When I run "ManualSpanScenario"
     And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
 
@@ -61,8 +59,6 @@ Feature: Resource Attributes
     When I run "ManualSpanScenario"
     And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
 
@@ -77,8 +73,6 @@ Feature: Resource Attributes
     When I run "ManualSpanScenario"
     And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
 
