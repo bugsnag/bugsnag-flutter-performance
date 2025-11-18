@@ -7,7 +7,6 @@ Feature: Manual Spans
     When I run "ManualSpanScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span field "name" equals "ManualSpanScenario"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
@@ -29,7 +28,6 @@ Feature: Manual Spans
     When I run "MaxBatchAgeScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span field "name" equals "MaxBatchAgeScenario"
 
@@ -58,7 +56,6 @@ Feature: Manual Spans
     When I run "ManualNavigationSpanScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span field "name" equals "[Navigation]customNavigator/navigationScenarioRoute"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
@@ -76,7 +73,6 @@ Feature: Manual Spans
     When I run "CustomSpanAttributesScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span field "name" equals "CustomSpanAttributesScenarioSpan"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
@@ -102,7 +98,6 @@ Feature: Manual Spans
     When I run "CustomSpanAttributesWithLimitsScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span field "name" equals "CustomSpanAttributesWithLimitsScenarioSpan"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"

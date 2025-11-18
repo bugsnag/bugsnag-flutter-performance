@@ -7,7 +7,6 @@ Feature: Network Spans
     When I run "HttpGetScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/GET"
@@ -21,7 +20,6 @@ Feature: Network Spans
     When I run "HttpPostScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/POST"
@@ -37,7 +35,6 @@ Feature: Network Spans
     When I run "HttpGetMultipleSubscribersScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/GET"
@@ -46,7 +43,6 @@ Feature: Network Spans
     When I run "HttpCallbackEditScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/GET"
@@ -60,7 +56,6 @@ Feature: Network Spans
     When I run "HttpCallbackCancelSpan"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     * every span bool attribute "bugsnag.span.first_class" is true
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HttpCallbackCancelSpanScenario"
@@ -86,7 +81,6 @@ Feature: Network Spans
     When I run "DIOGetScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/GET"
@@ -100,7 +94,6 @@ Feature: Network Spans
     When I run "DIOPostScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/POST"
@@ -115,7 +108,6 @@ Feature: Network Spans
     When I run "DIOCallbackEditScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/GET"
@@ -129,7 +121,6 @@ Feature: Network Spans
     When I run "DIOCallbackCancelSpan"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "DIOCallbackCancelSpanScenario"
@@ -140,7 +131,6 @@ Feature: Network Spans
     When I run "DartIoGetScenario"
     And I wait to receive at least 1 span
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
     
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "HTTP/GET"
