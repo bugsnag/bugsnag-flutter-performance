@@ -78,23 +78,11 @@ Then('every span string attribute {string} does not exist') do |attribute|
   spans.map { |span| Maze.check.nil span['attributes'].find { |a| a['key'] == attribute } }
 end
 
-Then('all span bool attribute {string} is true') do |attribute|
-  spans = spans_from_request_list(Maze::Server.list_for('traces'))
-  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
-  selected_attributes.map { |a| Maze::check.true a['value']['boolValue'] }
-end
-
 Then('a span bool attribute {string} is true') do |attribute|
   spans = spans_from_request_list(Maze::Server.list_for('traces'))
   selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
   selected_attributes = selected_attributes.map { |a| a['value']['boolValue'] == true }
   Maze.check.false(selected_attributes.empty?)
-end
-
-Then('all span bool attribute {string} is false') do |attribute|
-  spans = spans_from_request_list(Maze::Server.list_for('traces'))
-  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
-  selected_attributes.map { |a| Maze::check.false a['value']['boolValue'] }
 end
 
 Then('a span bool attribute {string} is false') do |attribute|
@@ -174,13 +162,6 @@ When('I invoke {string}') do |method_name|
   sleep 0.1 until Maze::Server.commands.remaining.empty? || (count -= 1) < 1
   raise 'Test fixture did not GET /command' unless Maze::Server.commands.remaining.empty?
 end
-Then('the span named {string} exists') do |span_name|
-  spans = spans_from_request_list(Maze::Server.list_for("traces"))
-
-  spans_with_name = spans.find_all { |span| span['name'].eql?(span_name) }
-
-  Maze.check.true(spans_with_name.length() == 1);
-end
 
 Then('the span named {string} is the parent of the span named {string}') do |span1name, span2name|
   
@@ -249,11 +230,6 @@ end
 Then('a span array attribute {string} contains {int} items') do |attribute, length|
   array = get_array_attribute_contents(attribute)
   Maze.check.true(array.length() == length)
-end
-
-Then('a span array attribute {string} is empty') do |attribute|
-  array_contents = get_array_attribute_contents(attribute)
-  Maze.check.true(array_contents.empty?)
 end
 
 def get_array_value_at_index(attribute, index, type)

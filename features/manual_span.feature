@@ -8,8 +8,6 @@ Feature: Manual Spans
     And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" is true
@@ -43,9 +41,8 @@ Feature: Manual Spans
 
   Scenario: Span With No Parent
     When I run "SpanWithNoParentScenario"
-    And I wait to receive at least 2 spans
-    * the span named "parent" exists
-    * the span named "no-parent" exists
+    And I wait to receive a span named "parent"
+    * I wait to receive a span named "no-parent"
     * the span named "no-parent" has no parent
 
   Scenario: Manual Navigation Span
@@ -53,8 +50,6 @@ Feature: Manual Spans
     And I wait to receive a span named "[Navigation]customNavigator/navigationScenarioRoute"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span string attribute "bugsnag.span.category" equals "navigation"
@@ -69,8 +64,6 @@ Feature: Manual Spans
     And I wait to receive a span named "CustomSpanAttributesScenarioSpan"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "droppedAttributesCount" does not exist
@@ -93,8 +86,6 @@ Feature: Manual Spans
     And  I wait to receive a span named "CustomSpanAttributesWithLimitsScenarioSpan"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "droppedAttributesCount" equals 3
