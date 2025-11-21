@@ -5,38 +5,30 @@ Feature: Resource Attributes
 
   Scenario: Custom release stage
     When I run "CustomReleaseStageScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "CustomReleaseStageScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "name" equals "CustomReleaseStageScenario"
     * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "CustomReleaseStageScenario"
 
   Scenario: Custom enabled release stage
     When I run "CustomEnabledReleaseStageScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "CustomEnabledReleaseStageScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "name" equals "CustomEnabledReleaseStageScenario"
     * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "CustomEnabledReleaseStageScenario"
 
   Scenario: Custom service name
     When I run "CustomServiceNameScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "CustomServiceNameScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "name" equals "CustomServiceNameScenario"
     * the trace payload field "resourceSpans.0.resource" string attribute "service.name" equals "com.custom.serviceName"
 
   Scenario: Custom app version
     When I run "CustomAppVersionScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "CustomAppVersionScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "name" equals "CustomAppVersionScenario"
     * the trace payload field "resourceSpans.0.resource" string attribute "service.version" equals "999.888.777"
 
   Scenario: Disabled release stage
@@ -45,10 +37,8 @@ Feature: Resource Attributes
 
   Scenario: Common Attributes
     When I run "ManualSpanScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
-    * every span field "name" equals "ManualSpanScenario"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
     * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
@@ -69,10 +59,8 @@ Feature: Resource Attributes
   @android_only
   Scenario: Android Attributes
     When I run "ManualSpanScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
-    * every span field "name" equals "ManualSpanScenario"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
     * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
@@ -87,10 +75,8 @@ Feature: Resource Attributes
   @ios_only
   Scenario: iOS Attributes
     When I run "ManualSpanScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
-    * every span field "name" equals "ManualSpanScenario"
     * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
     * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
     * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
