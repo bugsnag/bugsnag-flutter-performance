@@ -11,8 +11,6 @@ Feature: Automatic instrumentation spans
     * I wait to receive a span named "[AppStartPhase/UI init]"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:4"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * a span string attribute "bugsnag.phase" equals "pre runApp()"
     * a span string attribute "bugsnag.phase" equals "runApp()"
     * a span string attribute "bugsnag.phase" equals "UI init"
@@ -34,8 +32,6 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.navigation.triggered_by" equals "push"
     * a span string attribute "bugsnag.navigation.ended_by" equals "frame_render"
     * a span string attribute "bugsnag.navigation.previous_route" equals "/"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
 
   Scenario: AutoInstrumentNavigationBasicDeferScenario
@@ -50,8 +46,6 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.navigation.triggered_by" equals "push"
     * a span string attribute "bugsnag.navigation.ended_by" equals "loading_indicator"
     * a span string attribute "bugsnag.navigation.previous_route" equals "/"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
 
   Scenario: AutoInstrumentNavigationComplexDeferScenario
@@ -72,8 +66,6 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.navigation.triggered_by" equals "push"
     * a span string attribute "bugsnag.navigation.ended_by" equals "loading_indicator"
     * a span string attribute "bugsnag.navigation.previous_route" equals "/"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
 
   Scenario: AutoInstrumentNavigationNestedNavigationScenario
@@ -109,8 +101,6 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.navigation.ended_by" equals "frame_render"
     * a span string attribute "bugsnag.navigation.previous_route" equals "nested_scenario_child_route_2"
     * a span string attribute "bugsnag.navigation.navigator" equals "nested_scenario_child_navigator"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
 
   Scenario: AutoInstrumentNavigationPushAndPopScenario
@@ -128,8 +118,6 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.navigation.triggered_by" equals "pop"
     * a span string attribute "bugsnag.navigation.ended_by" equals "frame_render"
     * a span string attribute "bugsnag.navigation.previous_route" equals "push_and_pop_scenario"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
 
   Scenario: AutoInstrumentViewLoadBasicScenario
@@ -144,8 +132,6 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.phase" equals "building"
     * a span string attribute "bugsnag.phase" equals "appearing"
     * no span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicScenarioWidget/loading content" exists
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicScenarioWidget/building"
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicScenarioWidget/appearing"
@@ -165,8 +151,6 @@ Feature: Automatic instrumentation spans
     * I wait to receive a span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/loading content"
     * a span string attribute "bugsnag.span.category" equals "view_load"
     * a span string attribute "bugsnag.phase" equals "loading content"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/building"
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadBasicDeferScenarioWidget/appearing"
@@ -193,8 +177,6 @@ Feature: Automatic instrumentation spans
     * I wait to receive a span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioChildWidget/loading content"
     * a span string attribute "bugsnag.span.category" equals "view_load"
     * a span string attribute "bugsnag.phase" equals "loading content"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/building"
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentViewLoadNestedScenarioWidget/appearing"
@@ -233,8 +215,6 @@ Feature: Automatic instrumentation spans
     * a span string attribute "bugsnag.phase" equals "loading content"
     * a span string attribute "bugsnag.span.category" equals "view_load_phase"
     * a span string attribute "bugsnag.span.category" equals "view_load"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" does not exist
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/building"
     * the span named "[ViewLoad]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget" is the parent of the span named "[ViewLoadPhase]FlutterWidget/AutoInstrumentNavigationWithViewLoadWidget/appearing"

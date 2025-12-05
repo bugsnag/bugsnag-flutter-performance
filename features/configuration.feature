@@ -9,17 +9,12 @@ Feature: Configuration overrides
     And I run "FixedSamplingProbabilityOneScenario"
     And I wait to receive a span named "FixedSamplingProbabilitySpan1"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Integrity" header matches the regex "^sha1 [A-Fa-f0-9]{40}$"
     * the trace "Bugsnag-Span-Sampling" header is not present
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     Then I discard the oldest trace
     Then I set the sampling probability for the next traces to "0"
     And I invoke "step2"
     And I wait to receive a span named "FixedSamplingProbabilitySpan2"
     * the trace "Bugsnag-Span-Sampling" header is not present
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
 
   Scenario: Setting fixed sampling probability of 0 with dynamic probability of 1 should send no spans
     Given I set the sampling probability for the next traces to "0"

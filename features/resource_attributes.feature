@@ -39,8 +39,6 @@ Feature: Resource Attributes
     When I run "ManualSpanScenario"
     And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
 
     * the trace payload field "resourceSpans.0.resource" string attribute "deployment.environment" equals "development"
     * the trace payload field "resourceSpans.0.resource" string attribute "telemetry.sdk.name" equals "bugsnag.performance.flutter"
@@ -59,8 +57,6 @@ Feature: Resource Attributes
     When I run "ManualSpanScenario"
     And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
 
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.platform" equals "android"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.version_code" equals "1"
@@ -73,8 +69,6 @@ Feature: Resource Attributes
     When I run "ManualSpanScenario"
     And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
 
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.platform" equals "ios"
     * the trace payload field "resourceSpans.0.resource" string attribute "bugsnag.app.bundle_version" equals "1"

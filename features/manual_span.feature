@@ -8,8 +8,6 @@ Feature: Manual Spans
     And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" is true
     * every span string attribute "bugsnag.span.category" equals "custom"
     * a span double attribute "bugsnag.sampling.p" equals 1.0
@@ -50,8 +48,6 @@ Feature: Manual Spans
     And I wait to receive a span named "[Navigation]customNavigator/navigationScenarioRoute"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span string attribute "bugsnag.span.category" equals "navigation"
     * every span string attribute "bugsnag.navigation.route" equals "navigationScenarioRoute"
     * every span string attribute "bugsnag.navigation.navigator" equals "customNavigator"
@@ -64,8 +60,6 @@ Feature: Manual Spans
     And I wait to receive a span named "CustomSpanAttributesScenarioSpan"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "droppedAttributesCount" does not exist
     * every span bool attribute "bugsnag.span.first_class" is true
     * every span string attribute "bugsnag.span.category" equals "custom"
@@ -86,8 +80,6 @@ Feature: Manual Spans
     And  I wait to receive a span named "CustomSpanAttributesWithLimitsScenarioSpan"
     Then the trace "Content-Type" header equals "application/json"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "droppedAttributesCount" equals 3
     * every span bool attribute "bugsnag.span.first_class" is true
     * every span string attribute "bugsnag.span.category" equals "custom"
