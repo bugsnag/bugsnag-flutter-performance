@@ -64,7 +64,7 @@ steps:
 
   - group: "End-to-End Tests"
     steps:
-      - label: ":bitbar: iOS end-to-end tests"
+      - label: ":bitbar: Flutter {{matrix}} iOS end-to-end tests"
         depends_on: "ios-fixture"
         timeout_in_minutes: 20
         matrix:
@@ -105,7 +105,7 @@ steps:
             - exit_status: 103  # Appium session failed
               limit: 2
 
-      - label: ":bitbar: Android end-to-end tests 3.19.0"
+      - label: ":bitbar: Flutter {{matrix}} Android end-to-end tests"
         depends_on: "android-fixture"
         timeout_in_minutes: 20
         matrix:
