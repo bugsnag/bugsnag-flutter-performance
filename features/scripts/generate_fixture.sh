@@ -13,9 +13,6 @@ HTTP_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-common/packages/bugsn
 
 DART_IO_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-common/packages/bugsnag_flutter_dart_io_http_client"
 
-
-
-
 EXPORT_OPTIONS=features/fixture_resources/exportOptions.plist
 
 XCODE_PROJECT=features/fixtures/mazerunner/ios/Runner.xcodeproj/project.pbxproj
@@ -32,10 +29,14 @@ BS_DART_LOCATION=features/fixture_resources/lib
 
 BS_DART_DESTINATION=features/fixtures/mazerunner
 
-ANDROID_GRADLE=features/fixtures/mazerunner/android/app/build.gradle
+# If flutter version = 3.38.3 or higher, change min sdk to 19
+if $FLUTTER_BIN --version | grep -qE 'Flutter 3\.(3[8-9]|[4-9][0-9]|[1-9][0-9]{2,})'; then
+  ANDROID_GRADLE=features/fixtures/mazerunner/android/app/build.gradle.kts
+else
+  ANDROID_GRADLE=features/fixtures/mazerunner/android/app/build.gradle
+fi
 
 PODFILE=features/fixtures/mazerunner/ios/Podfile
-
 
 echo "Remove old fixture"
 
@@ -53,7 +54,15 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" path_provider
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" http
 
-$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.1.15"
+if $FLUTTER_BIN --version | grep -qE 'Flutter 3\.(2[0-9]|[3-9][0-9]|[1-9][0-9]{2,})'; then
+  echo "Using local native_flutter_proxy package for flutter version >= 3.20.0"
+  $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy"
+  sed -i '' "s|import 'package:native_flutter_proxy/custom_proxy.dart';|import 'package:native_flutter_proxy/src/custom_proxy.dart';|" $BS_DART_LOCATION/main.dart
+  sed -i '' "s|import 'package:native_flutter_proxy/native_proxy_reader.dart';|import 'package:native_flutter_proxy/src/native_proxy_reader.dart';|" $BS_DART_LOCATION/main.dart
+else
+  $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.1.15"
+fi
+
 #$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_http_client:{'path':'$HTTP_WRAPPER_PACKAGE_PATH'}"
 #$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_dart_io_http_client:{'path':'$DART_IO_WRAPPER_PACKAGE_PATH'}"
 
