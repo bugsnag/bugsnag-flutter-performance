@@ -88,8 +88,7 @@ steps:
             command:
               - "--app=/app/features/fixtures/mazerunner/build/ios/ipa/mazerunner-{{matrix}}.ipa"
               - "--farm=bb"
-              # Avoid iOS 17 for now as it will force us to Appium 2.5, where the Touch we perform will fail.
-              - "--device=IOS_14|IOS_15|IOS_16"
+              - "--device=IOS_17|IOS_18|IOS_26"
               - "--fail-fast"
               - "--no-tunnel"
               - "--aws-public-ip"
@@ -133,7 +132,7 @@ steps:
               - "--fail-fast"
               - "--no-tunnel"
               - "--aws-public-ip"
-              - "--appium-version=1.22"
+              - "--appium-version=2.19"
           test-collector#v1.10.2:
             files: "reports/TEST-*.xml"
             format: "junit"
