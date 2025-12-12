@@ -2,7 +2,7 @@
 set -o errexit
 
 # Use fvm if it is on the PATH
-if [ -n `command -v fvm` ]; then
+if [ `command -v fvm` ]; then
   FLUTTER_BIN="fvm flutter"
 fi
 
