@@ -39,8 +39,10 @@ def execute_command(action, scenario_name)
   raise 'Test fixture did not GET /command' unless Maze::Server.commands.remaining.empty?
 end
 
-When('I relaunch the app') do
-  Maze::Api::Appium::AppManager.new.activate
+When('I stop and relaunch the app') do
+  manager = Maze::Api::Appium::AppManager.new
+  manager.terminate
+  manager.activate
 end
 
 When("I relaunch the app after a crash") do
