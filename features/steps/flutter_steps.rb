@@ -149,10 +149,7 @@ end
 
 When('I invoke {string}') do |method_name|
   Maze::Server.commands.add({ action: "invoke_method", args: [method_name] })
-  # Ensure fixture has read the command
-  touch_action = Appium::TouchAction.new
-  touch_action.tap({:x => 200, :y => 200})
-  touch_action.perform
+  Maze::Api::Appium::UiManager.new.touch_at(200, 200)
 
   $extra_config = ''
   # Ensure fixture has read the command
