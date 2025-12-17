@@ -30,6 +30,7 @@ Package.resolved
 Gemfile.lock
 Podfile.lock
 maze_output/
+maze-runner.log
 .idea/
 bugsnag-flutter-performance.iml
 
