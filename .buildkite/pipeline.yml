@@ -11,8 +11,7 @@ steps:
       - label: ":test_tube: {{matrix}}"
         matrix:
           - "3.38.3"
-          - "3.24.4"
-          - "3.19.0"
+          - "3.32.0"
         timeout_in_minutes: 10
         env:
           FLUTTER_VERSION: "{{matrix}}"
@@ -32,8 +31,7 @@ steps:
         key: "ios-fixture"
         matrix:
           - "3.38.3"
-          - "3.24.4"
-          - "3.19.0"
+          - "3.32.0"
         timeout_in_minutes: 20
         env:
           FLUTTER_VERSION: "{{matrix}}"
@@ -49,8 +47,7 @@ steps:
         key: "android-fixture"
         matrix:
           - "3.38.3"
-          - "3.24.4"
-          - "3.19.0"
+          - "3.32.0"
         timeout_in_minutes: 20
         env:
           FLUTTER_VERSION: "{{matrix}}"
@@ -69,8 +66,7 @@ steps:
         timeout_in_minutes: 20
         matrix:
           - "3.38.3"
-          - "3.24.4"
-          - "3.19.0"
+          - "3.32.0"
         env:
           FLUTTER_VERSION: "{{matrix}}"
         agents:
@@ -109,8 +105,7 @@ steps:
         timeout_in_minutes: 20
         matrix:
           - "3.38.3"
-          - "3.24.4"
-          - "3.19.0"
+          - "3.32.0"
         env:
           FLUTTER_VERSION: "{{matrix}}"
         agents:
