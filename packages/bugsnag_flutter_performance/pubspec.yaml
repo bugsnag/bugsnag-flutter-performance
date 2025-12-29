@@ -7,7 +7,7 @@ repository: https://github.com/bugsnag/bugsnag-flutter-performance
 issue_tracker: https://github.com/bugsnag/bugsnag-flutter-performance/issues
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '>=3.8.0 <4.0.0'
   flutter: ">=3.19.0"
 
 dependencies:
