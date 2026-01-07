@@ -77,13 +77,14 @@ class _AutoInstrumentNavigationComplexDeferScenarioScreenState
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        child: Container(
-          color: Colors.white,
-          child: Row(
-            children: [
-              if (_stage < 4)
-                BugsnagLoadingIndicator(
-                  child: Column(children: [
+      child: Container(
+        color: Colors.white,
+        child: Row(
+          children: [
+            if (_stage < 4)
+              BugsnagLoadingIndicator(
+                child: Column(
+                  children: [
                     if (_stage < 3)
                       const BugsnagLoadingIndicator(
                         child: Text('Still loading...'),
@@ -91,14 +92,16 @@ class _AutoInstrumentNavigationComplexDeferScenarioScreenState
                     if (_stage < 2)
                       const BugsnagLoadingIndicator(
                         child: CircularProgressIndicator(),
-                      )
-                  ]),
+                      ),
+                  ],
                 ),
-              const Text('AutoInstrumentNavigationComplexDeferScenarioScreen')
-            ],
-          ),
+              ),
+            const Text('AutoInstrumentNavigationComplexDeferScenarioScreen'),
+          ],
         ),
-        onTap: () => widget.runCommandCallback());
+      ),
+      onTap: () => widget.runCommandCallback(),
+    );
   }
 
   void setStage(int stage) {

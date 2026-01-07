@@ -11,11 +11,12 @@ class DIOCallbackCancelSpanScenario extends Scenario {
   Future<void> run() async {
     bugsnag_performance.setExtraConfig("instrumentAppStart", false);
     await bugsnag_performance.start(
-        apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
-        networkRequestCallback: (info) {
-          return null;
-        });
+      apiKey: '12312312312312312312312312312312',
+      endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
+      networkRequestCallback: (info) {
+        return null;
+      },
+    );
     setMaxBatchSize(1);
     dart_io.addSubscriber(bugsnag_performance.networkInstrumentation);
     final dio = Dio();

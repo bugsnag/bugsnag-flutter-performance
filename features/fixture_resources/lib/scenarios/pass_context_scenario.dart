@@ -10,8 +10,10 @@ class PassContextToNewZoneScenario extends Scenario {
     setMaxBatchSize(3);
     final span1 = bugsnag_performance.startSpan('span1');
     runZoned(() {
-      final span2 =
-          bugsnag_performance.startSpan('span2', parentContext: span1);
+      final span2 = bugsnag_performance.startSpan(
+        'span2',
+        parentContext: span1,
+      );
       final span3 = bugsnag_performance.startSpan('span3');
       span2.end();
       span3.end();

@@ -22,8 +22,7 @@ class _MockRetryQueueBuilder implements RetryQueueBuilder {
 
 class _MockLifecycleListener implements BugsnagLifecycleListener {
   @override
-  void startObserving({void Function()? onAppBackgrounded}) {
-  }
+  void startObserving({void Function()? onAppBackgrounded}) {}
 }
 
 void main() {

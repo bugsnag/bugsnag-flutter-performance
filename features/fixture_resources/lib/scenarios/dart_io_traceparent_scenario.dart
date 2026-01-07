@@ -13,8 +13,9 @@ class DartIoTraceparentScenario extends Scenario {
     setMaxBatchSize(1);
     dartIo.addSubscriber(bugsnag_performance.networkInstrumentation);
     final client = dartIo.HttpClient();
-    HttpClientRequest request = await client
-        .getUrl(Uri.parse('${FixtureConfig.MAZE_HOST.toString()}/reflect'));
+    HttpClientRequest request = await client.getUrl(
+      Uri.parse('${FixtureConfig.MAZE_HOST.toString()}/reflect'),
+    );
     await request.close();
   }
 }

@@ -91,17 +91,13 @@ class MazeRunnerFlutterApp extends StatelessWidget {
     log('Building MazeRunnerFlutterApp');
     return MaterialApp(
       title: 'Bugsnag Test',
-      theme: ThemeData(
-        primaryColor: const Color.fromARGB(255, 73, 73, 227),
-      ),
+      theme: ThemeData(primaryColor: const Color.fromARGB(255, 73, 73, 227)),
       navigatorObservers: [BugsnagPerformanceNavigatorObserver()],
       home: FutureBuilder<String>(
         future: _getMazeRunnerUrl(),
         builder: (_, mazerunnerUrl) {
           if (mazerunnerUrl.data != null) {
-            return MazeRunnerHomePage(
-              mazerunnerUrl: mazerunnerUrl.data!,
-            );
+            return MazeRunnerHomePage(mazerunnerUrl: mazerunnerUrl.data!);
           } else {
             return Container(
               color: Colors.white,
@@ -119,7 +115,8 @@ class MazeRunnerFlutterApp extends StatelessWidget {
       try {
         final Directory directory = await appFilesDirectory();
         final File file = File(
-            '${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json');
+          '${directory.path.replaceAll('app_flutter', 'files')}/fixture_config.json',
+        );
         final text = await file.readAsString();
         log("fixture_config.json found with contents: $text");
         Map<String, dynamic> json = jsonDecode(text);
@@ -132,7 +129,9 @@ class MazeRunnerFlutterApp extends StatelessWidget {
       }
       await Future.delayed(const Duration(seconds: 1));
     }
-    log("fixture_config.json not read within 30s, defaulting to BrowserStack address");
+    log(
+      "fixture_config.json not read within 30s, defaulting to BrowserStack address",
+    );
     FixtureConfig.MAZE_HOST = Uri.parse('http://bs-local.com:9339');
     log('using ${FixtureConfig.MAZE_HOST} as the MazeRunner URL');
     return FixtureConfig.MAZE_HOST.toString();
@@ -142,7 +141,7 @@ class MazeRunnerFlutterApp extends StatelessWidget {
     log('Fetching app files directory');
     return Platform.isAndroid
         ? await getExternalStorageDirectory() ??
-            await getApplicationDocumentsDirectory()
+              await getApplicationDocumentsDirectory()
         : await getApplicationDocumentsDirectory();
   }
 }
@@ -150,10 +149,7 @@ class MazeRunnerFlutterApp extends StatelessWidget {
 class MazeRunnerHomePage extends StatefulWidget {
   final String mazerunnerUrl;
 
-  const MazeRunnerHomePage({
-    super.key,
-    required this.mazerunnerUrl,
-  });
+  const MazeRunnerHomePage({super.key, required this.mazerunnerUrl});
 
   @override
   State<MazeRunnerHomePage> createState() => _HomePageState();
@@ -207,8 +203,9 @@ class _HomePageState extends State<MazeRunnerHomePage> {
         if (response.body.isEmpty) {
           log('Empty command, retrying...');
           if (retry) {
-            Future.delayed(const Duration(seconds: 1))
-                .then((value) => _onRunCommand(context, retry: true));
+            Future.delayed(
+              const Duration(seconds: 1),
+            ).then((value) => _onRunCommand(context, retry: true));
           }
           return;
         }
@@ -216,7 +213,9 @@ class _HomePageState extends State<MazeRunnerHomePage> {
         final command = Command.fromJsonString(response.body);
         _scenarioNameController.text = command.scenarioName;
         _extraConfigController.text = command.extraConfig;
-        log("Received command: Action - ${command.action}, Scenario Name - ${command.scenarioName}, Extra Config - ${command.extraConfig}");
+        log(
+          "Received command: Action - ${command.action}, Scenario Name - ${command.scenarioName}, Extra Config - ${command.extraConfig}",
+        );
 
         switch (command.action) {
           case 'clear_cache':
@@ -232,15 +231,17 @@ class _HomePageState extends State<MazeRunnerHomePage> {
       } else {
         log('Received response with status code ${response.statusCode}.');
         if (retry) {
-          Future.delayed(const Duration(seconds: 1))
-              .then((value) => _onRunCommand(context, retry: true));
+          Future.delayed(
+            const Duration(seconds: 1),
+          ).then((value) => _onRunCommand(context, retry: true));
         }
       }
     } catch (e) {
       log('Error fetching command: $e \nRetrying...');
       if (retry) {
-        Future.delayed(const Duration(seconds: 1))
-            .then((value) => _onRunCommand(context, retry: true));
+        Future.delayed(
+          const Duration(seconds: 1),
+        ).then((value) => _onRunCommand(context, retry: true));
       }
       return;
     }
@@ -250,8 +251,9 @@ class _HomePageState extends State<MazeRunnerHomePage> {
     log("Clearing the cache");
     final appCacheDir = await getApplicationSupportDirectory();
     try {
-      await Directory('${appCacheDir.path}/bugsnag-performance')
-          .delete(recursive: true);
+      await Directory(
+        '${appCacheDir.path}/bugsnag-performance',
+      ).delete(recursive: true);
       log("Cache cleared successfully");
     } catch (e) {
       log("Couldn't delete bugsnag-performance directory: $e");
@@ -296,8 +298,9 @@ class _HomePageState extends State<MazeRunnerHomePage> {
   Scenario? _initScenario(BuildContext context) {
     final name = _scenarioNameController.value.text;
     log('Initializing scenario: $name');
-    final scenarioIndex =
-        scenarios.indexWhere((element) => element.name == name);
+    final scenarioIndex = scenarios.indexWhere(
+      (element) => element.name == name,
+    );
 
     if (scenarioIndex == -1) {
       log('Cannot find Scenario $name. Has it been added to scenarios.dart?');
@@ -340,16 +343,12 @@ class _HomePageState extends State<MazeRunnerHomePage> {
               TextField(
                 controller: _scenarioNameController,
                 key: const Key("scenarioName"),
-                decoration: const InputDecoration(
-                  label: Text("Scenario Name"),
-                ),
+                decoration: const InputDecoration(label: Text("Scenario Name")),
               ),
               TextField(
                 controller: _extraConfigController,
                 key: const Key("extraConfig"),
-                decoration: const InputDecoration(
-                  label: Text("Extra Config"),
-                ),
+                decoration: const InputDecoration(label: Text("Extra Config")),
               ),
               TextField(
                 controller: _commandEndpointController,

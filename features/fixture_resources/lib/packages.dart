@@ -9,9 +9,7 @@ Future<List<String>> listPackages() async {
   // We don't care about those license issues, we just want each package name once.
   // Therefore we add each name to a set to make sure we only add it once.
   await LicenseRegistry.licenses.forEach(
-    (entry) => packages.addAll(
-      entry.packages.toList(),
-    ),
+    (entry) => packages.addAll(entry.packages.toList()),
   );
 
   return List.from(packages);

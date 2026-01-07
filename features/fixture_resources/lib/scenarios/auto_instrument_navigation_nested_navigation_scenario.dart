@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'scenario.dart';
 
 class AutoInstrumentNavigationNestedNavigationScenario extends Scenario {
-  final _key = GlobalKey<
-      _AutoInstrumentNavigationNestedNavigationScenarioSubScreenState>();
+  final _key =
+      GlobalKey<
+        _AutoInstrumentNavigationNestedNavigationScenarioSubScreenState
+      >();
   Route<dynamic>? routeToReplace;
 
   @override
@@ -22,14 +24,17 @@ class AutoInstrumentNavigationNestedNavigationScenario extends Scenario {
       child: Navigator(
         observers: [
           BugsnagPerformanceNavigatorObserver(
-              navigatorName: "nested_scenario_child_navigator")
+            navigatorName: "nested_scenario_child_navigator",
+          ),
         ],
         pages: [
           MaterialPage(
             child: AutoInstrumentNavigationNestedNavigationScenarioSubScreen(
-                key: _key, runCommandCallback: () => runCommandCallback!()),
+              key: _key,
+              runCommandCallback: () => runCommandCallback!(),
+            ),
             name: 'nested_scenario_child_route_initial',
-          )
+          ),
         ],
       ),
     );
@@ -37,9 +42,7 @@ class AutoInstrumentNavigationNestedNavigationScenario extends Scenario {
 
   @override
   RouteSettings? routeSettings() {
-    return const RouteSettings(
-      name: 'nested_defer_navigation_scenario_parent',
-    );
+    return const RouteSettings(name: 'nested_defer_navigation_scenario_parent');
   }
 
   void step2() {
@@ -49,14 +52,10 @@ class AutoInstrumentNavigationNestedNavigationScenario extends Scenario {
   void step3() {
     routeToReplace = MaterialPageRoute(
       builder: (context) => GestureDetector(
-        child: Container(
-          color: Colors.white,
-        ),
+        child: Container(color: Colors.white),
         onTap: () => runCommandCallback!(),
       ),
-      settings: const RouteSettings(
-        name: 'nested_scenario_child_route_2',
-      ),
+      settings: const RouteSettings(name: 'nested_scenario_child_route_2'),
     );
     Navigator.of(_key.currentContext!).push(routeToReplace!);
   }
@@ -64,14 +63,11 @@ class AutoInstrumentNavigationNestedNavigationScenario extends Scenario {
   void step4() {
     final route = MaterialPageRoute(
       builder: (context) => Container(),
-      settings: const RouteSettings(
-        name: 'nested_scenario_child_route_3',
-      ),
+      settings: const RouteSettings(name: 'nested_scenario_child_route_3'),
     );
-    Navigator.of(_key.currentContext!).replace(
-      oldRoute: routeToReplace!,
-      newRoute: route,
-    );
+    Navigator.of(
+      _key.currentContext!,
+    ).replace(oldRoute: routeToReplace!, newRoute: route);
   }
 
   @override
@@ -102,8 +98,8 @@ class AutoInstrumentNavigationNestedNavigationScenarioSubScreen
 
   @override
   State<AutoInstrumentNavigationNestedNavigationScenarioSubScreen>
-      createState() =>
-          _AutoInstrumentNavigationNestedNavigationScenarioSubScreenState();
+  createState() =>
+      _AutoInstrumentNavigationNestedNavigationScenarioSubScreenState();
 }
 
 class _AutoInstrumentNavigationNestedNavigationScenarioSubScreenState

@@ -11,8 +11,9 @@ class InitialPScenario extends Scenario {
     bugsnag_performance.setExtraConfig("probabilityRequestsPause", 1000);
     bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 25000);
     bugsnag_performance.start(
-        apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
+      apiKey: '12312312312312312312312312312312',
+      endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
+    );
     setMaxBatchSize(1);
     doSimpleSpan('First');
   }

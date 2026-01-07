@@ -4,9 +4,7 @@ import 'scenario.dart';
 class FixedSamplingProbabilityOneScenario extends Scenario {
   @override
   Future<void> run() async {
-    await startBugsnag(
-      samplingProbability: 1.0,
-    );
+    await startBugsnag(samplingProbability: 1.0);
     setMaxBatchSize(1);
     bugsnag_performance.startSpan('FixedSamplingProbabilitySpan1').end();
   }

@@ -1,5 +1,3 @@
-library bugsnag_flutter_performance;
-
 import 'dart:async';
 
 import 'package:bugsnag_flutter_performance/src/bugsnag_network_request_info.dart';
@@ -133,7 +131,8 @@ class BugsnagPerformance {
     return _client.getCurrentSpanContext();
   }
 
-  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
+  R? getSpanControl<R extends SpanControl>(
+      {Map<String, dynamic> params = const {}}) {
     return _client.getSpanControl<R>(params: params);
   }
 }

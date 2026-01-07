@@ -9,8 +9,9 @@ class ClearCustomAppStartNameScenario extends Scenario {
     bugsnag_performance.setExtraConfig('instrumentAppStart', true);
     bugsnag_performance.setExtraConfig('probabilityValueExpireTime', 1000);
     bugsnag_performance.start(
-        apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
+      apiKey: '12312312312312312312312312312312',
+      endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
+    );
     final control = bugsnag_performance.getSpanControl<AppStartSpanControl>();
     control?.setType('FirstOpen');
     control?.clearType();

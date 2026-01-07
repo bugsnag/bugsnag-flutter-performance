@@ -9,12 +9,13 @@ class CheckNetworkCallbackTypeScenario extends Scenario {
     bugsnag_performance.setExtraConfig("instrumentAppStart", false);
     String type = "not-set";
     await bugsnag_performance.start(
-        apiKey: '12312312312312312312312312312312',
-        endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
-        networkRequestCallback: (info) {
-          type = info.type!;
-          return info;
-        });
+      apiKey: '12312312312312312312312312312312',
+      endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'),
+      networkRequestCallback: (info) {
+        type = info.type!;
+        return info;
+      },
+    );
     setMaxBatchSize(2);
     http.addSubscriber(bugsnag_performance.networkInstrumentation);
     await http.Client().get(FixtureConfig.MAZE_HOST);

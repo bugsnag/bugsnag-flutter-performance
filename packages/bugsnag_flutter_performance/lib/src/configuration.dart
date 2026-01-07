@@ -17,7 +17,9 @@ class BugsnagPerformanceConfiguration {
   String? apiKey;
   Uri? endpoint;
   int maxBatchSize = 100;
-  int maxBatchAge = kDebugMode ? 5 * 1000 : 60 * 1000; // 5 seconds for debug, 60 seconds for release
+  int maxBatchAge = kDebugMode
+      ? 5 * 1000
+      : 60 * 1000; // 5 seconds for debug, 60 seconds for release
   int probabilityRequestsPause = 30000;
   int probabilityValueExpireTime = 24 * 3600 * 1000;
   bool instrumentAppStart = true;

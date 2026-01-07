@@ -78,31 +78,34 @@ class _AutoInstrumentNavigationWithViewLoadScenarioScreenState
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        child: Container(
-            color: Colors.white,
-            child: MeasuredWidget(
-              name: 'AutoInstrumentNavigationWithViewLoadWidget',
-              builder: (context) => Row(
-                children: [
-                  if (_stage < 4)
-                    BugsnagLoadingIndicator(
-                      child: Column(children: [
-                        if (_stage < 3)
-                          const BugsnagLoadingIndicator(
-                            child: Text('Still loading...'),
-                          ),
-                        if (_stage < 2)
-                          const BugsnagLoadingIndicator(
-                            child: CircularProgressIndicator(),
-                          )
-                      ]),
-                    ),
-                  const Text(
-                      'AutoInstrumentNavigationWithViewLoadScenarioScreen')
-                ],
-              ),
-            )),
-        onTap: () => widget.runCommandCallback());
+      child: Container(
+        color: Colors.white,
+        child: MeasuredWidget(
+          name: 'AutoInstrumentNavigationWithViewLoadWidget',
+          builder: (context) => Row(
+            children: [
+              if (_stage < 4)
+                BugsnagLoadingIndicator(
+                  child: Column(
+                    children: [
+                      if (_stage < 3)
+                        const BugsnagLoadingIndicator(
+                          child: Text('Still loading...'),
+                        ),
+                      if (_stage < 2)
+                        const BugsnagLoadingIndicator(
+                          child: CircularProgressIndicator(),
+                        ),
+                    ],
+                  ),
+                ),
+              const Text('AutoInstrumentNavigationWithViewLoadScenarioScreen'),
+            ],
+          ),
+        ),
+      ),
+      onTap: () => widget.runCommandCallback(),
+    );
   }
 
   void setStage(int stage) {

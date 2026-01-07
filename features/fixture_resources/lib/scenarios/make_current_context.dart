@@ -9,8 +9,10 @@ class MakeCurrentContextScenario extends Scenario {
     await startBugsnag();
     setMaxBatchSize(3);
     final span1 = bugsnag_performance.startSpan('span1');
-    final span2 =
-        bugsnag_performance.startSpan('span2', makeCurrentContext: false);
+    final span2 = bugsnag_performance.startSpan(
+      'span2',
+      makeCurrentContext: false,
+    );
     final span3 = bugsnag_performance.startSpan('span3');
     span3.end();
     span2.end();

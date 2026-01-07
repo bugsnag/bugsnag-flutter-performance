@@ -49,7 +49,8 @@ class BugsnagPerformanceSpanImpl
       this.parentSpanId,
       int? attributeCountLimit,
       BugsnagPerformanceSpanAttributes? attributes})
-      : _name = name, _originalName = name {
+      : _name = name,
+        _originalName = name {
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
@@ -214,7 +215,6 @@ class BugsnagPerformanceSpanImpl
     }
     _name = newName;
   }
-
 }
 
 String _encodeSpanId(SpanId spanId) {
