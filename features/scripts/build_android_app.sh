@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -o errexit
-set -o pipefail
-set -o nounset
 
-if [[ -z "${FLUTTER_BIN:-}" ]]; then
+# Select Flutter binary
+# Prefer fvm if available, otherwise fall back to system flutter
+if command -v fvm >/dev/null 2>&1; then
+  FLUTTER_BIN="fvm flutter"
+else
   FLUTTER_BIN="flutter"
-  echo "FLUTTER_BIN not set; defaulting to 'flutter'"
 fi
 
 echo "--- 📦 Bundle Install"
@@ -19,4 +20,4 @@ echo "Running generate_fixture.sh script"
 
 echo "--- 🚀 Building Flutter APK"
 cd features/fixtures/mazerunner
-"$FLUTTER_BIN" build apk --no-tree-shake-icons
+$FLUTTER_BIN build apk --no-tree-shake-icons

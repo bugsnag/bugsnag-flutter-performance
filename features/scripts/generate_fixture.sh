@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 set -o errexit
 
-# Use fvm if it is on the PATH
-if [ `command -v fvm` ]; then
+# Select Flutter binary
+# Prefer fvm if available, otherwise fall back to system flutter
+if command -v fvm >/dev/null 2>&1; then
   FLUTTER_BIN="fvm flutter"
-fi
-
-if [ -z "$FLUTTER_BIN" ]; then
+else
   FLUTTER_BIN="flutter"
 fi
 
@@ -59,12 +58,26 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" path_provider
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" http
 
-# Change the version of native_flutter_proxy based on flutter version. >= 3.20.0 requires a newer version
-if $FLUTTER_BIN --version | grep -qE 'Flutter 3\.(2[0-9]|[3-9][0-9]|[1-9][0-9]{2,})'; then
-  $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy"
-  sed -i '' "s|import 'package:native_flutter_proxy/custom_proxy.dart';|import 'package:native_flutter_proxy/src/custom_proxy.dart';|" $BS_DART_LOCATION/main.dart
-  sed -i '' "s|import 'package:native_flutter_proxy/native_proxy_reader.dart';|import 'package:native_flutter_proxy/src/native_proxy_reader.dart';|" $BS_DART_LOCATION/main.dart
+# Change the version of native_flutter_proxy based on flutter version
+# < 3.20.0             -> pin to 0.1.15
+# >= 3.20.0 < 3.30.0   -> pin to 0.2.3
+# >= 3.30.0            -> use latest
+
+update_native_flutter_proxy_imports() {
+  sed -i '' "s|import 'package:native_flutter_proxy/custom_proxy.dart';|import 'package:native_flutter_proxy/src/custom_proxy.dart';|" "$BS_DART_LOCATION/main.dart"
+  sed -i '' "s|import 'package:native_flutter_proxy/native_proxy_reader.dart';|import 'package:native_flutter_proxy/src/native_proxy_reader.dart';|" "$BS_DART_LOCATION/main.dart"
+}
+
+if $FLUTTER_BIN --version | grep -qE 'Flutter 3\.(3[0-9]|[4-9][0-9]|[1-9][0-9]{2,})'; then
+  # >= 3.30.0
+  $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" native_flutter_proxy
+  update_native_flutter_proxy_imports
+elif $FLUTTER_BIN --version | grep -qE 'Flutter 3\.2[0-9]\.'; then
+  # >= 3.20.0 and < 3.30.0
+  $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.2.3"
+  update_native_flutter_proxy_imports
 else
+  # < 3.20.0
   $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.1.15"
 fi
 

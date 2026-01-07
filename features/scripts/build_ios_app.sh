@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -o errexit
-set -o pipefail
-set -o nounset
 
-if [[ -z "${FLUTTER_BIN:-}" ]]; then
+# Select Flutter binary
+# Prefer fvm if available, otherwise fall back to system flutter
+if command -v fvm >/dev/null 2>&1; then
+  FLUTTER_BIN="fvm flutter"
+else
   FLUTTER_BIN="flutter"
-  echo "FLUTTER_BIN not set; defaulting to 'flutter'"
 fi
 
 echo "--- 📦 Bundle Install"
@@ -21,8 +22,6 @@ fi
 echo "--- 🔧 Generate Fixture"
 echo "Running generate_fixture.sh script"
 ./features/scripts/generate_fixture.sh
-
-
 
 echo "--- 🚧 Running xcodebuild to set provisioning profile (failure allowed)..."
 EXPORT_OPTIONS="$(pwd)/features/fixture_resources/exportOptions.plist"
@@ -40,6 +39,4 @@ xcodebuild build \
 
 echo "--- 🚀 Building Flutter IPA"
 echo "Running flutter build ipa command"
-"$FLUTTER_BIN" build ipa \
-  --export-options-plist="$EXPORT_OPTIONS" \
-  --no-tree-shake-icons
+$FLUTTER_BIN build ipa --export-options-plist="$EXPORT_OPTIONS" --no-tree-shake-icons
