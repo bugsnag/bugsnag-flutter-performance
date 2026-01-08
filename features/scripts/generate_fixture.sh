@@ -45,18 +45,46 @@ sedi() {
   fi
 }
 
-# Extract flutter frameworkVersion once (JSON via --machine)
-FLUTTER_JSON="$("${FLUTTER_BIN[@]}" --version --machine)"
+xtract flutter frameworkVersion once (prefer --machine JSON, but robust to wrappers)
+FLUTTER_VERSION=""
+
+# Capture both stdout and stderr (some wrappers print JSON to stderr)
+FLUTTER_OUT="$("${FLUTTER_BIN[@]}" --version --machine 2>&1 || true)"
+
+# Try to extract a JSON object from the output (first {...} block)
 FLUTTER_VERSION="$(
-  printf '%s' "$FLUTTER_JSON" | python3 - <<'PY'
-import json, sys
-data=json.load(sys.stdin)
-print(data.get("frameworkVersion",""))
+  printf '%s' "$FLUTTER_OUT" | python3 - <<'PY'
+import sys, json, re
+s = sys.stdin.read().strip()
+if not s:
+    sys.exit(0)
+
+# Find first JSON object in the output (handles leading logs)
+m = re.search(r'\{.*\}', s, flags=re.S)
+if not m:
+    sys.exit(0)
+
+try:
+    data = json.loads(m.group(0))
+    v = data.get("frameworkVersion", "") or ""
+    print(v)
+except Exception:
+    pass
 PY
 )"
 
 if [[ -z "$FLUTTER_VERSION" ]]; then
-  echo "ERROR: Could not determine Flutter version from --machine output" >&2
+  # Fallback to plain text parsing: "Flutter 3.x.y"
+  FLUTTER_OUT_PLAIN="$("${FLUTTER_BIN[@]}" --version 2>&1 || true)"
+  FLUTTER_VERSION="$(printf '%s\n' "$FLUTTER_OUT_PLAIN" | awk 'match($0,/Flutter[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+)/,a){print a[1]; exit}')"
+fi
+
+if [[ -z "$FLUTTER_VERSION" ]]; then
+  echo "ERROR: Could not determine Flutter version." >&2
+  echo "---- flutter --version --machine (combined) ----" >&2
+  echo "$FLUTTER_OUT" >&2
+  echo "---- flutter --version (combined) ----" >&2
+  echo "$("${FLUTTER_BIN[@]}" --version 2>&1 || true)" >&2
   exit 1
 fi
 
