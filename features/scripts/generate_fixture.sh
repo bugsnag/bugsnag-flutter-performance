@@ -93,11 +93,22 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" bugsnag_flutter
 
 echo "update min sdk version in android gradle file"
 
-sed -i '' 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 19/g' "$ANDROID_GRADLE"
+# Update minSdk for both Groovy (.gradle) and Kotlin (.kts) build files
+if [ -f "features/fixtures/mazerunner/android/app/build.gradle" ]; then
+  sed -i '' 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 19/g' "features/fixtures/mazerunner/android/app/build.gradle"
+elif [ -f "features/fixtures/mazerunner/android/app/build.gradle.kts" ]; then
+  sed -i '' 's/minSdk = flutter.minSdkVersion/minSdk = 19/g' "features/fixtures/mazerunner/android/app/build.gradle.kts"
+fi
 
 echo "Fix Android root build.gradle for newer Flutter Gradle plugin"
 
-sed -i '' '/project.evaluationDependsOn/d' "$FIXTURE_LOCATION/android/build.gradle"
+# Remove the problematic evaluationDependsOn line from both .gradle and .gradle.kts files
+if [ -f "$FIXTURE_LOCATION/android/build.gradle" ]; then
+  sed -i '' '/subprojects {/{N;/project\.evaluationDependsOn.*:app/d;}' "$FIXTURE_LOCATION/android/build.gradle"
+fi
+if [ -f "$FIXTURE_LOCATION/android/build.gradle.kts" ]; then
+  sed -i '' '/^subprojects {$/,/^}$/{/project\.evaluationDependsOn/d;}' "$FIXTURE_LOCATION/android/build.gradle.kts"
+fi
 
 echo "Add min platform to pod file"
 
