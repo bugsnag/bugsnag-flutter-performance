@@ -114,17 +114,24 @@ fi
 
 echo "Upgrade Gradle and AGP versions for compatibility"
 
-# Upgrade Gradle wrapper to 8.7.0 (minimum required by newer Flutter versions)
-sed -i '' 's/gradle-[0-9.]*-all.zip/gradle-8.7-all.zip/g' "$FIXTURE_LOCATION/android/gradle/wrapper/gradle-wrapper.properties"
-
-# Upgrade AGP version in build.gradle (for older Flutter templates)
-if [ -f "$FIXTURE_LOCATION/android/build.gradle" ]; then
-  sed -i '' "s/com.android.tools.build:gradle:[0-9.]*/com.android.tools.build:gradle:8.6.0/g" "$FIXTURE_LOCATION/android/build.gradle"
-fi
-
-# Upgrade AGP version in settings.gradle (for newer Flutter templates)
-if [ -f "$FIXTURE_LOCATION/android/settings.gradle" ]; then
-  sed -i '' 's/id "com.android.application" version "[0-9.]*"/id "com.android.application" version "8.6.0"/g' "$FIXTURE_LOCATION/android/settings.gradle"
+# Conditionally upgrade Gradle/AGP based on Flutter version
+if $FLUTTER_BIN --version | grep -qE 'Flutter 3\.(3[8-9]|[4-9][0-9]|[1-9][0-9]{2,})'; then
+  # Flutter 3.38+ uses AGP 8.9+ which requires Gradle 8.13+
+  echo "Detected Flutter 3.38+, upgrading to Gradle 8.13"
+  sed -i '' 's/gradle-[0-9.]*-all.zip/gradle-8.13-all.zip/g' "$FIXTURE_LOCATION/android/gradle/wrapper/gradle-wrapper.properties"
+  # AGP version is already set correctly in the template for 3.38+, no need to change
+else
+  # Flutter 3.24 and earlier - upgrade to minimum compatible versions
+  echo "Detected Flutter 3.24 or earlier, upgrading to Gradle 8.7 and AGP 8.3.0"
+  sed -i '' 's/gradle-[0-9.]*-all.zip/gradle-8.7-all.zip/g' "$FIXTURE_LOCATION/android/gradle/wrapper/gradle-wrapper.properties"
+  
+  # Upgrade AGP to 8.3.0 for Flutter 3.24 (compatible with Gradle 8.7)
+  if [ -f "$FIXTURE_LOCATION/android/build.gradle" ]; then
+    sed -i '' "s/com.android.tools.build:gradle:[0-9.]*/com.android.tools.build:gradle:8.3.0/g" "$FIXTURE_LOCATION/android/build.gradle"
+  fi
+  if [ -f "$FIXTURE_LOCATION/android/settings.gradle" ]; then
+    sed -i '' 's/id "com.android.application" version "[0-9.]*"/id "com.android.application" version "8.3.0"/g' "$FIXTURE_LOCATION/android/settings.gradle"
+  fi
 fi
 
 echo "Add min platform to pod file"
