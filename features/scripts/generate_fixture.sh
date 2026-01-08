@@ -112,6 +112,21 @@ if [ -f "$FIXTURE_LOCATION/android/build.gradle.kts" ]; then
   sed -i '' -e '/^subprojects {$/,/^}$/{/project\.evaluationDependsOn/d;}' -e '/^subprojects {$/N;/^subprojects {\n}$/d' "$FIXTURE_LOCATION/android/build.gradle.kts"
 fi
 
+echo "Upgrade Gradle and AGP versions for compatibility"
+
+# Upgrade Gradle wrapper to 8.7.0 (minimum required by newer Flutter versions)
+sed -i '' 's/gradle-[0-9.]*-all.zip/gradle-8.7-all.zip/g' "$FIXTURE_LOCATION/android/gradle/wrapper/gradle-wrapper.properties"
+
+# Upgrade AGP version in build.gradle (for older Flutter templates)
+if [ -f "$FIXTURE_LOCATION/android/build.gradle" ]; then
+  sed -i '' "s/com.android.tools.build:gradle:[0-9.]*/com.android.tools.build:gradle:8.6.0/g" "$FIXTURE_LOCATION/android/build.gradle"
+fi
+
+# Upgrade AGP version in settings.gradle (for newer Flutter templates)
+if [ -f "$FIXTURE_LOCATION/android/settings.gradle" ]; then
+  sed -i '' 's/id "com.android.application" version "[0-9.]*"/id "com.android.application" version "8.6.0"/g' "$FIXTURE_LOCATION/android/settings.gradle"
+fi
+
 echo "Add min platform to pod file"
 
 sed -i '' "s/# platform :ios, '11.0'/platform :ios, '12.0'/" "$PODFILE"
