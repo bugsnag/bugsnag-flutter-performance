@@ -95,6 +95,10 @@ echo "update min sdk version in android gradle file"
 
 sed -i '' 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 19/g' "$ANDROID_GRADLE"
 
+echo "Fix Android root build.gradle for newer Flutter Gradle plugin"
+
+sed -i '' '/project.evaluationDependsOn/d' "$FIXTURE_LOCATION/android/build.gradle"
+
 echo "Add min platform to pod file"
 
 sed -i '' "s/# platform :ios, '11.0'/platform :ios, '12.0'/" "$PODFILE"
