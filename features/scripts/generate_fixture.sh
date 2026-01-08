@@ -102,12 +102,14 @@ fi
 
 echo "Fix Android root build.gradle for newer Flutter Gradle plugin"
 
-# Remove the problematic evaluationDependsOn line from both .gradle and .gradle.kts files
+# Remove the problematic evaluationDependsOn block from both .gradle and .gradle.kts files
 if [ -f "$FIXTURE_LOCATION/android/build.gradle" ]; then
-  sed -i '' '/subprojects {/{N;/project\.evaluationDependsOn.*:app/d;}' "$FIXTURE_LOCATION/android/build.gradle"
+  # For Groovy files, remove the entire second subprojects block containing evaluationDependsOn
+  sed -i '' '/^subprojects {$/{N;/project\.evaluationDependsOn/{ N; d; }}' "$FIXTURE_LOCATION/android/build.gradle"
 fi
 if [ -f "$FIXTURE_LOCATION/android/build.gradle.kts" ]; then
-  sed -i '' '/^subprojects {$/,/^}$/{/project\.evaluationDependsOn/d;}' "$FIXTURE_LOCATION/android/build.gradle.kts"
+  # For Kotlin files, remove the entire subprojects block containing evaluationDependsOn
+  sed -i '' '/^subprojects {$/{N;/project\.evaluationDependsOn/{ N; d; }}' "$FIXTURE_LOCATION/android/build.gradle.kts"
 fi
 
 echo "Add min platform to pod file"
