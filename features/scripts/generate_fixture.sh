@@ -95,13 +95,34 @@ echo "update min sdk version in android gradle file"
 
 sed -i '' 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 19/g' "$ANDROID_GRADLE"
 
-echo "Fix Android Gradle Plugin version to meet Flutter 3.24+ requirements"
+echo "Fix Android Gradle Plugin and Kotlin versions"
 
-# Update AGP version in settings.gradle (for newer Flutter templates)
-sed -i '' 's/id "com.android.application" version "[^"]*"/id "com.android.application" version "8.1.1"/g' features/fixtures/mazerunner/android/settings.gradle
+# Determine required versions based on Flutter version
+if $FLUTTER_BIN --version | grep -qE 'Flutter 3\.(3[8-9]|[4-9][0-9]|[1-9][0-9]{2,})'; then
+  # Flutter 3.38+ - uses .gradle.kts files
+  AGP_VERSION="8.7.0"
+  KOTLIN_VERSION="2.1.0"
+  SETTINGS_FILE="features/fixtures/mazerunner/android/settings.gradle.kts"
+  BUILD_FILE="features/fixtures/mazerunner/android/build.gradle.kts"
+else
+  # Flutter < 3.38 - uses .gradle files
+  AGP_VERSION="8.6.0"
+  KOTLIN_VERSION="2.1.0"
+  SETTINGS_FILE="features/fixtures/mazerunner/android/settings.gradle"
+  BUILD_FILE="features/fixtures/mazerunner/android/build.gradle"
+fi
 
-# Update AGP version in build.gradle (for older Flutter templates)
-sed -i '' "s/classpath 'com.android.tools.build:gradle:[^']*'/classpath 'com.android.tools.build:gradle:8.1.1'/g" features/fixtures/mazerunner/android/build.gradle
+# Update AGP version in settings file if it exists
+if [ -f "$SETTINGS_FILE" ]; then
+  sed -i '' "s/id \"com.android.application\" version \"[^\"]*\"/id \"com.android.application\" version \"$AGP_VERSION\"/g" "$SETTINGS_FILE"
+  sed -i '' "s/id \"org.jetbrains.kotlin.android\" version \"[^\"]*\"/id \"org.jetbrains.kotlin.android\" version \"$KOTLIN_VERSION\"/g" "$SETTINGS_FILE"
+fi
+
+# Update AGP and Kotlin version in build file if it exists
+if [ -f "$BUILD_FILE" ]; then
+  sed -i '' "s/classpath 'com.android.tools.build:gradle:[^']*'/classpath 'com.android.tools.build:gradle:$AGP_VERSION'/g" "$BUILD_FILE"
+  sed -i '' "s/ext.kotlin_version = '[^']*'/ext.kotlin_version = '$KOTLIN_VERSION'/g" "$BUILD_FILE"
+fi
 
 echo "Add min platform to pod file"
 
