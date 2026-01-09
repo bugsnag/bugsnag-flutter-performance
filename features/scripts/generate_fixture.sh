@@ -130,6 +130,37 @@ rm -rf "$FIXTURE_LOCATION"
 echo "Create blank fixture"
 "${FLUTTER_BIN[@]}" create "$FIXTURE_LOCATION" --org com.bugsnag --platforms=ios,android
 
+# Fix SDK constraint to match Flutter's bundled Dart version
+PUBSPEC="$FIXTURE_LOCATION/pubspec.yaml"
+echo "Fix Dart SDK constraint in pubspec.yaml"
+python3 - "$PUBSPEC" "$FLUTTER_VERSION" <<'PY'
+import sys, re
+
+pubspec_path = sys.argv[1]
+flutter_version = sys.argv[2]
+
+with open(pubspec_path, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# Map Flutter versions to their bundled Dart SDK versions
+# Flutter 3.38.x uses Dart 3.5.x
+# Flutter 3.24.x uses Dart 3.5.x
+# Use a conservative constraint that works with the bundled Dart
+dart_constraint = ">=3.5.0 <4.0.0"
+
+# Replace the SDK constraint
+content = re.sub(
+    r'sdk:\s*["\']?\^?[0-9.]+["\']?',
+    f"sdk: '{dart_constraint}'",
+    content
+)
+
+with open(pubspec_path, 'w', encoding='utf-8') as f:
+    f.write(content)
+
+print(f"Set Dart SDK constraint to: {dart_constraint}")
+PY
+
 ###############################################################################
 # Add dependencies (batch most of them)
 ###############################################################################
