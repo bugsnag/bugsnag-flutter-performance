@@ -189,12 +189,13 @@ open(pubspec, "w", encoding="utf-8").write("\n".join(out) + "\n")
 PY
 
 ###############################################################################
-# Work around package_info_plus 9.x on older Flutter (3.24)
-# package_info_plus 9.x requires newer AGP/Gradle/Kotlin; pin to 8.x for older Flutter.
+# Work around package_info_plus 9.x and connectivity_plus 7.x on older Flutter (3.24)
+# - package_info_plus 9.x requires newer AGP/Gradle/Kotlin; pin to 8.x for older Flutter.
+# - connectivity_plus 7.x has Gradle issues with flutter.minSdkVersion; pin to 6.x.
 # Use dependency_overrides to avoid conflicts with bugsnag_flutter_performance's dependency.
 ###############################################################################
 if ! ver_ge "$FLUTTER_VERSION" "3.38.0"; then
-  echo "Override package_info_plus to 8.x for older Flutter (<3.38)"
+  echo "Override package_info_plus to 8.x and connectivity_plus to 6.x for older Flutter (<3.38)"
   
   # Append to dependency_overrides (already exists from earlier)
   python3 - "$PUBSPEC" <<'PY'
@@ -203,13 +204,14 @@ import sys
 pubspec = sys.argv[1]
 lines = open(pubspec, "r", encoding="utf-8").read().splitlines()
 
-# Find dependency_overrides section and append package_info_plus
+# Find dependency_overrides section and append overrides
 out = []
 for line in lines:
     out.append(line)
 
-# Add package_info_plus override after bugsnag_flutter_performance
+# Add package overrides after bugsnag_flutter_performance
 out.append("  package_info_plus: ^8.3.1")
+out.append("  connectivity_plus: ^6.0.5")
 
 open(pubspec, "w", encoding="utf-8").write("\n".join(out) + "\n")
 PY
