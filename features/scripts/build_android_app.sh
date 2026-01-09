@@ -2,12 +2,10 @@
 set -o errexit
 
 # Select Flutter binary
-# Prefer fvm if available, otherwise fall back to system flutter
-if command -v fvm >/dev/null 2>&1; then
-  FLUTTER_BIN="fvm flutter"
-else
-  FLUTTER_BIN="flutter"
-fi
+# Use FLUTTER_BIN if provided by CI, otherwise default to flutter
+FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
+
+echo "Using Flutter binary: $FLUTTER_BIN"
 
 echo "--- 📦 Bundle Install"
 if ! bundle install; then
@@ -15,7 +13,6 @@ if ! bundle install; then
 fi
 
 echo "--- 🔧 Generate Fixture"
-echo "Running generate_fixture.sh script"
 ./features/scripts/generate_fixture.sh
 
 echo "--- 🚀 Building Flutter APK"
