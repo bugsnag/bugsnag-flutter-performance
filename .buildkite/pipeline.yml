@@ -12,7 +12,6 @@ steps:
         matrix:
           - "3.38.3"
           - "3.24.4"
-          - "3.19.0"
         timeout_in_minutes: 10
         env:
           FLUTTER_VERSION: "{{matrix}}"
@@ -33,7 +32,6 @@ steps:
         matrix:
           - "3.38.3"
           - "3.24.4"
-          - "3.19.0"
         timeout_in_minutes: 20
         env:
           FLUTTER_VERSION: "{{matrix}}"
@@ -50,7 +48,6 @@ steps:
         matrix:
           - "3.38.3"
           - "3.24.4"
-          - "3.19.0"
         timeout_in_minutes: 20
         env:
           FLUTTER_VERSION: "{{matrix}}"
@@ -70,7 +67,6 @@ steps:
         matrix:
           - "3.38.3"
           - "3.24.4"
-          - "3.19.0"
         env:
           FLUTTER_VERSION: "{{matrix}}"
         agents:
@@ -110,7 +106,6 @@ steps:
         matrix:
           - "3.38.3"
           - "3.24.4"
-          - "3.19.0"
         env:
           FLUTTER_VERSION: "{{matrix}}"
         agents:
