@@ -95,6 +95,14 @@ echo "update min sdk version in android gradle file"
 
 sed -i '' 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 19/g' "$ANDROID_GRADLE"
 
+echo "Fix Android Gradle Plugin version to meet Flutter 3.24+ requirements"
+
+# Update AGP version in settings.gradle (for newer Flutter templates)
+sed -i '' 's/id "com.android.application" version "[^"]*"/id "com.android.application" version "8.1.1"/g' features/fixtures/mazerunner/android/settings.gradle
+
+# Update AGP version in build.gradle (for older Flutter templates)
+sed -i '' "s/classpath 'com.android.tools.build:gradle:[^']*'/classpath 'com.android.tools.build:gradle:8.1.1'/g" features/fixtures/mazerunner/android/build.gradle
+
 echo "Add min platform to pod file"
 
 sed -i '' "s/# platform :ios, '11.0'/platform :ios, '12.0'/" "$PODFILE"
