@@ -271,31 +271,71 @@ else
   sedi 's/gradle-[0-9.]*-all\.zip/gradle-8.7-all.zip/g' \
     "$FIXTURE_LOCATION/android/gradle/wrapper/gradle-wrapper.properties"
 
-  # Update AGP in build.gradle (Groovy)
-  if [[ -f "$FIXTURE_LOCATION/android/build.gradle" ]]; then
-    sedi 's/com\.android\.tools\.build:gradle:[0-9.]\+/com.android.tools.build:gradle:8.3.0/g' \
-      "$FIXTURE_LOCATION/android/build.gradle"
-  fi
+  # Update AGP using Python for more reliable replacement
+  python3 - "$FIXTURE_LOCATION/android" <<'PY'
+import sys, os, re
 
-  # Update AGP in settings.gradle (Groovy)
-  if [[ -f "$FIXTURE_LOCATION/android/settings.gradle" ]]; then
-    sedi 's/id "com\.android\.application" version "[0-9.]\+"/id "com.android.application" version "8.3.0"/g' \
-      "$FIXTURE_LOCATION/android/settings.gradle"
-    sedi "s/id 'com\.android\.application' version '[0-9.]\+'/id 'com.android.application' version '8.3.0'/g" \
-      "$FIXTURE_LOCATION/android/settings.gradle"
-  fi
+android_dir = sys.argv[1]
 
-  # Update AGP in settings.gradle.kts (Kotlin DSL)
-  if [[ -f "$FIXTURE_LOCATION/android/settings.gradle.kts" ]]; then
-    sedi 's/id("com\.android\.application") version "[0-9.]\+"/id("com.android.application") version "8.3.0"/g' \
-      "$FIXTURE_LOCATION/android/settings.gradle.kts"
-  fi
+def update_agp_version(filepath, patterns):
+    """Update AGP version to 8.3.0 using multiple patterns."""
+    if not os.path.exists(filepath):
+        return False
+    
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    original = content
+    for pattern, replacement in patterns:
+        content = re.sub(pattern, replacement, content)
+    
+    if content != original:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return True
+    return False
 
-  # Update AGP in build.gradle.kts (Kotlin DSL)
-  if [[ -f "$FIXTURE_LOCATION/android/build.gradle.kts" ]]; then
-    sedi 's/com\.android\.tools\.build:gradle:[0-9.]\+/com.android.tools.build:gradle:8.3.0/g' \
-      "$FIXTURE_LOCATION/android/build.gradle.kts"
-  fi
+# Patterns for different file formats
+groovy_build_patterns = [
+    (r"com\.android\.tools\.build:gradle:[0-9.]+", "com.android.tools.build:gradle:8.3.0"),
+    (r"classpath\s+['\"]com\.android\.tools\.build:gradle:[0-9.]+['\"]", 
+     "classpath 'com.android.tools.build:gradle:8.3.0'"),
+]
+
+groovy_settings_patterns = [
+    (r'id\s+["\']com\.android\.application["\']\s+version\s+["\'][0-9.]+["\']', 
+     'id "com.android.application" version "8.3.0"'),
+    (r'id\s+["\']com\.android\.library["\']\s+version\s+["\'][0-9.]+["\']', 
+     'id "com.android.library" version "8.3.0"'),
+]
+
+kotlin_settings_patterns = [
+    (r'id\(["\']com\.android\.application["\']\)\s+version\s+["\'][0-9.]+["\']', 
+     'id("com.android.application") version "8.3.0"'),
+    (r'id\(["\']com\.android\.library["\']\)\s+version\s+["\'][0-9.]+["\']', 
+     'id("com.android.library") version "8.3.0"'),
+]
+
+kotlin_build_patterns = [
+    (r"com\.android\.tools\.build:gradle:[0-9.]+", "com.android.tools.build:gradle:8.3.0"),
+]
+
+# Update all possible files
+files_updated = []
+if update_agp_version(f"{android_dir}/build.gradle", groovy_build_patterns):
+    files_updated.append("build.gradle")
+if update_agp_version(f"{android_dir}/settings.gradle", groovy_settings_patterns):
+    files_updated.append("settings.gradle")
+if update_agp_version(f"{android_dir}/build.gradle.kts", kotlin_build_patterns):
+    files_updated.append("build.gradle.kts")
+if update_agp_version(f"{android_dir}/settings.gradle.kts", kotlin_settings_patterns):
+    files_updated.append("settings.gradle.kts")
+
+if files_updated:
+    print(f"Updated AGP to 8.3.0 in: {', '.join(files_updated)}")
+else:
+    print("Warning: No AGP version patterns matched in Android build files")
+PY
 fi
 
 ###############################################################################
