@@ -2,12 +2,8 @@
 set -o errexit
 
 # Select Flutter binary
-# Prefer fvm if available, otherwise fall back to system flutter
-if command -v fvm >/dev/null 2>&1; then
-  FLUTTER_BIN="fvm flutter"
-else
-  FLUTTER_BIN="flutter"
-fi
+# Use FLUTTER_BIN if provided by CI, otherwise default to flutter
+FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
 
 FIXTURE_LOCATION=features/fixtures/mazerunner
 

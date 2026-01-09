@@ -3,6 +3,10 @@ Changelog
 
 ## TBD
 
+* Raise the minimum supported flutter sdk version to 3.24.0 and the minimum dart version to 3.5.0 [#136](https://github.com/bugsnag/bugsnag-flutter-performance/pull/136)
+
+* Update the version constraint for the device_info_plus dependency [#136](https://github.com/bugsnag/bugsnag-flutter-performance/pull/136)
+
 * Amend secondary instance URL to bugsnag.smartbear.com [#122](https://github.com/bugsnag/bugsnag-flutter-performance/pull/122)
 
 ## 1.7.0 (2025-09-22)
