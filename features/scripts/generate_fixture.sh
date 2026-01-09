@@ -3,10 +3,10 @@ set -euo pipefail
 
 ###############################################################################
 # Cross-version fixture generator (Flutter 3.24 + 3.38+)
-# - Uses flutter --version --machine (stable parsing)
-# - Runs flutter version detection once
+# - Robust Flutter version detection (handles --machine noise / non-JSON)
+# - Uses Flutter version detection once
 # - Portable sed in-place editing (macOS + Linux)
-# - Quotes all paths, avoids rm footguns
+# - Quotes all paths, safer rm
 # - Batches pub add where possible
 # - Uses dependency_overrides for local path (more robust than inline map parsing)
 # - Pins package_info_plus to 8.x on older Flutter to avoid AGP/Kotlin requirements in 9.x
@@ -17,6 +17,12 @@ if command -v fvm >/dev/null 2>&1; then
   FLUTTER_BIN=(fvm flutter)
 else
   FLUTTER_BIN=(flutter)
+fi
+
+# Fail fast if flutter isn't runnable
+if ! "${FLUTTER_BIN[@]}" --version >/dev/null 2>&1; then
+  echo "ERROR: Flutter is not runnable via: ${FLUTTER_BIN[*]}" >&2
+  exit 1
 fi
 
 # Paths
@@ -45,21 +51,22 @@ sedi() {
   fi
 }
 
-xtract flutter frameworkVersion once (prefer --machine JSON, but robust to wrappers)
+# Robust Flutter version detection
+# - Prefer: flutter --version --machine (JSON)
+# - Handles wrappers/noisy output by extracting first {...} JSON block
+# - Fallback: parse plain flutter --version line "Flutter x.y.z"
 FLUTTER_VERSION=""
 
-# Capture both stdout and stderr (some wrappers print JSON to stderr)
-FLUTTER_OUT="$("${FLUTTER_BIN[@]}" --version --machine 2>&1 || true)"
-
-# Try to extract a JSON object from the output (first {...} block)
+FLUTTER_OUT_MACHINE="$("${FLUTTER_BIN[@]}" --version --machine 2>&1 || true)"
 FLUTTER_VERSION="$(
-  printf '%s' "$FLUTTER_OUT" | python3 - <<'PY'
+  printf '%s' "$FLUTTER_OUT_MACHINE" | python3 - <<'PY'
 import sys, json, re
+
 s = sys.stdin.read().strip()
 if not s:
     sys.exit(0)
 
-# Find first JSON object in the output (handles leading logs)
+# Extract first JSON object from possibly noisy output
 m = re.search(r'\{.*\}', s, flags=re.S)
 if not m:
     sys.exit(0)
@@ -74,16 +81,15 @@ PY
 )"
 
 if [[ -z "$FLUTTER_VERSION" ]]; then
-  # Fallback to plain text parsing: "Flutter 3.x.y"
   FLUTTER_OUT_PLAIN="$("${FLUTTER_BIN[@]}" --version 2>&1 || true)"
   FLUTTER_VERSION="$(printf '%s\n' "$FLUTTER_OUT_PLAIN" | awk 'match($0,/Flutter[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+)/,a){print a[1]; exit}')"
 fi
 
 if [[ -z "$FLUTTER_VERSION" ]]; then
   echo "ERROR: Could not determine Flutter version." >&2
-  echo "---- flutter --version --machine (combined) ----" >&2
-  echo "$FLUTTER_OUT" >&2
-  echo "---- flutter --version (combined) ----" >&2
+  echo "---- flutter --version --machine (combined stdout+stderr) ----" >&2
+  echo "$FLUTTER_OUT_MACHINE" >&2
+  echo "---- flutter --version (combined stdout+stderr) ----" >&2
   echo "$("${FLUTTER_BIN[@]}" --version 2>&1 || true)" >&2
   exit 1
 fi
@@ -95,8 +101,7 @@ ver_ge() {
   python3 - "$1" "$2" <<'PY'
 import sys, re
 def norm(v):
-  # keep numeric dot parts only, ignore suffixes like -beta
-  v = re.split(r'[-+]', v.strip())[0]
+  v = re.split(r'[-+]', v.strip())[0]  # drop -beta/+build
   parts = v.split('.')
   nums = []
   for p in parts:
@@ -110,23 +115,6 @@ a = norm(sys.argv[1])
 b = norm(sys.argv[2])
 sys.exit(0 if a >= b else 1)
 PY
-}
-
-# Helpers
-ensure_in_file() {
-  # ensure_in_file "literal line to search" "file"
-  local needle="$1"
-  local file="$2"
-  grep -Fq "$needle" "$file" 2>/dev/null || return 1
-}
-
-append_if_missing() {
-  # append_if_missing "literal line" "file"
-  local line="$1"
-  local file="$2"
-  if ! grep -Fq "$line" "$file" 2>/dev/null; then
-    printf "\n%s\n" "$line" >> "$file"
-  fi
 }
 
 ###############################################################################
@@ -143,7 +131,6 @@ echo "Create blank fixture"
 ###############################################################################
 echo "Add dependencies (batched)"
 
-# Add these in one go to reduce churn
 "${FLUTTER_BIN[@]}" pub add --directory="$FIXTURE_LOCATION" \
   path_provider \
   http \
@@ -160,28 +147,25 @@ if ! grep -qE '^[[:space:]]*dependency_overrides:' "$PUBSPEC"; then
   printf "\ndependency_overrides:\n" >> "$PUBSPEC"
 fi
 
-# Remove any existing override stanza for bugsnag_flutter_performance (best-effort)
+# Remove any existing override stanza for bugsnag_flutter_performance (best-effort) then append ours
 python3 - "$PUBSPEC" "$PACKAGE_PATH" <<'PY'
 import sys, re
 pubspec = sys.argv[1]
 path = sys.argv[2]
 
 lines = open(pubspec, "r", encoding="utf-8").read().splitlines()
-
 out = []
 i = 0
+
 while i < len(lines):
     line = lines[i]
-    # Remove an existing override block:
-    #   bugsnag_flutter_performance:
-    #     path: ...
+    # Remove an existing override block for this package (common shape)
     if re.match(r'^\s*bugsnag_flutter_performance:\s*$', line):
-        # If the previous non-empty is within dependency_overrides, remove this entry (and possible indented children)
-        # We'll just skip this line + following indented children.
+        # Skip this line and following indented lines (package stanza)
         i += 1
         while i < len(lines) and (lines[i].startswith("  ") or lines[i].startswith("\t")):
-            # keep dependency_overrides itself; only remove this package entry
-            if re.match(r'^\s*dependency_overrides:\s*$', lines[i]):
+            # stop if we somehow hit a new top-level key (very defensive)
+            if re.match(r'^\S', lines[i]):
                 break
             i += 1
         continue
@@ -193,7 +177,7 @@ if not any(re.match(r'^\s*dependency_overrides:\s*$', l) for l in out):
     out.append("")
     out.append("dependency_overrides:")
 
-# Append our override at the end (safe + predictable)
+# Append our override (safe + predictable)
 out.append("  bugsnag_flutter_performance:")
 out.append(f"    path: {path}")
 
@@ -216,8 +200,6 @@ fi
 # >= 3.30.0            -> latest (and patch imports)
 ###############################################################################
 update_native_flutter_proxy_imports() {
-  # These edits are applied to the source that you copy into the fixture later
-  # (features/fixture_resources/lib/main.dart).
   local target="$BS_DART_LOCATION/main.dart"
   if [[ -f "$target" ]]; then
     sedi "s|import 'package:native_flutter_proxy/custom_proxy.dart';|import 'package:native_flutter_proxy/src/custom_proxy.dart';|g" "$target"
@@ -243,19 +225,11 @@ echo "Update Android minSdk to 19"
 
 if [[ -f "$FIXTURE_LOCATION/android/app/build.gradle" ]]; then
   sedi 's/minSdkVersion flutter\.minSdkVersion/minSdkVersion 19/g' "$FIXTURE_LOCATION/android/app/build.gradle"
-  # sanity check
-  grep -qE 'minSdkVersion[[:space:]]+19' "$FIXTURE_LOCATION/android/app/build.gradle" || {
-    echo "WARN: minSdk patch may not have applied (build.gradle)" >&2
-  }
 elif [[ -f "$FIXTURE_LOCATION/android/app/build.gradle.kts" ]]; then
   sedi 's/minSdk[[:space:]]*=[[:space:]]*flutter\.minSdkVersion/minSdk = 19/g' "$FIXTURE_LOCATION/android/app/build.gradle.kts"
-  grep -qE 'minSdk[[:space:]]*=[[:space:]]*19' "$FIXTURE_LOCATION/android/app/build.gradle.kts" || {
-    echo "WARN: minSdk patch may not have applied (build.gradle.kts)" >&2
-  }
 fi
 
 echo "Fix Android root build.gradle evaluationDependsOn issues (line-only removal)"
-# safer than deleting whole blocks: drop only the offending lines
 if [[ -f "$FIXTURE_LOCATION/android/build.gradle" ]]; then
   sedi '/evaluationDependsOn/d' "$FIXTURE_LOCATION/android/build.gradle"
 fi
@@ -279,7 +253,6 @@ else
   fi
 
   if [[ -f "$FIXTURE_LOCATION/android/settings.gradle" ]]; then
-    # Flutter templates vary; this catches the common plugins block line
     sedi 's/id "com\.android\.application" version "[0-9.]\+"/id "com.android.application" version "8.3.0"/g' \
       "$FIXTURE_LOCATION/android/settings.gradle"
   fi
@@ -291,16 +264,13 @@ fi
 echo "Set iOS minimum platform to 12.0 in Podfile"
 if [[ -f "$PODFILE" ]]; then
   sedi "s/# platform :ios, '11\.0'/platform :ios, '12.0'/g" "$PODFILE"
-  # Some templates use different commented line; fall back to inserting if needed
   if ! grep -qE '^platform :ios, .12\.0.' "$PODFILE"; then
-    # Insert near top
     sedi "1s|^|platform :ios, '12.0'\n|" "$PODFILE"
   fi
 fi
 
 echo "Add Development Team and code signing settings to Xcode project"
 if [[ -f "$XCODE_PROJECT" ]]; then
-  # Best-effort: add after ENABLE_BITCODE = NO; if present
   if grep -q 'ENABLE_BITCODE = NO;' "$XCODE_PROJECT"; then
     sedi "s/ENABLE_BITCODE = NO;/ENABLE_BITCODE = NO;\nDEVELOPMENT_TEAM = 7W9PZ27Y5F;\nCODE_SIGN_STYLE = Automatic;/g" "$XCODE_PROJECT"
   else
@@ -310,7 +280,6 @@ fi
 
 echo "Allow cleartext (ATS) in Info.plist"
 if [[ -f "$XCODE_PLIST" ]]; then
-  # Insert ATS dict before CFBundleDevelopmentRegion (best-effort)
   if ! grep -q 'NSAppTransportSecurity' "$XCODE_PLIST"; then
     sedi "s/<key>CFBundleDevelopmentRegion<\/key>/<key>NSAppTransportSecurity<\/key><dict><key>NSAllowsArbitraryLoads<\/key><true\/><\/dict>\n<key>CFBundleDevelopmentRegion<\/key>/g" \
       "$XCODE_PLIST"
@@ -321,11 +290,8 @@ fi
 # Android Manifest: INTERNET + usesCleartextTraffic
 ###############################################################################
 echo "Patch AndroidManifest.xml"
-
 if [[ -f "$ANDROID_MANIFEST" ]]; then
-  # Ensure INTERNET permission exists (prefer above <application>, but easiest: append near end if missing)
   if ! grep -q 'android.permission.INTERNET' "$ANDROID_MANIFEST"; then
-    # Insert before closing </manifest> if present, else after </application> as your original did
     if grep -q '</manifest>' "$ANDROID_MANIFEST"; then
       sedi 's|</manifest>|<uses-permission android:name="android.permission.INTERNET"/>\n</manifest>|g' "$ANDROID_MANIFEST"
     else
@@ -333,7 +299,6 @@ if [[ -f "$ANDROID_MANIFEST" ]]; then
     fi
   fi
 
-  # Ensure usesCleartextTraffic is present on <application ...>
   if ! grep -q 'usesCleartextTraffic' "$ANDROID_MANIFEST"; then
     sedi 's|<application\([^>]*\)>|<application\1 android:usesCleartextTraffic="true">|g' "$ANDROID_MANIFEST"
   fi
@@ -354,7 +319,6 @@ echo "Copy test fixture code"
 rm -rf "$DART_TEST_LOCATION"
 rm -rf "$DART_LOCATION"
 
-# Copy resources/lib into fixture root (creates lib/)
 cp -r "$BS_DART_LOCATION" "$BS_DART_DESTINATION"
 
 echo "Done: $FIXTURE_LOCATION"
