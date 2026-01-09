@@ -271,14 +271,30 @@ else
   sedi 's/gradle-[0-9.]*-all\.zip/gradle-8.7-all.zip/g' \
     "$FIXTURE_LOCATION/android/gradle/wrapper/gradle-wrapper.properties"
 
+  # Update AGP in build.gradle (Groovy)
   if [[ -f "$FIXTURE_LOCATION/android/build.gradle" ]]; then
     sedi 's/com\.android\.tools\.build:gradle:[0-9.]\+/com.android.tools.build:gradle:8.3.0/g' \
       "$FIXTURE_LOCATION/android/build.gradle"
   fi
 
+  # Update AGP in settings.gradle (Groovy)
   if [[ -f "$FIXTURE_LOCATION/android/settings.gradle" ]]; then
     sedi 's/id "com\.android\.application" version "[0-9.]\+"/id "com.android.application" version "8.3.0"/g' \
       "$FIXTURE_LOCATION/android/settings.gradle"
+    sedi "s/id 'com\.android\.application' version '[0-9.]\+'/id 'com.android.application' version '8.3.0'/g" \
+      "$FIXTURE_LOCATION/android/settings.gradle"
+  fi
+
+  # Update AGP in settings.gradle.kts (Kotlin DSL)
+  if [[ -f "$FIXTURE_LOCATION/android/settings.gradle.kts" ]]; then
+    sedi 's/id("com\.android\.application") version "[0-9.]\+"/id("com.android.application") version "8.3.0"/g' \
+      "$FIXTURE_LOCATION/android/settings.gradle.kts"
+  fi
+
+  # Update AGP in build.gradle.kts (Kotlin DSL)
+  if [[ -f "$FIXTURE_LOCATION/android/build.gradle.kts" ]]; then
+    sedi 's/com\.android\.tools\.build:gradle:[0-9.]\+/com.android.tools.build:gradle:8.3.0/g' \
+      "$FIXTURE_LOCATION/android/build.gradle.kts"
   fi
 fi
 
