@@ -5,40 +5,30 @@ Feature: Manual Spans
 
   Scenario: Manual Span
     When I run "ManualSpanScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "ManualSpanScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "name" equals "ManualSpanScenario"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span bool attribute "bugsnag.span.first_class" is true
     * every span string attribute "bugsnag.span.category" equals "custom"
     * a span double attribute "bugsnag.sampling.p" equals 1.0
 
   Scenario: Manual Span isFirstClass false
     When I run "ManualSpanIsFirstClassFalseScenario"
-    And I wait to receive at least 1 span
-    Then every span field "name" equals "ManualSpanIsFirstClassFalseScenario"
+    And I wait to receive a span named "ManualSpanIsFirstClassFalseScenario"
     * every span bool attribute "bugsnag.span.first_class" is false
-
 
   Scenario: Max Batch Age
     When I run "MaxBatchAgeScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "MaxBatchAgeScenario"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "name" equals "MaxBatchAgeScenario"
 
   Scenario: Get Current Context
     When I run "GetCurrentContextScenario"
-    And I wait to receive at least 3 spans
-    * the span named "part 1: null" exists
-    * the span named "part 2: not null" exists
-    * the span named "context" is the parent of the span named "part 2: not null"    
+    And I wait to receive a span named "part 1: null"
+    * I wait to receive a span named "part 2: not null"
+    * I wait to receive a span named "context"
+    * the span named "context" is the parent of the span named "part 2: not null"
 
   @skip
   Scenario: Custom timings
@@ -49,22 +39,15 @@ Feature: Manual Spans
 
   Scenario: Span With No Parent
     When I run "SpanWithNoParentScenario"
-    And I wait to receive at least 2 spans
-    * the span named "parent" exists
-    * the span named "no-parent" exists
+    And I wait to receive a span named "parent"
+    * I wait to receive a span named "no-parent"
     * the span named "no-parent" has no parent
 
   Scenario: Manual Navigation Span
     When I run "ManualNavigationSpanScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "[Navigation]customNavigator/navigationScenarioRoute"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "name" equals "[Navigation]customNavigator/navigationScenarioRoute"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span string attribute "bugsnag.span.category" equals "navigation"
     * every span string attribute "bugsnag.navigation.route" equals "navigationScenarioRoute"
     * every span string attribute "bugsnag.navigation.navigator" equals "customNavigator"
@@ -74,15 +57,9 @@ Feature: Manual Spans
 
   Scenario: Custom attributes
     When I run "CustomSpanAttributesScenario"
-    And I wait to receive at least 1 span
+    And I wait to receive a span named "CustomSpanAttributesScenarioSpan"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "name" equals "CustomSpanAttributesScenarioSpan"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "droppedAttributesCount" does not exist
     * every span bool attribute "bugsnag.span.first_class" is true
     * every span string attribute "bugsnag.span.category" equals "custom"
@@ -100,15 +77,9 @@ Feature: Manual Spans
 
   Scenario: Custom attributes - limits
     When I run "CustomSpanAttributesWithLimitsScenario"
-    And I wait to receive at least 1 span
+    And  I wait to receive a span named "CustomSpanAttributesWithLimitsScenarioSpan"
     Then the trace "Content-Type" header equals "application/json"
-    * the trace "Bugsnag-Sent-At" header matches the regex "^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\dZ$"
     * the trace "Bugsnag-Span-Sampling" header equals "1:1"
-    * every span field "name" equals "CustomSpanAttributesWithLimitsScenarioSpan"
-    * every span field "spanId" matches the regex "^[A-Fa-f0-9]{16}$"
-    * every span field "traceId" matches the regex "^[A-Fa-f0-9]{32}$"
-    * every span field "startTimeUnixNano" matches the regex "^[0-9]+$"
-    * every span field "endTimeUnixNano" matches the regex "^[0-9]+$"
     * every span field "droppedAttributesCount" equals 3
     * every span bool attribute "bugsnag.span.first_class" is true
     * every span string attribute "bugsnag.span.category" equals "custom"

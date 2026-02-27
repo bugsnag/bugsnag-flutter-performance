@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -o errexit
 
-if [ -z "$FLUTTER_BIN" ]; then
-  FLUTTER_BIN="flutter"
-fi
+# Select Flutter binary
+# Use FLUTTER_BIN if provided by CI, otherwise default to flutter
+FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
 
 FIXTURE_LOCATION=features/fixtures/mazerunner
 
@@ -12,9 +12,6 @@ PACKAGE_PATH="$(pwd)/packages/bugsnag_flutter_performance"
 HTTP_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-common/packages/bugsnag_http_client"
 
 DART_IO_WRAPPER_PACKAGE_PATH="$(pwd)/packages/bugsnag-flutter-common/packages/bugsnag_flutter_dart_io_http_client"
-
-
-
 
 EXPORT_OPTIONS=features/fixture_resources/exportOptions.plist
 
@@ -32,10 +29,14 @@ BS_DART_LOCATION=features/fixture_resources/lib
 
 BS_DART_DESTINATION=features/fixtures/mazerunner
 
-ANDROID_GRADLE=features/fixtures/mazerunner/android/app/build.gradle
+# Change android gradle file based on flutter version
+if $FLUTTER_BIN --version | grep -qE 'Flutter 3\.(3[8-9]|[4-9][0-9]|[1-9][0-9]{2,})'; then
+  ANDROID_GRADLE=features/fixtures/mazerunner/android/app/build.gradle.kts
+else
+  ANDROID_GRADLE=features/fixtures/mazerunner/android/app/build.gradle
+fi
 
 PODFILE=features/fixtures/mazerunner/ios/Podfile
-
 
 echo "Remove old fixture"
 
@@ -53,7 +54,29 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" path_provider
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" http
 
-$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.1.15"
+# Change the version of native_flutter_proxy based on flutter version
+# < 3.20.0             -> pin to 0.1.15
+# >= 3.20.0 < 3.30.0   -> pin to 0.2.3
+# >= 3.30.0            -> use latest
+
+update_native_flutter_proxy_imports() {
+  sed -i '' "s|import 'package:native_flutter_proxy/custom_proxy.dart';|import 'package:native_flutter_proxy/src/custom_proxy.dart';|" "$BS_DART_LOCATION/main.dart"
+  sed -i '' "s|import 'package:native_flutter_proxy/native_proxy_reader.dart';|import 'package:native_flutter_proxy/src/native_proxy_reader.dart';|" "$BS_DART_LOCATION/main.dart"
+}
+
+if $FLUTTER_BIN --version | grep -qE 'Flutter 3\.(3[0-9]|[4-9][0-9]|[1-9][0-9]{2,})'; then
+  # >= 3.30.0
+  $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" native_flutter_proxy
+  update_native_flutter_proxy_imports
+elif $FLUTTER_BIN --version | grep -qE 'Flutter 3\.2[0-9]\.'; then
+  # >= 3.20.0 and < 3.30.0
+  $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.2.3"
+  update_native_flutter_proxy_imports
+else
+  # < 3.20.0
+  $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.1.15"
+fi
+
 #$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_http_client:{'path':'$HTTP_WRAPPER_PACKAGE_PATH'}"
 #$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter_dart_io_http_client:{'path':'$DART_IO_WRAPPER_PACKAGE_PATH'}"
 

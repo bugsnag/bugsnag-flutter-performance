@@ -30,9 +30,7 @@ def execute_command(action, scenario_name)
   command = { action: action, scenario_name: scenario_name, extra_config: extra_config }
   Maze::Server.commands.add command
   
-  touch_action = Appium::TouchAction.new
-  touch_action.tap({:x => 200, :y => 200})
-  touch_action.perform
+  Maze::Api::Appium::UiManager.new.touch_at(200, 200)
 
   $extra_config = ''
   # Ensure fixture has read the command
@@ -41,14 +39,16 @@ def execute_command(action, scenario_name)
   raise 'Test fixture did not GET /command' unless Maze::Server.commands.remaining.empty?
 end
 
-When('I relaunch the app') do
-  Maze::Api::Appium::AppManager.new.launch
+When('I stop and relaunch the app') do
+  manager = Maze::Api::Appium::AppManager.new
+  manager.terminate
+  manager.activate
 end
 
 When("I relaunch the app after a crash") do
   # Wait for the app to stop running before relaunching
   step 'the app is not running'
-  Maze::Api::Appium::AppManager.new.launch
+  Maze::Api::Appium::AppManager.new.activate
 end
 
 Then('the app is not running') do
@@ -78,23 +78,11 @@ Then('every span string attribute {string} does not exist') do |attribute|
   spans.map { |span| Maze.check.nil span['attributes'].find { |a| a['key'] == attribute } }
 end
 
-Then('all span bool attribute {string} is true') do |attribute|
-  spans = spans_from_request_list(Maze::Server.list_for('traces'))
-  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
-  selected_attributes.map { |a| Maze::check.true a['value']['boolValue'] }
-end
-
 Then('a span bool attribute {string} is true') do |attribute|
   spans = spans_from_request_list(Maze::Server.list_for('traces'))
   selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
   selected_attributes = selected_attributes.map { |a| a['value']['boolValue'] == true }
   Maze.check.false(selected_attributes.empty?)
-end
-
-Then('all span bool attribute {string} is false') do |attribute|
-  spans = spans_from_request_list(Maze::Server.list_for('traces'))
-  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('boolValue') } }.compact
-  selected_attributes.map { |a| Maze::check.false a['value']['boolValue'] }
 end
 
 Then('a span bool attribute {string} is false') do |attribute|
@@ -163,23 +151,13 @@ end
 
 When('I invoke {string}') do |method_name|
   Maze::Server.commands.add({ action: "invoke_method", args: [method_name] })
-  # Ensure fixture has read the command
-  touch_action = Appium::TouchAction.new
-  touch_action.tap({:x => 200, :y => 200})
-  touch_action.perform
+  Maze::Api::Appium::UiManager.new.touch_at(200, 200)
 
   $extra_config = ''
   # Ensure fixture has read the command
   count = 100
   sleep 0.1 until Maze::Server.commands.remaining.empty? || (count -= 1) < 1
   raise 'Test fixture did not GET /command' unless Maze::Server.commands.remaining.empty?
-end
-Then('the span named {string} exists') do |span_name|
-  spans = spans_from_request_list(Maze::Server.list_for("traces"))
-
-  spans_with_name = spans.find_all { |span| span['name'].eql?(span_name) }
-
-  Maze.check.true(spans_with_name.length() == 1);
 end
 
 Then('the span named {string} is the parent of the span named {string}') do |span1name, span2name|
@@ -251,11 +229,6 @@ Then('a span array attribute {string} contains {int} items') do |attribute, leng
   Maze.check.true(array.length() == length)
 end
 
-Then('a span array attribute {string} is empty') do |attribute|
-  array_contents = get_array_attribute_contents(attribute)
-  Maze.check.true(array_contents.empty?)
-end
-
 def get_array_value_at_index(attribute, index, type)
   array = get_array_attribute_contents(attribute)
   Maze.check.true(array.length() > index)
@@ -272,4 +245,12 @@ def get_array_attribute_contents(attribute)
   array_attributes = selected_attributes.map { |a| a['value']['arrayValue']['values'] }
   Maze.check.false(array_attributes.empty?)
   return array_attributes[0]
+end
+
+def spans_from_request_list(list)
+  list.remaining
+      .flat_map { |req| req[:body]['resourceSpans'] }
+      .flat_map { |r| r['scopeSpans'] }
+      .flat_map { |s| s['spans'] }
+      .select { |s| !s.nil? }
 end
