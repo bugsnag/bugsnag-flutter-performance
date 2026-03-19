@@ -40,8 +40,10 @@ class MainApp extends StatelessWidget {
     );
   }
 
-  void sendCustomSpan() {
-    bugsnag_performance.startSpan('test').end();
+  void sendCustomSpan() async {
+    final span = bugsnag_performance.startSpan('test');
+    await Future.delayed(Duration(seconds: 4));
+    span.end();
   }
 
   void sendNetworkSpan() {

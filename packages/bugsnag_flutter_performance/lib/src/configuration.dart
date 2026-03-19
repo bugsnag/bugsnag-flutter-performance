@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:bugsnag_flutter_performance/src/metrics/enabled_metrics.dart';
 
 class BugsnagPerformanceConfiguration {
   BugsnagPerformanceConfiguration({
@@ -13,9 +14,12 @@ class BugsnagPerformanceConfiguration {
     required this.attributeCountLimit,
     required this.attributeStringValueLimit,
     required this.attributeArrayLengthLimit,
-  });
+    EnabledMetrics? enabledMetrics,
+  }) : enabledMetrics = enabledMetrics ?? const EnabledMetrics();
+  
   String? apiKey;
   Uri? endpoint;
+  EnabledMetrics enabledMetrics;
   int maxBatchSize = 100;
   int maxBatchAge = kDebugMode ? 5 * 1000 : 60 * 1000; // 5 seconds for debug, 60 seconds for release
   int probabilityRequestsPause = 30000;
