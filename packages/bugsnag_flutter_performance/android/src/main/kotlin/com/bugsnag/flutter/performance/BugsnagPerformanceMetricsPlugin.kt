@@ -27,7 +27,7 @@ class BugsnagPerformanceMetricsPlugin : FlutterPlugin, MethodCallHandler {
         /**
          * Number of clock ticks per second, used to convert CPU time from ticks to milliseconds.
          */
-        private val TICKS_PER_SECOND: Long = try {
+        internal val TICKS_PER_SECOND: Long = try {
             Os.sysconf(OsConstants._SC_CLK_TCK)
         } catch (e: ErrnoException) {
             // Fallback to a reasonable default if sysconf fails.
