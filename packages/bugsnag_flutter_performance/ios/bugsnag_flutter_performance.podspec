@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'bugsnag_flutter_performance'
-  s.version          = '1.0.0'
+  s.version          = '1.7.0'
   s.summary          = 'Bugsnag Flutter Performance plugin with metrics support'
   s.description      = <<-DESC
 Bugsnag Flutter Performance plugin with CPU, memory, and rendering metrics support.

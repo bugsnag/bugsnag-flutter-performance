@@ -2,10 +2,18 @@ import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:bugsnag_http_client/bugsnag_http_client.dart' as http;
 import 'package:flutter/material.dart';
 
-const apiKey = 'YOUR_API_KEY_HERE';
+const apiKey = '08f132d176248047c7cc55bbd398bc6a';
 
 Future<void> main() async {
-  bugsnag_performance.start(apiKey: apiKey);
+  bugsnag_performance.start(
+      apiKey: apiKey,
+      enabledMetrics: const EnabledMetrics(
+        rendering: true,
+        cpu: true,
+        memory: true,
+      ),
+      endpoint: Uri.parse(
+          "https://webhook.site/ba9136ed-195b-4377-8f56-251c22348f8a"));
   http.addSubscriber(bugsnag_performance.networkInstrumentation);
   bugsnag_performance.measureRunApp(() async => runApp(const MainApp()));
 }
@@ -40,9 +48,9 @@ class MainApp extends StatelessWidget {
     );
   }
 
-  void sendCustomSpan() async {
+  Future<void> sendCustomSpan() async {
     final span = bugsnag_performance.startSpan('test');
-    await Future.delayed(Duration(seconds: 4));
+    await Future.delayed(const Duration(seconds: 4));
     span.end();
   }
 

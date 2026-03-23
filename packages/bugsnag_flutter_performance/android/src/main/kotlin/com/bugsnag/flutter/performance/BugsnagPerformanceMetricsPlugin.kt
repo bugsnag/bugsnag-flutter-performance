@@ -4,6 +4,9 @@ import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
 import android.os.Debug
+import android.system.ErrnoException
+import android.system.Os
+import android.system.OsConstants
 import android.view.Display
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -19,6 +22,19 @@ import kotlin.concurrent.scheduleAtFixedRate
  * Plugin for collecting CPU and Memory performance metrics on Android
  */
 class BugsnagPerformanceMetricsPlugin : FlutterPlugin, MethodCallHandler {
+
+    companion object {
+        /**
+         * Number of clock ticks per second, used to convert CPU time from ticks to milliseconds.
+         */
+        private val TICKS_PER_SECOND: Long = try {
+            Os.sysconf(OsConstants._SC_CLK_TCK)
+        } catch (e: ErrnoException) {
+            // Fallback to a reasonable default if sysconf fails.
+            100L
+        }
+    }
+
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
     
@@ -137,11 +153,18 @@ class CpuSampler {
         val currentCpuTime = getTotalCpuTime()
         val currentUptime = getUptimeMs()
         
-        val cpuDelta = currentCpuTime - lastCpuTime
+        val cpuDeltaTicks = currentCpuTime - lastCpuTime
         val uptimeDelta = currentUptime - lastUptime
         
+        // Convert CPU time delta from ticks to milliseconds so it matches uptime units.
+        val cpuDeltaMs = if (BugsnagPerformanceMetricsPlugin.TICKS_PER_SECOND > 0L) {
+            (cpuDeltaTicks * 1000L) / BugsnagPerformanceMetricsPlugin.TICKS_PER_SECOND
+        } else {
+            0L
+        }
+        
         val cpuPercent = if (uptimeDelta > 0) {
-            (cpuDelta.toDouble() / uptimeDelta.toDouble()) * 100.0
+            (cpuDeltaMs.toDouble() / uptimeDelta.toDouble()) * 100.0
         } else {
             0.0
         }

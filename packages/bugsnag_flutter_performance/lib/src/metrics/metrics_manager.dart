@@ -10,13 +10,14 @@ class MetricsManager {
   final RenderingMetricsCollector _renderingCollector;
   final CpuMetricsCollector _cpuCollector;
   final MemoryMetricsCollector _memoryCollector;
-  
+
   EnabledMetrics _globalMetrics;
 
   MetricsManager({
     EnabledMetrics globalMetrics = const EnabledMetrics(),
   })  : _globalMetrics = globalMetrics,
-        _renderingCollector = RenderingMetricsCollector(ValueNotifier(globalMetrics.rendering)),
+        _renderingCollector =
+            RenderingMetricsCollector(ValueNotifier(globalMetrics.rendering)),
         _cpuCollector = CpuMetricsCollector(),
         _memoryCollector = MemoryMetricsCollector();
 
@@ -25,11 +26,11 @@ class MetricsManager {
     if (_globalMetrics.rendering) {
       _renderingCollector.attach();
     }
-    
+
     if (_globalMetrics.cpu) {
       await _cpuCollector.initialize();
     }
-    
+
     if (_globalMetrics.memory) {
       await _memoryCollector.initialize();
     }
@@ -38,14 +39,28 @@ class MetricsManager {
   /// Updates the global metrics configuration
   void updateGlobalMetrics(EnabledMetrics metrics) {
     final wasRenderingEnabled = _globalMetrics.rendering;
+    final wasCpuEnabled = _globalMetrics.cpu;
+    final wasMemoryEnabled = _globalMetrics.memory;
     _globalMetrics = metrics;
-    
+
     // Update rendering collector state
     if (metrics.rendering && !wasRenderingEnabled) {
       _renderingCollector.enabled.value = true;
       _renderingCollector.attach();
     } else if (!metrics.rendering && wasRenderingEnabled) {
       _renderingCollector.detach();
+    }
+
+    // Initialize CPU metrics collector when CPU metrics are enabled
+    if (metrics.cpu && !wasCpuEnabled) {
+      // Fire-and-forget initialization; assumes idempotent behavior
+      _cpuCollector.initialize();
+    }
+
+    // Initialize memory metrics collector when memory metrics are enabled
+    if (metrics.memory && !wasMemoryEnabled) {
+      // Fire-and-forget initialization; assumes idempotent behavior
+      _memoryCollector.initialize();
     }
   }
 
@@ -74,7 +89,8 @@ class MetricsManager {
     // Collect rendering metrics if enabled
     if (effectiveMetrics.rendering) {
       try {
-        final renderingAttrs = await _renderingCollector.summarize(startNanos, endNanos);
+        final renderingAttrs =
+            await _renderingCollector.summarize(startNanos, endNanos);
         attributes.addAll(renderingAttrs);
       } catch (e) {
         if (kDebugMode) {
@@ -100,7 +116,8 @@ class MetricsManager {
     // Collect memory metrics if enabled
     if (effectiveMetrics.memory) {
       try {
-        final memoryAttrs = await _memoryCollector.summarize(startNanos, endNanos);
+        final memoryAttrs =
+            await _memoryCollector.summarize(startNanos, endNanos);
         if (memoryAttrs != null) {
           attributes.addAll(memoryAttrs);
         }

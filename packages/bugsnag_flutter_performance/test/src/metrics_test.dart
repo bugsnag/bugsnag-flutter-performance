@@ -26,9 +26,10 @@ void main() {
     });
 
     test('copyWith preserves unchanged values', () {
-      const original = EnabledMetrics(rendering: true, cpu: false, memory: true);
+      const original =
+          EnabledMetrics(rendering: true, cpu: false, memory: true);
       final copy = original.copyWith(cpu: true);
-      
+
       expect(copy.rendering, true);
       expect(copy.cpu, true);
       expect(copy.memory, true);

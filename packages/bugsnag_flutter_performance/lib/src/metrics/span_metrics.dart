@@ -3,11 +3,11 @@ class SpanMetrics {
   /// Whether rendering metrics (frames, FPS) should be collected for this span
   /// If null, uses the global configuration
   final bool? rendering;
-  
+
   /// Whether CPU usage metrics should be collected for this span
   /// If null, uses the global configuration
   final bool? cpu;
-  
+
   /// Whether memory usage metrics should be collected for this span
   /// If null, uses the global configuration
   final bool? memory;
@@ -56,5 +56,6 @@ class SpanMetrics {
   int get hashCode => rendering.hashCode ^ cpu.hashCode ^ memory.hashCode;
 
   @override
-  String toString() => 'SpanMetrics(rendering: $rendering, cpu: $cpu, memory: $memory)';
+  String toString() =>
+      'SpanMetrics(rendering: $rendering, cpu: $cpu, memory: $memory)';
 }

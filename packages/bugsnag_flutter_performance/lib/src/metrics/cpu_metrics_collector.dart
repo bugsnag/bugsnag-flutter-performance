@@ -28,13 +28,13 @@ class CpuSample {
 /// Collects CPU usage metrics via native platform code
 class CpuMetricsCollector {
   static const _methodChannel = MethodChannel('bugsnag_performance_metrics');
-  
+
   bool _initialized = false;
 
   /// Initializes the CPU metrics collector
   Future<void> initialize() async {
     if (_initialized || (!Platform.isAndroid && !Platform.isIOS)) return;
-    
+
     try {
       await _methodChannel.invokeMethod('initCpuSampler', {
         'period': 1000, // 1 second sampling period
@@ -49,24 +49,24 @@ class CpuMetricsCollector {
   /// Returns null if not available or not initialized
   Future<List<CpuSample>?> getSamples(int fromNanos, int toNanos) async {
     if (!_initialized) return null;
-    
+
     try {
       final result = await _methodChannel.invokeMethod<Map>('getCpuSlice', {
         'fromNanos': fromNanos.toString(),
         'toNanos': toNanos.toString(),
       });
-      
+
       if (result == null) return null;
-      
+
       final samples = <CpuSample>[];
       final samplesList = result['samples'] as List?;
-      
+
       if (samplesList != null) {
         for (final sampleData in samplesList) {
           samples.add(CpuSample.fromMap(sampleData as Map));
         }
       }
-      
+
       return samples;
     } catch (e) {
       return null;
@@ -79,9 +79,8 @@ class CpuMetricsCollector {
     if (samples == null || samples.length < 2) return null;
 
     // Cap at 600 samples as per spec
-    final cappedSamples = samples.length > 600 
-        ? samples.sublist(samples.length - 600) 
-        : samples;
+    final cappedSamples =
+        samples.length > 600 ? samples.sublist(samples.length - 600) : samples;
 
     final totalMeasures = <double>[];
     final mainThreadMeasures = <double>[];
@@ -97,14 +96,14 @@ class CpuMetricsCollector {
       mainThreadMeasures.add(sample.mainThreadCpu);
       overheadMeasures.add(sample.overheadCpu);
       timestamps.add(sample.timestampNanos.toString());
-      
+
       totalSum += sample.totalCpu;
       mainThreadSum += sample.mainThreadCpu;
       overheadSum += sample.overheadCpu;
     }
 
     final count = cappedSamples.length;
-    
+
     return {
       'bugsnag.system.cpu_measures_total': totalMeasures,
       'bugsnag.system.cpu_measures_main_thread': mainThreadMeasures,

@@ -98,7 +98,8 @@ abstract class BugsnagPerformanceClient {
 
   dynamic networkInstrumentation(dynamic);
 
-  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}});
+  R? getSpanControl<R extends SpanControl>(
+      {Map<String, dynamic> params = const {}});
 }
 
 class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
@@ -222,13 +223,13 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
     _setup(
       shouldUpdateSamplingProbabilityPeriodically: samplingProbability == null,
     );
-    
+
     // Initialize metrics manager
     _metricsManager = MetricsManager(
       globalMetrics: configuration!.enabledMetrics,
     );
     await _metricsManager!.initialize();
-    
+
     _appStartInstrumentation.didStartBugsnagPerformance();
     await _retryQueue?.flush();
     _lifecycleListener?.startObserving(onAppBackgrounded: _onAppBackgrounded);
@@ -257,47 +258,53 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       name: name,
       startTime: startTime ?? _clock.now(),
       onEnded: (endedSpan) async {
-        // Collect metrics if enabled  
-        if (_metricsManager != null && endedSpan is BugsnagPerformanceSpanImpl) {
+        // Collect metrics if enabled
+        if (_metricsManager != null &&
+            endedSpan is BugsnagPerformanceSpanImpl) {
           final spanOptions = endedSpan.options;
           final metricsToCollect = spanOptions?.metrics;
-          
+
           // Only collect metrics if the span has any enabled
-          if (metricsToCollect != null || 
+          if (metricsToCollect != null ||
               configuration?.enabledMetrics.hasAnyEnabled == true) {
-            final startNanos = endedSpan.startTime.microsecondsSinceEpoch * 1000;
-            final endNanos = (endedSpan.endTime?.microsecondsSinceEpoch ?? 
-                              endedSpan.startTime.microsecondsSinceEpoch) * 1000;
-            
+            final startNanos =
+                endedSpan.startTime.microsecondsSinceEpoch * 1000;
+            final endNanos = (endedSpan.endTime?.microsecondsSinceEpoch ??
+                    endedSpan.startTime.microsecondsSinceEpoch) *
+                1000;
+
             if (kDebugMode) {
-              print('Collecting metrics for span ${endedSpan.name} (${(endNanos - startNanos) / 1e9}s)');
+              print(
+                  'Collecting metrics for span ${endedSpan.name} (${(endNanos - startNanos) / 1e9}s)');
             }
-            
+
             try {
               final metricsAttributes = await _metricsManager!.collectMetrics(
                 startNanos: startNanos,
                 endNanos: endNanos,
                 spanMetrics: metricsToCollect,
               );
-              
+
               if (kDebugMode) {
-                print('Collected ${metricsAttributes.length} metric attributes');
+                print(
+                    'Collected ${metricsAttributes.length} metric attributes');
               }
-              
+
               // Add collected metrics to span attributes
               metricsAttributes.forEach((key, value) {
                 endedSpan.setAttribute(key, value);
               });
             } catch (e) {
               if (kDebugMode) {
-                print('Error collecting metrics for span ${endedSpan.name}: $e');
+                print(
+                    'Error collecting metrics for span ${endedSpan.name}: $e');
               }
             }
           } else if (kDebugMode) {
             print('Metrics collection skipped for span ${endedSpan.name}');
           }
         }
-        
+
         await _updateSamplingProbabilityIfNeeded();
         if ((await _sampler?.sample(endedSpan) ?? true) &&
             (await _callOnSpanEndedCallbacks(endedSpan))) {
@@ -668,7 +675,8 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
   }
 
   @override
-  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
+  R? getSpanControl<R extends SpanControl>(
+      {Map<String, dynamic> params = const {}}) {
     SpanQuery<R> query = SpanQuery<R>(params);
     return _spanControlProvider.getSpanControl<R>(query);
   }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bugsnag_flutter_performance/src/configuration.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
@@ -51,7 +52,9 @@ class BugsnagPerformanceSpanImpl
       int? attributeCountLimit,
       BugsnagPerformanceSpanAttributes? attributes,
       SpanOptions? options})
-      : _name = name, _originalName = name, _options = options {
+      : _name = name,
+        _originalName = name,
+        _options = options {
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
@@ -101,29 +104,39 @@ class BugsnagPerformanceSpanImpl
       return;
     }
     _endTime = endTime ?? clock.now();
-    
+
     if (cancelled) {
       makeMutable(false);
       onCanceled(this);
       return;
     }
-    
+
     // Update span attributes with network information if provided
-    if (httpStatusCode != null) attributes.httpStatusCode = httpStatusCode;
+    if (httpStatusCode != null) {
+      attributes.httpStatusCode = httpStatusCode;
+    }
     if (requestContentLength != null && requestContentLength > 0) {
       attributes.requestContentLength = requestContentLength;
     }
     if (responseContentLength != null && responseContentLength > 0) {
       attributes.responseContentLength = responseContentLength;
     }
-    
+
     // Call onEnded while span is still mutable so metrics can be added
     // Note: We cannot await here as end() is not async to maintain API compatibility
     // The callback will add metrics asynchronously
-    onEnded(this).then((_) {
-      // Make span immutable after all processing is complete
-      makeMutable(false);
-    });
+    unawaited(
+      onEnded(this).catchError((error, stackTrace) {
+        if (kDebugMode) {
+          print(
+              'Error in onEnded callback for span $name: $error\n$stackTrace');
+        }
+      }).whenComplete(() {
+        // Make span immutable after all processing is complete,
+        // even if onEnded completes with an error.
+        makeMutable(false);
+      }),
+    );
   }
 
   @override
@@ -230,7 +243,6 @@ class BugsnagPerformanceSpanImpl
     }
     _name = newName;
   }
-
 }
 
 String _encodeSpanId(SpanId spanId) {

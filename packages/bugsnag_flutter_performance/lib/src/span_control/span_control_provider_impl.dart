@@ -7,7 +7,8 @@ import 'app_start_span_control_provider.dart';
 
 class SpanControlProviderImpl implements SpanControlProvider {
   final AppStartInstrumentation _appStartInstrumentation;
-  final CompositeSpanControlProvider _compositeProvider = CompositeSpanControlProvider();
+  final CompositeSpanControlProvider _compositeProvider =
+      CompositeSpanControlProvider();
   AppStartSpanControlProvider? _appStartProvider;
 
   static const int internalPriority = 999999;

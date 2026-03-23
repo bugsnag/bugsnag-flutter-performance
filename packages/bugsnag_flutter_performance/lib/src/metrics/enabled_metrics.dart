@@ -2,10 +2,10 @@
 class EnabledMetrics {
   /// Whether rendering metrics (frames, FPS) should be collected
   final bool rendering;
-  
+
   /// Whether CPU usage metrics should be collected
   final bool cpu;
-  
+
   /// Whether memory usage metrics should be collected
   final bool memory;
 
@@ -44,5 +44,6 @@ class EnabledMetrics {
   int get hashCode => rendering.hashCode ^ cpu.hashCode ^ memory.hashCode;
 
   @override
-  String toString() => 'EnabledMetrics(rendering: $rendering, cpu: $cpu, memory: $memory)';
+  String toString() =>
+      'EnabledMetrics(rendering: $rendering, cpu: $cpu, memory: $memory)';
 }

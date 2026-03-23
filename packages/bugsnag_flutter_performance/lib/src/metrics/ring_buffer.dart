@@ -5,7 +5,8 @@ class RingBuffer<T> {
   int _head = 0;
   int _size = 0;
 
-  RingBuffer({required this.capacity}) : _buffer = List<T?>.filled(capacity, null);
+  RingBuffer({required this.capacity})
+      : _buffer = List<T?>.filled(capacity, null);
 
   void push(T item) {
     _buffer[_head] = item;
@@ -17,7 +18,7 @@ class RingBuffer<T> {
 
   Iterable<T> get items sync* {
     if (_size == 0) return;
-    
+
     final start = _size < capacity ? 0 : _head;
     for (var i = 0; i < _size; i++) {
       final index = (start + i) % capacity;
