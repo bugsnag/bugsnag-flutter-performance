@@ -7,11 +7,10 @@ class CustomSpanTimeScenario extends Scenario {
     await startBugsnag();
     setMaxBatchSize(1);
     bugsnag_performance
-        .startSpan('custom-time',
-            startTime: DateTime.fromMicrosecondsSinceEpoch(473385600000000,
-                isUtc: true))
-        .end(
-            endTime: DateTime.fromMicrosecondsSinceEpoch(504921600000000,
-                isUtc: true));
+        .startSpan(
+      'custom-time',
+      startTime: DateTime.fromMicrosecondsSinceEpoch(473385600000000, isUtc: true)
+    )
+    .end(endTime: DateTime.fromMicrosecondsSinceEpoch(504921600000000, isUtc: true));
   }
 }

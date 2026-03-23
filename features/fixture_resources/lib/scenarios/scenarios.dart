@@ -135,8 +135,8 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       'CustomSpanAttributesScenario', () => CustomSpanAttributesScenario()),
   ScenarioInfo('CustomSpanAttributesWithLimitsScenario',
       () => CustomSpanAttributesWithLimitsScenario()),
-  ScenarioInfo(
-      'SetCustomAppStartNameScenario', () => SetCustomAppStartNameScenario()),
+  ScenarioInfo('SetCustomAppStartNameScenario',
+      () => SetCustomAppStartNameScenario()),
   ScenarioInfo('ClearCustomAppStartNameScenario',
       () => ClearCustomAppStartNameScenario()),
 ];
