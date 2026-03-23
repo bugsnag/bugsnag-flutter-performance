@@ -13,8 +13,7 @@ class TestUploader implements Uploader {
   final RequestResult resultToReturn;
   final bool throwError;
 
-  TestUploader(
-      {this.resultToReturn = RequestResult.success, this.throwError = false});
+  TestUploader({this.resultToReturn = RequestResult.success, this.throwError = false});
 
   @override
   Future<RequestResult> upload({required OtlpPackage package}) async {
@@ -48,6 +47,7 @@ void main() {
       final mockCachePath = '${supportDir.path}/bugsnag-performance/v1/batches';
       mockCacheDirectory = Directory(mockCachePath);
       await mockCacheDirectory.create(recursive: true);
+
     });
 
     tearDown(() async {
@@ -59,8 +59,7 @@ void main() {
     test('should delete the file after successful upload', () async {
       // Setup uploader to return success
       testUploader = TestUploader(resultToReturn: RequestResult.success);
-      retryQueue =
-          FileRetryQueue(testUploader, cacheDirectory: mockCacheDirectory);
+      retryQueue = FileRetryQueue(testUploader, cacheDirectory: mockCacheDirectory);
 
       // Create a valid payload file
       final fileName = '${mockCacheDirectory.path}/payload_success.json';
@@ -76,10 +75,8 @@ void main() {
 
     test('should not delete the file after failed upload', () async {
       // Setup uploader to return failure
-      testUploader =
-          TestUploader(resultToReturn: RequestResult.retriableFailure);
-      retryQueue =
-          FileRetryQueue(testUploader, cacheDirectory: mockCacheDirectory);
+      testUploader = TestUploader(resultToReturn: RequestResult.retriableFailure);
+      retryQueue = FileRetryQueue(testUploader, cacheDirectory: mockCacheDirectory);
 
       // Create a valid payload file
       final fileName = '${mockCacheDirectory.path}/payload_failure.json';
@@ -95,8 +92,7 @@ void main() {
 
     test('should handle malformed JSON and delete the file', () async {
       testUploader = TestUploader();
-      retryQueue =
-          FileRetryQueue(testUploader, cacheDirectory: mockCacheDirectory);
+      retryQueue = FileRetryQueue(testUploader, cacheDirectory: mockCacheDirectory);
       // Create a file with malformed JSON
       final fileName = '${mockCacheDirectory.path}/malformed_payload.json';
       final file = File(fileName);
@@ -110,11 +106,9 @@ void main() {
 
     test('should delete files older than 24 hours', () async {
       testUploader = TestUploader();
-      retryQueue =
-          FileRetryQueue(testUploader, cacheDirectory: mockCacheDirectory);
+      retryQueue = FileRetryQueue(testUploader, cacheDirectory: mockCacheDirectory);
       // Create a file older than 24 hours
-      final oldTimestamp =
-          BugsnagClockImpl.instance.now().subtract(const Duration(hours: 25));
+      final oldTimestamp = BugsnagClockImpl.instance.now().subtract(const Duration(hours: 25));
       final fileName = '${mockCacheDirectory.path}/old_payload.json';
       final file = File(fileName);
       await file.writeAsString('{"headers": {}, "body": ""}');
