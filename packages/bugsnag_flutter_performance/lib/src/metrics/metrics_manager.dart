@@ -51,16 +51,22 @@ class MetricsManager {
       _renderingCollector.detach();
     }
 
-    // Initialize CPU metrics collector when CPU metrics are enabled
+    // Initialize/teardown CPU metrics collector based on configuration changes
     if (metrics.cpu && !wasCpuEnabled) {
       // Fire-and-forget initialization; assumes idempotent behavior
       _cpuCollector.initialize();
+    } else if (!metrics.cpu && wasCpuEnabled) {
+      // Stop CPU metrics collection when CPU metrics are disabled
+      _cpuCollector.dispose();
     }
 
-    // Initialize memory metrics collector when memory metrics are enabled
+    // Manage memory metrics collector based on memory metrics configuration
     if (metrics.memory && !wasMemoryEnabled) {
       // Fire-and-forget initialization; assumes idempotent behavior
       _memoryCollector.initialize();
+    } else if (!metrics.memory && wasMemoryEnabled) {
+      // Stop memory collection when memory metrics are disabled
+      _memoryCollector.dispose();
     }
   }
 

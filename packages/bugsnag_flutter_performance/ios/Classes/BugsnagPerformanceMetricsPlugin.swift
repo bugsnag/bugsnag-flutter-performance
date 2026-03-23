@@ -37,6 +37,14 @@ public class BugsnagPerformanceMetricsPlugin: NSObject, FlutterPlugin {
             let physicalMemory = ProcessInfo.processInfo.physicalMemory
             result(["physicalMemory": String(physicalMemory)])
             
+        case "stopCpuSampler":
+            cpuSampler.stop()
+            result(nil)
+            
+        case "stopMemorySampler":
+            memorySampler.stop()
+            result(nil)
+            
         case "getCpuSlice":
             if let args = call.arguments as? [String: Any],
                let fromNanosStr = args["fromNanos"] as? String,

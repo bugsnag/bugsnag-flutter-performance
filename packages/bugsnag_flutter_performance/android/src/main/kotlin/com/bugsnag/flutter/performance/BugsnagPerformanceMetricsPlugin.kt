@@ -68,6 +68,14 @@ class BugsnagPerformanceMetricsPlugin : FlutterPlugin, MethodCallHandler {
                 
                 result.success(mapOf("physicalMemory" to memInfo.totalMem))
             }
+            "stopCpuSampler" -> {
+                cpuSampler.stop()
+                result.success(null)
+            }
+            "stopMemorySampler" -> {
+                memorySampler.stop()
+                result.success(null)
+            }
             "getCpuSlice" -> {
                 val fromNanos = call.argument<String>("fromNanos")?.toLongOrNull() ?: 0L
                 val toNanos = call.argument<String>("toNanos")?.toLongOrNull() ?: Long.MAX_VALUE
@@ -205,9 +213,25 @@ class CpuSampler {
     private fun getTotalCpuTime(): Long {
         return try {
             val statFile = File("/proc/self/stat")
-            val stats = statFile.readText().split(" ")
-            val utime = stats.getOrNull(13)?.toLongOrNull() ?: 0L
-            val stime = stats.getOrNull(14)?.toLongOrNull() ?: 0L
+            val content = statFile.readText()
+
+            // The format of /proc/[pid]/stat is:
+            // pid (comm) state ppid ... utime stime ...
+            // The comm field may contain spaces, so we must locate the closing ')' first.
+            val endOfComm = content.indexOf(") ")
+            if (endOfComm == -1) {
+                return 0L
+            }
+
+            // Start parsing from the state field (field 3), which begins after ") ".
+            val remainder = content.substring(endOfComm + 2).trim()
+            val fields = remainder.split(Regex("\\s+"))
+
+            // Overall field indices: 3=state, 4=ppid, ..., 14=utime, 15=stime.
+            // Since remainder starts at field 3, utime is at index 14 - 3 = 11,
+            // and stime is at index 15 - 3 = 12 in the 'fields' list.
+            val utime = fields.getOrNull(11)?.toLongOrNull() ?: 0L
+            val stime = fields.getOrNull(12)?.toLongOrNull() ?: 0L
             utime + stime
         } catch (e: Exception) {
             0L

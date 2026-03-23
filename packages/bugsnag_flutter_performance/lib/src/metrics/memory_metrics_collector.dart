@@ -54,6 +54,19 @@ class MemoryMetricsCollector {
     }
   }
 
+  /// Disposes the memory metrics collector and stops sampling
+  Future<void> dispose() async {
+    if (!_initialized) return;
+
+    try {
+      await _methodChannel.invokeMethod('stopMemorySampler');
+      _initialized = false;
+    } catch (e) {
+      // Disposal failed, but mark as not initialized anyway
+      _initialized = false;
+    }
+  }
+
   /// Gets memory samples for the given time window
   /// Returns null if not available or not initialized
   Future<List<MemorySample>?> getSamples(int fromNanos, int toNanos) async {
@@ -87,24 +100,24 @@ class MemoryMetricsCollector {
     final samples = await getSamples(fromNanos, toNanos);
     if (samples == null || samples.isEmpty) return null;
 
-    final deviceUsed = <String>[];
-    final timestamps = <String>[];
+    final deviceUsed = <int>[];
+    final timestamps = <int>[];
     var deviceSum = 0;
 
     // Android-specific ART metrics
-    final artUsed = <String>[];
+    final artUsed = <int>[];
     int? maxArtSize;
     var artSum = 0;
     var artCount = 0;
 
     for (final sample in samples) {
-      deviceUsed.add(sample.deviceUsed.toString());
-      timestamps.add(sample.timestampNanos.toString());
+      deviceUsed.add(sample.deviceUsed);
+      timestamps.add(sample.timestampNanos);
       deviceSum += sample.deviceUsed;
 
       // Collect ART metrics (Android only)
       if (sample.artUsed != null) {
-        artUsed.add(sample.artUsed.toString());
+        artUsed.add(sample.artUsed!);
         artSum += sample.artUsed!;
         artCount++;
       }

@@ -122,19 +122,19 @@ class BugsnagPerformanceSpanImpl
       attributes.responseContentLength = responseContentLength;
     }
 
-    // Call onEnded while span is still mutable so metrics can be added
-    // Note: We cannot await here as end() is not async to maintain API compatibility
-    // The callback will add metrics asynchronously
+    // Make the span immutable immediately after it has ended, so user-facing
+    // APIs like setAttribute/rename can no longer mutate it.
+    makeMutable(false);
+
+    // Invoke onEnded asynchronously. Any internal code that needs to attach
+    // metrics should not rely on public mutators that check _isMutable.
+    // Note: We cannot await here as end() is not async to maintain API compatibility.
     unawaited(
       onEnded(this).catchError((error, stackTrace) {
         if (kDebugMode) {
           print(
               'Error in onEnded callback for span $name: $error\n$stackTrace');
         }
-      }).whenComplete(() {
-        // Make span immutable after all processing is complete,
-        // even if onEnded completes with an error.
-        makeMutable(false);
       }),
     );
   }

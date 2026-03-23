@@ -6,7 +6,8 @@ class RingBuffer<T> {
   int _size = 0;
 
   RingBuffer({required this.capacity})
-      : _buffer = List<T?>.filled(capacity, null);
+      : assert(capacity > 0, 'RingBuffer capacity must be greater than 0'),
+        _buffer = List<T?>.filled(capacity, null);
 
   void push(T item) {
     _buffer[_head] = item;

@@ -45,6 +45,19 @@ class CpuMetricsCollector {
     }
   }
 
+  /// Disposes the CPU metrics collector and stops sampling
+  Future<void> dispose() async {
+    if (!_initialized) return;
+
+    try {
+      await _methodChannel.invokeMethod('stopCpuSampler');
+      _initialized = false;
+    } catch (e) {
+      // Disposal failed, but mark as not initialized anyway
+      _initialized = false;
+    }
+  }
+
   /// Gets CPU samples for the given time window
   /// Returns null if not available or not initialized
   Future<List<CpuSample>?> getSamples(int fromNanos, int toNanos) async {
@@ -85,7 +98,7 @@ class CpuMetricsCollector {
     final totalMeasures = <double>[];
     final mainThreadMeasures = <double>[];
     final overheadMeasures = <double>[];
-    final timestamps = <String>[];
+    final timestamps = <int>[];
 
     var totalSum = 0.0;
     var mainThreadSum = 0.0;
@@ -95,7 +108,7 @@ class CpuMetricsCollector {
       totalMeasures.add(sample.totalCpu);
       mainThreadMeasures.add(sample.mainThreadCpu);
       overheadMeasures.add(sample.overheadCpu);
-      timestamps.add(sample.timestampNanos.toString());
+      timestamps.add(sample.timestampNanos);
 
       totalSum += sample.totalCpu;
       mainThreadSum += sample.mainThreadCpu;
