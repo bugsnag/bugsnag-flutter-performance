@@ -5,13 +5,7 @@ import 'package:flutter/material.dart';
 const apiKey = 'YOUR_API_KEY_HERE';
 
 Future<void> main() async {
-  bugsnag_performance.start(
-      apiKey: apiKey,
-      enabledMetrics: const EnabledMetrics(
-        rendering: true,
-        cpu: true,
-        memory: true,
-      ));
+  bugsnag_performance.start(apiKey: apiKey);
   http.addSubscriber(bugsnag_performance.networkInstrumentation);
   bugsnag_performance.measureRunApp(() async => runApp(const MainApp()));
 }
@@ -46,10 +40,8 @@ class MainApp extends StatelessWidget {
     );
   }
 
-  Future<void> sendCustomSpan() async {
-    final span = bugsnag_performance.startSpan('test');
-    await Future.delayed(const Duration(seconds: 4));
-    span.end();
+  void sendCustomSpan() {
+    bugsnag_performance.startSpan('test').end();
   }
 
   void sendNetworkSpan() {
