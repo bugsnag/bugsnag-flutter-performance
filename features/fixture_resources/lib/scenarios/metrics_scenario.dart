@@ -17,7 +17,7 @@ class MetricsScenario extends Scenario {
 
     // Create a span that runs for 4 seconds to generate enough samples
     // CPU/Memory sample every ~1 second, so 4 seconds should give us 4 samples
-    final span = BugsnagPerformance.startSpan('MetricsScenarioSpan');
+    final span = bugsnag_performance.startSpan('MetricsScenarioSpan');
     
     // Simulate some work to generate frame timing data
     await Future.delayed(const Duration(milliseconds: 100));
@@ -42,7 +42,7 @@ class MetricsDisabledScenario extends Scenario {
     );
     setMaxBatchSize(1);
 
-    final span = BugsnagPerformance.startSpan('MetricsDisabledSpan');
+    final span = bugsnag_performance.startSpan('MetricsDisabledSpan');
     await Future.delayed(const Duration(seconds: 2));
     span.end();
   }
@@ -61,7 +61,7 @@ class RenderingMetricsOnlyScenario extends Scenario {
     );
     setMaxBatchSize(1);
 
-    final span = BugsnagPerformance.startSpan('RenderingOnlySpan');
+    final span = bugsnag_performance.startSpan('RenderingOnlySpan');
     await Future.delayed(const Duration(seconds: 2));
     span.end();
   }
@@ -82,7 +82,7 @@ class PerSpanMetricsOverrideScenario extends Scenario {
     setMaxBatchSize(1);
 
     // Create span with per-span override that disables CPU metrics
-    final span = BugsnagPerformance.startSpan(
+    final span = bugsnag_performance.startSpan(
       'PerSpanOverrideSpan',
       options: const SpanOptions(
         metrics: SpanMetrics(cpu: false),
