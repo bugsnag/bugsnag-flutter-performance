@@ -229,6 +229,28 @@ Then('a span array attribute {string} contains {int} items') do |attribute, leng
   Maze.check.true(array.length() == length)
 end
 
+Then('a span array attribute {string} contains at least {int} items') do |attribute, min_length|
+  array = get_array_attribute_contents(attribute)
+  Maze.check.true(array.length() >= min_length)
+end
+
+Then('a span double attribute {string} is greater than {float}') do |attribute, expected|
+  spans = spans_from_request_list(Maze::Server.list_for('traces'))
+  selected_attributes = spans.map { |span| span['attributes'].find { |a| a['key'].eql?(attribute) && a['value'].has_key?('doubleValue') } }.compact
+  attribute_values = selected_attributes.map { |a| a['value']['doubleValue'] > expected }
+  Maze.check.false(attribute_values.empty?)
+end
+
+Then('a span array attribute {string} is greater than {float} at index {int}') do |attribute, expected, index|
+  value = get_array_value_at_index(attribute, index, 'doubleValue')
+  Maze.check.true(value > expected)
+end
+
+Then('a span array attribute {string} is greater than {int} at index {int}') do |attribute, expected, index|
+  value = get_array_value_at_index(attribute, index, 'intValue')
+  Maze.check.true(value.to_i > expected)
+end
+
 def get_array_value_at_index(attribute, index, type)
   array = get_array_attribute_contents(attribute)
   Maze.check.true(array.length() > index)
