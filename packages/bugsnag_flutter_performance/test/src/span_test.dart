@@ -103,6 +103,56 @@ void main() {
         expect(span.endTime!.nanosecondsSinceEpoch,
             equals(firstEndTime!.nanosecondsSinceEpoch));
       });
+
+      test(
+          'should store uncompressed request/response content lengths using the expected attribute keys',
+          () {
+        final span = BugsnagPerformanceSpanImpl(
+          name: 'Test name',
+          startTime: DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch,
+              isUtc: true),
+        );
+        span.clock = BugsnagClockImpl.instance;
+
+        span.end(
+          uncompressedRequestContentLength: 123,
+          uncompressedResponseContentLength: 456,
+        );
+
+        expect(
+          span.attributes.attributes['http.request.body.size'],
+          equals(123),
+        );
+        expect(
+          span.attributes.attributes['http.response.body.size'],
+          equals(456),
+        );
+      });
+
+      test(
+          'should not store uncompressed request/response content lengths when values are non-positive',
+          () {
+        final span = BugsnagPerformanceSpanImpl(
+          name: 'Test name',
+          startTime: DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch,
+              isUtc: true),
+        );
+        span.clock = BugsnagClockImpl.instance;
+
+        span.end(
+          uncompressedRequestContentLength: 0,
+          uncompressedResponseContentLength: -1,
+        );
+
+        expect(
+          span.attributes.attributes.containsKey('http.request.body.size'),
+          isFalse,
+        );
+        expect(
+          span.attributes.attributes.containsKey('http.response.body.size'),
+          isFalse,
+        );
+      });
     });
 
     group('fromJson', () {

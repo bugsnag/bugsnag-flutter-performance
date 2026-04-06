@@ -32,6 +32,7 @@ import 'pass_context_scenario.dart';
 import 'make_current_context.dart';
 import 'http_get_scenario.dart';
 import 'http_post_scenario.dart';
+import 'uncompressed_network_body_sizes_scenario.dart';
 import 'http_callback_edit_scenario.dart';
 import 'http_callback_cancel_span.dart';
 import 'dio_get_scenario.dart';
@@ -74,6 +75,8 @@ final List<ScenarioInfo<Scenario>> scenarios = [
       () => AutoInstrumentAppStartsScenario()),
   ScenarioInfo('HttpGetScenario', () => HttpGetScenario()),
   ScenarioInfo('HttpPostScenario', () => HttpPostScenario()),
+  ScenarioInfo('UncompressedNetworkBodySizesScenario',
+      () => UncompressedNetworkBodySizesScenario()),
   ScenarioInfo('HttpCallbackEditScenario', () => HttpCallbackEditScenario()),
   ScenarioInfo(
       'HttpCallbackCancelSpan', () => HttpCallbackCancelSpanScenario()),
