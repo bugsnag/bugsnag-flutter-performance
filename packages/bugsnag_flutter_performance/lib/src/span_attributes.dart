@@ -49,58 +49,18 @@ class BugsnagPerformanceSpanAttributes {
     setAttribute('http.status_code', httpStatusCode);
   }
 
-  /// Set the HTTP request content length attribute on this span.
-  ///
-  /// This represents the number of bytes in the HTTP request body.
-  ///
-  /// Use [requestContentLength] to set the number of bytes in the request body.
-  ///
-  /// Attribute keys:
-  /// - Legacy: `"http.request_content_length"` (not currently used)
-  /// - Current: `"http.request.header.content-length"`
-  ///
-  /// [requestContentLength] the number of bytes in the request body.
   set requestContentLength(int requestContentLength) {
-    // setAttribute('http.request_content_length', requestContentLength);
     setAttribute('http.request.header.content-length', requestContentLength);
   }
 
-  /// Set the HTTP response content length attribute on this span.
-  ///
-  /// This represents the number of bytes in the HTTP response body.
-  ///
-  /// Use [responseContentLength] to set the number of bytes in the response body.
-  ///
-  /// Attribute keys:
-  /// - Legacy: `"http.response_content_length"` (not currently used)
-  /// - Current: `"http.response.header.content-length"`
-  ///
-  /// [responseContentLength] the number of bytes in the response body.
   set responseContentLength(int responseContentLength) {
-    // setAttribute('http.response_content_length', responseContentLength);
     setAttribute('http.response.header.content-length', responseContentLength);
   }
 
-  /// Set the HTTP uncompressed request content length attribute on this span.
-  ///
-  /// This represents the number of bytes in the *uncompressed* HTTP request body.
-  ///
-  /// Attribute key: `"http.request.body.size"`.
-  ///
-  /// [uncompressedRequestContentLength] the number of bytes in the uncompressed
-  /// request body.
   set uncompressedRequestContentLength(int uncompressedRequestContentLength) {
     setAttribute('http.request.body.size', uncompressedRequestContentLength);
   }
 
-  /// Set the HTTP uncompressed response content length attribute on this span.
-  ///
-  /// This represents the number of bytes in the *uncompressed* HTTP response body.
-  ///
-  /// Attribute key: `"http.response.body.size"`.
-  ///
-  /// [uncompressedResponseContentLength] the number of bytes in the uncompressed
-  /// response body.
   set uncompressedResponseContentLength(int uncompressedResponseContentLength) {
     setAttribute('http.response.body.size', uncompressedResponseContentLength);
   }

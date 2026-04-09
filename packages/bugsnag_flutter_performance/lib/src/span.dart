@@ -21,6 +21,8 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
     int? httpStatusCode,
     int? requestContentLength,
     int? responseContentLength,
+    int? uncompressedRequestContentLength,
+    int? uncompressedResponseContentLength,
     bool cancelled = false,
     DateTime? endTime,
   });
