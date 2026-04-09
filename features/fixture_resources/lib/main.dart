@@ -7,8 +7,7 @@ import 'dart:io';
 import 'package:bugsnag_flutter/bugsnag_flutter.dart';
 import 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart';
 import 'package:flutter/material.dart';
-import 'package:native_flutter_proxy/custom_proxy.dart';
-import 'package:native_flutter_proxy/native_proxy_reader.dart';
+import 'package:native_flutter_proxy/native_flutter_proxy.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 

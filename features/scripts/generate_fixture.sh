@@ -60,8 +60,9 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" http
 # >= 3.30.0            -> use latest
 
 update_native_flutter_proxy_imports() {
-  sed -i '' "s|import 'package:native_flutter_proxy/custom_proxy.dart';|import 'package:native_flutter_proxy/src/custom_proxy.dart';|" "$BS_DART_LOCATION/main.dart"
-  sed -i '' "s|import 'package:native_flutter_proxy/native_proxy_reader.dart';|import 'package:native_flutter_proxy/src/native_proxy_reader.dart';|" "$BS_DART_LOCATION/main.dart"
+  # replace specific file imports with the main package import.
+  sed -i '' "s|import 'package:native_flutter_proxy/custom_proxy.dart';|import 'package:native_flutter_proxy/native_flutter_proxy.dart';|" "$BS_DART_LOCATION/main.dart"
+  sed -i '' "s|import 'package:native_flutter_proxy/native_proxy_reader.dart';|import 'package:native_flutter_proxy/native_flutter_proxy.dart';|" "$BS_DART_LOCATION/main.dart"
 }
 
 if $FLUTTER_BIN --version | grep -qE 'Flutter 3\.(3[0-9]|[4-9][0-9]|[1-9][0-9]{2,})'; then
@@ -72,9 +73,6 @@ elif $FLUTTER_BIN --version | grep -qE 'Flutter 3\.2[0-9]\.'; then
   # >= 3.20.0 and < 3.30.0
   $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.2.3"
   update_native_flutter_proxy_imports
-else
-  # < 3.20.0
-  $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "native_flutter_proxy:0.1.15"
 fi
 
 #$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_http_client:{'path':'$HTTP_WRAPPER_PACKAGE_PATH'}"
