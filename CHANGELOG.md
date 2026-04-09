@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 2.0.0 (2026-02-26)
 
 * Raise the minimum supported flutter sdk version to 3.24.0 and the minimum dart version to 3.5.0 [#136](https://github.com/bugsnag/bugsnag-flutter-performance/pull/136)
 
