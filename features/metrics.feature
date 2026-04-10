@@ -10,47 +10,30 @@ Feature: Performance Metrics
     # Verify rendering metrics
     * a span double attribute "bugsnag.rendering.fps_target" is greater than 0
     * a span double attribute "bugsnag.rendering.fps_average" is greater than 0
-    * a span integer attribute "bugsnag.rendering.frame_count" is greater than 0
-    * a span integer attribute "bugsnag.rendering.frozen_frame_count" is greater than -1
-    * a span integer attribute "bugsnag.rendering.slow_frame_count" is greater than -1
-    * a span double attribute "bugsnag.rendering.frozen_frame_percentage" is greater than -1
-    * a span double attribute "bugsnag.rendering.slow_frame_percentage" is greater than -1
+    * a span integer attribute "bugsnag.rendering.total_frames" is greater than 0
+    * a span integer attribute "bugsnag.rendering.frozen_frames" is greater than -1
+    * a span integer attribute "bugsnag.rendering.slow_frames" is greater than -1
     # Verify CPU metrics (arrays with at least 1 sample)
-    * a span array attribute "bugsnag.cpu.time" contains at least 1 items
-    * a span array attribute "bugsnag.cpu.time" is greater than 0 at index 0
-    * a span array attribute "bugsnag.cpu.usage_percent" contains at least 1 items
-    * a span array attribute "bugsnag.cpu.usage_percent" is greater than -1 at index 0
-    * a span array attribute "bugsnag.cpu.user_percent" contains at least 1 items
-    * a span array attribute "bugsnag.cpu.user_percent" is greater than -1 at index 0
-    * a span array attribute "bugsnag.cpu.system_percent" contains at least 1 items
-    * a span array attribute "bugsnag.cpu.system_percent" is greater than -1 at index 0
+    * a span array attribute "bugsnag.system.cpu_measures_timestamps" contains at least 1 items
+    * a span array attribute "bugsnag.system.cpu_measures_timestamps" is greater than 0 at index 0
+    * a span array attribute "bugsnag.system.cpu_measures_total" contains at least 1 items
+    * a span array attribute "bugsnag.system.cpu_measures_total" is greater than -1 at index 0
+    * a span array attribute "bugsnag.system.cpu_measures_main_thread" contains at least 1 items
+    * a span array attribute "bugsnag.system.cpu_measures_main_thread" is greater than -1 at index 0
     # Verify memory metrics (arrays with at least 1 sample)
-    * a span array attribute "bugsnag.memory.time" contains at least 1 items
-    * a span array attribute "bugsnag.memory.time" is greater than 0 at index 0
-    * a span array attribute "bugsnag.memory.pss_kb" contains at least 1 items
-    * a span array attribute "bugsnag.memory.pss_kb" is greater than 0 at index 0
-    * a span array attribute "bugsnag.memory.rss_kb" contains at least 1 items
-    * a span array attribute "bugsnag.memory.rss_kb" is greater than 0 at index 0
+    * a span array attribute "bugsnag.system.memory.timestamps" contains at least 1 items
+    * a span array attribute "bugsnag.system.memory.timestamps" is greater than 0 at index 0
+    * a span array attribute "bugsnag.system.memory.spaces.device.used" contains at least 1 items
+    * a span array attribute "bugsnag.system.memory.spaces.device.used" is greater than 0 at index 0
 
   @skip_android
-  Scenario: iOS-specific memory metrics
+  Scenario: Android-specific ART memory metrics
     When I run "MetricsScenario"
     And I wait to receive a span named "MetricsScenarioSpan"
-    # Verify iOS-specific memory metrics
-    * a span array attribute "bugsnag.memory.footprint_kb" contains at least 1 items
-    * a span array attribute "bugsnag.memory.footprint_kb" is greater than 0 at index 0
-
-  @skip_ios
-  Scenario: Android-specific memory metrics
-    When I run "MetricsScenario"
-    And I wait to receive a span named "MetricsScenarioSpan"
-    # Verify Android-specific memory metrics
-    * a span array attribute "bugsnag.memory.dalvik_kb" contains at least 1 items
-    * a span array attribute "bugsnag.memory.dalvik_kb" is greater than 0 at index 0
-    * a span array attribute "bugsnag.memory.native_kb" contains at least 1 items
-    * a span array attribute "bugsnag.memory.native_kb" is greater than 0 at index 0
-    * a span array attribute "bugsnag.memory.other_kb" contains at least 1 items
-    * a span array attribute "bugsnag.memory.other_kb" is greater than -1 at index 0
+    # Verify Android-specific ART memory metrics
+    * a span array attribute "bugsnag.system.memory.spaces.art.used" contains at least 1 items
+    * a span array attribute "bugsnag.system.memory.spaces.art.used" is greater than 0 at index 0
+    * a span integer attribute "bugsnag.system.memory.spaces.art.size" is greater than 0
 
   Scenario: All metrics disabled
     When I run "MetricsDisabledScenario"
@@ -59,11 +42,11 @@ Feature: Performance Metrics
     # Verify NO metrics attributes are present
     * every span string attribute "bugsnag.rendering.fps_target" does not exist
     * every span string attribute "bugsnag.rendering.fps_average" does not exist
-    * every span string attribute "bugsnag.rendering.frame_count" does not exist
-    * every span string attribute "bugsnag.cpu.time" does not exist
-    * every span string attribute "bugsnag.cpu.usage_percent" does not exist
-    * every span string attribute "bugsnag.memory.time" does not exist
-    * every span string attribute "bugsnag.memory.pss_kb" does not exist
+    * every span string attribute "bugsnag.rendering.total_frames" does not exist
+    * every span string attribute "bugsnag.system.cpu_measures_timestamps" does not exist
+    * every span string attribute "bugsnag.system.cpu_measures_total" does not exist
+    * every span string attribute "bugsnag.system.memory.timestamps" does not exist
+    * every span string attribute "bugsnag.system.memory.spaces.device.used" does not exist
 
   Scenario: Only rendering metrics enabled
     When I run "RenderingMetricsOnlyScenario"
@@ -72,12 +55,12 @@ Feature: Performance Metrics
     # Verify rendering metrics ARE present
     * a span double attribute "bugsnag.rendering.fps_target" is greater than 0
     * a span double attribute "bugsnag.rendering.fps_average" is greater than 0
-    * a span integer attribute "bugsnag.rendering.frame_count" is greater than 0
+    * a span integer attribute "bugsnag.rendering.total_frames" is greater than 0
     # Verify CPU and memory metrics are NOT present
-    * every span string attribute "bugsnag.cpu.time" does not exist
-    * every span string attribute "bugsnag.cpu.usage_percent" does not exist
-    * every span string attribute "bugsnag.memory.time" does not exist
-    * every span string attribute "bugsnag.memory.pss_kb" does not exist
+    * every span string attribute "bugsnag.system.cpu_measures_timestamps" does not exist
+    * every span string attribute "bugsnag.system.cpu_measures_total" does not exist
+    * every span string attribute "bugsnag.system.memory.timestamps" does not exist
+    * every span string attribute "bugsnag.system.memory.spaces.device.used" does not exist
 
   Scenario: Per-span metrics override
     When I run "PerSpanMetricsOverrideScenario"
