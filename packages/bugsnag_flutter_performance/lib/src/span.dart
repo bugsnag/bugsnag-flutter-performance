@@ -21,6 +21,8 @@ abstract class BugsnagPerformanceSpan implements BugsnagPerformanceSpanContext {
     int? httpStatusCode,
     int? requestContentLength,
     int? responseContentLength,
+    int? uncompressedRequestContentLength,
+    int? uncompressedResponseContentLength,
     bool cancelled = false,
     DateTime? endTime,
   });
@@ -91,6 +93,8 @@ class BugsnagPerformanceSpanImpl
     int? httpStatusCode,
     int? requestContentLength,
     int? responseContentLength,
+    int? uncompressedRequestContentLength,
+    int? uncompressedResponseContentLength,
     bool cancelled = false,
     DateTime? endTime,
   }) {
@@ -110,6 +114,16 @@ class BugsnagPerformanceSpanImpl
     }
     if (responseContentLength != null && responseContentLength > 0) {
       attributes.responseContentLength = responseContentLength;
+    }
+    if (uncompressedRequestContentLength != null &&
+        uncompressedRequestContentLength >= 0) {
+      attributes.uncompressedRequestContentLength =
+          uncompressedRequestContentLength;
+    }
+    if (uncompressedResponseContentLength != null &&
+        uncompressedResponseContentLength >= 0) {
+      attributes.uncompressedResponseContentLength =
+          uncompressedResponseContentLength;
     }
     onEnded(this);
   }
