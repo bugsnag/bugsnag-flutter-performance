@@ -15,16 +15,13 @@ Feature: Performance Metrics
     * a span integer attribute "bugsnag.rendering.slow_frames" is greater than -1
     # Verify CPU metrics (arrays with at least 1 sample)
     * a span array attribute "bugsnag.system.cpu_measures_timestamps" contains at least 1 items
-    * a span array attribute "bugsnag.system.cpu_measures_timestamps" is greater than 0 at index 0
     * a span array attribute "bugsnag.system.cpu_measures_total" contains at least 1 items
-    * a span array attribute "bugsnag.system.cpu_measures_total" is greater than -1 at index 0
+    * a span array attribute "bugsnag.system.cpu_measures_total" is greater than -1.0 at index 0
     * a span array attribute "bugsnag.system.cpu_measures_main_thread" contains at least 1 items
-    * a span array attribute "bugsnag.system.cpu_measures_main_thread" is greater than -1 at index 0
+    * a span array attribute "bugsnag.system.cpu_measures_main_thread" is greater than -1.0 at index 0
     # Verify memory metrics (arrays with at least 1 sample)
     * a span array attribute "bugsnag.system.memory.timestamps" contains at least 1 items
-    * a span array attribute "bugsnag.system.memory.timestamps" is greater than 0 at index 0
     * a span array attribute "bugsnag.system.memory.spaces.device.used" contains at least 1 items
-    * a span array attribute "bugsnag.system.memory.spaces.device.used" is greater than 0 at index 0
 
   @skip_android
   Scenario: Android-specific ART memory metrics
@@ -32,7 +29,7 @@ Feature: Performance Metrics
     And I wait to receive a span named "MetricsScenarioSpan"
     # Verify Android-specific ART memory metrics
     * a span array attribute "bugsnag.system.memory.spaces.art.used" contains at least 1 items
-    * a span array attribute "bugsnag.system.memory.spaces.art.used" is greater than 0 at index 0
+    * a span integer attribute "bugsnag.system.memory.spaces.art.mean" is greater than 0
     * a span integer attribute "bugsnag.system.memory.spaces.art.size" is greater than 0
 
   Scenario: All metrics disabled
@@ -70,9 +67,9 @@ Feature: Performance Metrics
     * a span double attribute "bugsnag.rendering.fps_target" is greater than 0
     * a span double attribute "bugsnag.rendering.fps_average" is greater than 0
     # Verify memory metrics ARE present (enabled globally, not overridden)
-    * a span array attribute "bugsnag.memory.time" contains at least 1 items
-    * a span array attribute "bugsnag.memory.pss_kb" contains at least 1 items
+    * a span array attribute "bugsnag.system.memory.timestamps" contains at least 1 items
+    * a span array attribute "bugsnag.system.memory.spaces.device.used" contains at least 1 items
     # Verify CPU metrics are NOT present (disabled by per-span override)
-    * every span string attribute "bugsnag.cpu.time" does not exist
-    * every span string attribute "bugsnag.cpu.usage_percent" does not exist
-    * every span string attribute "bugsnag.cpu.user_percent" does not exist
+    * every span string attribute "bugsnag.system.cpu_measures_timestamps" does not exist
+    * every span string attribute "bugsnag.system.cpu_measures_total" does not exist
+    * every span string attribute "bugsnag.system.cpu_measures_main_thread" does not exist

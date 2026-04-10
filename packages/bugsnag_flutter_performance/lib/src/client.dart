@@ -291,8 +291,9 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
               }
 
               // Add collected metrics to span attributes
+              // Use internal method to bypass mutability check since span is already ended
               metricsAttributes.forEach((key, value) {
-                endedSpan.setAttribute(key, value);
+                endedSpan.setAttributeInternal(key, value);
               });
             } catch (e) {
               if (kDebugMode) {

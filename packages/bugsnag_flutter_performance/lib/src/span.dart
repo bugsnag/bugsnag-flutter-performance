@@ -148,6 +148,13 @@ class BugsnagPerformanceSpanImpl
       }
       return;
     }
+    setAttributeInternal(key, value);
+  }
+
+  /// Internal method to set attributes that bypasses mutability check.
+  /// Used by metrics collection which runs after span.end() is called.
+  /// @nodoc
+  void setAttributeInternal(String key, dynamic value) {
     if (!attributes.hasAttribute(key) &&
         value != null &&
         attributes.count >= attributeCountLimit) {
