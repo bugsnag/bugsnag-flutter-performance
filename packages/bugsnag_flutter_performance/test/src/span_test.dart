@@ -145,8 +145,8 @@ void main() {
         );
 
         expect(
-          span.attributes.attributes.containsKey('http.request.body.size'),
-          isFalse,
+          span.attributes.attributes['http.request.body.size'],
+          equals(0),
         );
         expect(
           span.attributes.attributes.containsKey('http.response.body.size'),

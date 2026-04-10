@@ -116,12 +116,12 @@ class BugsnagPerformanceSpanImpl
       attributes.responseContentLength = responseContentLength;
     }
     if (uncompressedRequestContentLength != null &&
-        uncompressedRequestContentLength > 0) {
+        uncompressedRequestContentLength >= 0) {
       attributes.uncompressedRequestContentLength =
           uncompressedRequestContentLength;
     }
     if (uncompressedResponseContentLength != null &&
-        uncompressedResponseContentLength > 0) {
+        uncompressedResponseContentLength >= 0) {
       attributes.uncompressedResponseContentLength =
           uncompressedResponseContentLength;
     }
