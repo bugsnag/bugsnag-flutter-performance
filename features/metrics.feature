@@ -23,7 +23,7 @@ Feature: Performance Metrics
     * a span array attribute "bugsnag.system.memory.timestamps" contains at least 1 items
     * a span array attribute "bugsnag.system.memory.spaces.device.used" contains at least 1 items
 
-  @skip_android
+  @skip_ios
   Scenario: Android-specific ART memory metrics
     When I run "MetricsScenario"
     And I wait to receive a span named "MetricsScenarioSpan"
