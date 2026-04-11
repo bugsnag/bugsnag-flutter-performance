@@ -9,7 +9,11 @@ public class BugsnagPerformanceMetricsPlugin: NSObject, FlutterPlugin {
     private let cpuSampler = CpuSampler()
     private let memorySampler = MemorySampler()
     
+    /// The mach port of the main thread, captured during plugin registration (which runs on main).
+    private static var mainMachThread: mach_port_t = 0
+    
     public static func register(with registrar: FlutterPluginRegistrar) {
+        mainMachThread = mach_thread_self()
         let channel = FlutterMethodChannel(
             name: "bugsnag_performance_metrics",
             binaryMessenger: registrar.messenger()
@@ -153,7 +157,6 @@ class CpuSampler {
         var totalCpu: Double = 0
         var mainThreadCpu: Double = 0
         var overheadCpu: Double = 0
-        let mainThread = pthread_mach_thread_np(pthread_main_thread_np())
         let samplerThread = pthread_mach_thread_np(pthread_self())
         
         for i in 0..<Int(threadsCount) {
@@ -170,7 +173,7 @@ class CpuSampler {
                 let cpuUsage = Double(threadInfo.cpu_usage) / Double(TH_USAGE_SCALE) * 100.0
                 totalCpu += cpuUsage
                 
-                if threads[i] == mainThread {
+                if threads[i] == Self.mainMachThread {
                     mainThreadCpu = cpuUsage
                 }
                 if threads[i] == samplerThread {
