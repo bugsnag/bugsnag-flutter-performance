@@ -10,7 +10,7 @@ public class BugsnagPerformanceMetricsPlugin: NSObject, FlutterPlugin {
     private let memorySampler = MemorySampler()
     
     /// The mach port of the main thread, captured during plugin registration (which runs on main).
-    private static var mainMachThread: mach_port_t = 0
+    fileprivate static var mainMachThread: mach_port_t = 0
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         mainMachThread = mach_thread_self()
@@ -173,7 +173,7 @@ class CpuSampler {
                 let cpuUsage = Double(threadInfo.cpu_usage) / Double(TH_USAGE_SCALE) * 100.0
                 totalCpu += cpuUsage
                 
-                if threads[i] == Self.mainMachThread {
+                if threads[i] == BugsnagPerformanceMetricsPlugin.mainMachThread {
                     mainThreadCpu = cpuUsage
                 }
                 if threads[i] == samplerThread {
