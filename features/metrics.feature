@@ -13,11 +13,11 @@ Feature: Performance Metrics
     * a span integer attribute "bugsnag.rendering.total_frames" is greater than 0
     * a span integer attribute "bugsnag.rendering.frozen_frames" is greater than -1
     * a span integer attribute "bugsnag.rendering.slow_frames" is greater than -1
-    # Verify CPU metrics (arrays with at least 1 sample)
-    * a span array attribute "bugsnag.system.cpu_measures_timestamps" contains at least 1 items
-    * a span array attribute "bugsnag.system.cpu_measures_total" contains at least 1 items
+    # Verify CPU metrics (arrays with at least 2 samples)
+    * a span array attribute "bugsnag.system.cpu_measures_timestamps" contains at least 2 items
+    * a span array attribute "bugsnag.system.cpu_measures_total" contains at least 2 items
     * a span array attribute "bugsnag.system.cpu_measures_total" is greater than -1.0 at index 0
-    * a span array attribute "bugsnag.system.cpu_measures_main_thread" contains at least 1 items
+    * a span array attribute "bugsnag.system.cpu_measures_main_thread" contains at least 2 items
     * a span array attribute "bugsnag.system.cpu_measures_main_thread" is greater than -1.0 at index 0
     # Verify memory metrics (arrays with at least 1 sample)
     * a span array attribute "bugsnag.system.memory.timestamps" contains at least 1 items

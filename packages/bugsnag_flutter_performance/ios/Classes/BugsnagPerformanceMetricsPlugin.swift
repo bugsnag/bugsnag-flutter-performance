@@ -110,7 +110,7 @@ class CpuSampler {
     private func sample() {
         let timestamp = Int64(Date().timeIntervalSince1970 * 1_000_000_000)
         
-        var cpuUsage = getCpuUsage()
+        let cpuUsage = getCpuUsage()
         
         let sample = CpuSample(
             total: cpuUsage.total,
@@ -152,7 +152,9 @@ class CpuSampler {
         
         var totalCpu: Double = 0
         var mainThreadCpu: Double = 0
-        let mainThread = pthread_mach_thread_np(pthread_self())
+        var overheadCpu: Double = 0
+        let mainThread = pthread_mach_thread_np(pthread_main_thread_np())
+        let samplerThread = pthread_mach_thread_np(pthread_self())
         
         for i in 0..<Int(threadsCount) {
             var threadInfo = thread_basic_info()
@@ -171,15 +173,16 @@ class CpuSampler {
                 if threads[i] == mainThread {
                     mainThreadCpu = cpuUsage
                 }
+                if threads[i] == samplerThread {
+                    overheadCpu = cpuUsage
+                }
             }
         }
         
         // Deallocate threads list
         vm_deallocate(mach_task_self_, vm_address_t(bitPattern: threads), vm_size_t(Int(threadsCount) * MemoryLayout<thread_t>.stride))
         
-        let overhead = totalCpu * 0.01 // Small overhead estimate
-        
-        return (totalCpu, mainThreadCpu, overhead)
+        return (totalCpu, mainThreadCpu, overheadCpu)
     }
 }
 

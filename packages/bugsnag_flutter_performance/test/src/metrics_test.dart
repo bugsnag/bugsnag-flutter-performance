@@ -100,10 +100,10 @@ void main() {
       expect(options.metrics, equals(metrics));
     });
 
-    test('withMetrics defaults to none when called without args', () {
+    test('withMetrics defaults to all when called without args', () {
       const options = SpanOptions();
       final withMetrics = options.withMetrics();
-      expect(withMetrics.metrics, equals(const SpanMetrics.none()));
+      expect(withMetrics.metrics, equals(const SpanMetrics.all()));
     });
 
     test('withMetrics accepts custom metrics', () {

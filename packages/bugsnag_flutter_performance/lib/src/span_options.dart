@@ -12,10 +12,10 @@ class SpanOptions {
 
   /// Creates a copy of these options with metrics override.
   ///
-  /// If [metrics] is omitted, defaults to disabling all metrics for this span.
-  /// To enable all metrics, pass [SpanMetrics.all()].
+  /// If [metrics] is omitted, enables all metrics for this span.
+  /// To disable all metrics, pass [SpanMetrics.none()].
   /// To enable specific metrics, pass a custom [SpanMetrics] instance.
-  SpanOptions withMetrics([SpanMetrics metrics = const SpanMetrics.none()]) {
+  SpanOptions withMetrics([SpanMetrics metrics = const SpanMetrics.all()]) {
     return SpanOptions(metrics: metrics);
   }
 

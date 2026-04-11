@@ -98,7 +98,11 @@ class MemoryMetricsCollector {
   /// Summarizes memory metrics for a time window and returns span attributes
   Future<Map<String, Object>?> summarize(int fromNanos, int toNanos) async {
     final samples = await getSamples(fromNanos, toNanos);
-    if (samples == null || samples.isEmpty) return null;
+    if (samples == null || samples.length < 2) return null;
+
+    // Cap at 600 samples as per spec
+    final cappedSamples =
+        samples.length > 600 ? samples.sublist(samples.length - 600) : samples;
 
     final deviceUsed = <int>[];
     final timestamps = <int>[];
@@ -110,7 +114,7 @@ class MemoryMetricsCollector {
     var artSum = 0;
     var artCount = 0;
 
-    for (final sample in samples) {
+    for (final sample in cappedSamples) {
       deviceUsed.add(sample.deviceUsed);
       timestamps.add(sample.timestampNanos);
       deviceSum += sample.deviceUsed;
@@ -131,7 +135,7 @@ class MemoryMetricsCollector {
 
     final result = <String, Object>{
       'bugsnag.system.memory.spaces.device.used': deviceUsed,
-      'bugsnag.system.memory.spaces.device.mean': deviceSum ~/ samples.length,
+      'bugsnag.system.memory.spaces.device.mean': deviceSum ~/ cappedSamples.length,
       'bugsnag.system.memory.timestamps': timestamps,
     };
 

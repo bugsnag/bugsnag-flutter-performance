@@ -118,16 +118,29 @@ class BugsnagPerformanceMetricsPlugin : FlutterPlugin, MethodCallHandler {
 }
 
 /**
- * Samples CPU usage at regular intervals
+ * Samples CPU usage at regular intervals.
+ *
+ * Reads per-thread CPU time from /proc/self/task/<tid>/stat so that main-thread
+ * and sampler-thread (overhead) values are real measurements rather than
+ * approximations.
  */
 class CpuSampler {
     var context: Context? = null
     private var timer: Timer? = null
     private val samples = mutableListOf<CpuSample>()
     private val maxSamples = 600 // ~10 minutes at 1s intervals
-    
-    private var lastCpuTime = 0L
+
+    private var lastTotalCpuTime = 0L
+    private var lastMainThreadCpuTime = 0L
+    private var lastSamplerThreadCpuTime = 0L
     private var lastUptime = 0L
+
+    /** Thread ID of the main (UI) thread, captured at start(). */
+    private var mainTid = 0L
+
+    /** Thread ID of the sampler thread, captured on first sample(). */
+    @Volatile
+    private var samplerTid = 0L
 
     data class CpuSample(
         val total: Double,
@@ -138,13 +151,18 @@ class CpuSampler {
 
     fun start(periodMs: Long) {
         stop()
-        
-        // Initialize baseline
-        lastCpuTime = getTotalCpuTime()
+
+        // The main thread is always the process's own PID on Linux/Android.
+        mainTid = android.os.Process.myPid().toLong()
+
+        // Initialize baselines
+        lastTotalCpuTime = getProcessCpuTime()
+        lastMainThreadCpuTime = getThreadCpuTime(mainTid)
         lastUptime = getUptimeMs()
-        
+
         timer = Timer().apply {
-            scheduleAtFixedRate(0, periodMs) {
+            // Use periodMs as initial delay so the first sample has a real delta.
+            scheduleAtFixedRate(periodMs, periodMs) {
                 sample()
             }
         }
@@ -156,39 +174,37 @@ class CpuSampler {
     }
 
     private fun sample() {
+        // Capture the sampler thread id on the first invocation.
+        if (samplerTid == 0L) {
+            samplerTid = android.os.Process.myTid().toLong()
+            lastSamplerThreadCpuTime = getThreadCpuTime(samplerTid)
+        }
+
         val timestamp = System.currentTimeMillis() * 1_000_000 // nanos
-        
-        val currentCpuTime = getTotalCpuTime()
+
+        val currentTotalCpu = getProcessCpuTime()
+        val currentMainCpu = getThreadCpuTime(mainTid)
+        val currentSamplerCpu = getThreadCpuTime(samplerTid)
         val currentUptime = getUptimeMs()
-        
-        val cpuDeltaTicks = currentCpuTime - lastCpuTime
+
         val uptimeDelta = currentUptime - lastUptime
-        
-        // Convert CPU time delta from ticks to milliseconds so it matches uptime units.
-        val cpuDeltaMs = if (BugsnagPerformanceMetricsPlugin.TICKS_PER_SECOND > 0L) {
-            (cpuDeltaTicks * 1000L) / BugsnagPerformanceMetricsPlugin.TICKS_PER_SECOND
-        } else {
-            0L
-        }
-        
-        val cpuPercent = if (uptimeDelta > 0) {
-            (cpuDeltaMs.toDouble() / uptimeDelta.toDouble()) * 100.0
-        } else {
-            0.0
-        }
-        
-        lastCpuTime = currentCpuTime
+
+        val totalPercent = tickDeltaToPercent(currentTotalCpu - lastTotalCpuTime, uptimeDelta)
+        val mainPercent = tickDeltaToPercent(currentMainCpu - lastMainThreadCpuTime, uptimeDelta)
+        val overheadPercent = tickDeltaToPercent(currentSamplerCpu - lastSamplerThreadCpuTime, uptimeDelta)
+
+        lastTotalCpuTime = currentTotalCpu
+        lastMainThreadCpuTime = currentMainCpu
+        lastSamplerThreadCpuTime = currentSamplerCpu
         lastUptime = currentUptime
-        
-        // For now, we use simplified metrics
-        // In production, you'd want to track main thread and overhead separately
+
         val sample = CpuSample(
-            total = cpuPercent,
-            mainThread = cpuPercent * 0.8, // Approximation
-            overhead = cpuPercent * 0.01,  // Small overhead
+            total = totalPercent,
+            mainThread = mainPercent,
+            overhead = overheadPercent,
             timestamp = timestamp
         )
-        
+
         synchronized(samples) {
             samples.add(sample)
             if (samples.size > maxSamples) {
@@ -209,35 +225,56 @@ class CpuSampler {
                 )}
         }
     }
-    
-    private fun getTotalCpuTime(): Long {
+
+    /** Converts a tick delta into a CPU usage percentage given an elapsed wall-time in ms. */
+    private fun tickDeltaToPercent(deltaTicks: Long, uptimeDeltaMs: Long): Double {
+        if (uptimeDeltaMs <= 0 || BugsnagPerformanceMetricsPlugin.TICKS_PER_SECOND <= 0L) return 0.0
+        val deltaMs = (deltaTicks * 1000L) / BugsnagPerformanceMetricsPlugin.TICKS_PER_SECOND
+        return (deltaMs.toDouble() / uptimeDeltaMs.toDouble()) * 100.0
+    }
+
+    /**
+     * Reads the process-wide CPU time (utime + stime) from /proc/self/stat.
+     */
+    private fun getProcessCpuTime(): Long {
         return try {
-            val statFile = File("/proc/self/stat")
-            val content = statFile.readText()
-
-            // The format of /proc/[pid]/stat is:
-            // pid (comm) state ppid ... utime stime ...
-            // The comm field may contain spaces, so we must locate the closing ')' first.
-            val endOfComm = content.indexOf(") ")
-            if (endOfComm == -1) {
-                return 0L
-            }
-
-            // Start parsing from the state field (field 3), which begins after ") ".
-            val remainder = content.substring(endOfComm + 2).trim()
-            val fields = remainder.split(Regex("\\s+"))
-
-            // Overall field indices: 3=state, 4=ppid, ..., 14=utime, 15=stime.
-            // Since remainder starts at field 3, utime is at index 14 - 3 = 11,
-            // and stime is at index 15 - 3 = 12 in the 'fields' list.
-            val utime = fields.getOrNull(11)?.toLongOrNull() ?: 0L
-            val stime = fields.getOrNull(12)?.toLongOrNull() ?: 0L
-            utime + stime
+            val content = File("/proc/self/stat").readText()
+            parseCpuTimeFromStat(content)
         } catch (e: Exception) {
             0L
         }
     }
-    
+
+    /**
+     * Reads per-thread CPU time (utime + stime) from /proc/self/task/<tid>/stat.
+     */
+    private fun getThreadCpuTime(tid: Long): Long {
+        return try {
+            val content = File("/proc/self/task/$tid/stat").readText()
+            parseCpuTimeFromStat(content)
+        } catch (e: Exception) {
+            0L
+        }
+    }
+
+    /**
+     * Parses utime + stime from a /proc stat line.
+     * Format: pid (comm) state ppid ... utime(14) stime(15) ...
+     */
+    private fun parseCpuTimeFromStat(content: String): Long {
+        val endOfComm = content.indexOf(") ")
+        if (endOfComm == -1) return 0L
+
+        val remainder = content.substring(endOfComm + 2).trim()
+        val fields = remainder.split(Regex("\\s+"))
+
+        // Field 14 = utime, field 15 = stime. Remainder starts at field 3,
+        // so utime is at index 11 and stime is at index 12.
+        val utime = fields.getOrNull(11)?.toLongOrNull() ?: 0L
+        val stime = fields.getOrNull(12)?.toLongOrNull() ?: 0L
+        return utime + stime
+    }
+
     private fun getUptimeMs(): Long {
         return android.os.SystemClock.uptimeMillis()
     }

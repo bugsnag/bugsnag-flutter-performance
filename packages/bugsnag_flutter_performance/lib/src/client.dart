@@ -273,22 +273,12 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
                     endedSpan.startTime.microsecondsSinceEpoch) *
                 1000;
 
-            if (kDebugMode) {
-              print(
-                  'Collecting metrics for span ${endedSpan.name} (${(endNanos - startNanos) / 1e9}s)');
-            }
-
             try {
               final metricsAttributes = await _metricsManager!.collectMetrics(
                 startNanos: startNanos,
                 endNanos: endNanos,
                 spanMetrics: metricsToCollect,
               );
-
-              if (kDebugMode) {
-                print(
-                    'Collected ${metricsAttributes.length} metric attributes');
-              }
 
               // Add collected metrics to span attributes
               // Use internal method to bypass mutability check since span is already ended
@@ -301,8 +291,6 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
                     'Error collecting metrics for span ${endedSpan.name}: $e');
               }
             }
-          } else if (kDebugMode) {
-            print('Metrics collection skipped for span ${endedSpan.name}');
           }
         }
 
