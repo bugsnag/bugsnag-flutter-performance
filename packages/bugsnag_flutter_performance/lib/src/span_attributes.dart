@@ -50,11 +50,19 @@ class BugsnagPerformanceSpanAttributes {
   }
 
   set requestContentLength(int requestContentLength) {
-    setAttribute('http.request_content_length', requestContentLength);
+    setAttribute('http.request.header.content-length', requestContentLength);
   }
 
   set responseContentLength(int responseContentLength) {
-    setAttribute('http.response_content_length', responseContentLength);
+    setAttribute('http.response.header.content-length', responseContentLength);
+  }
+
+  set uncompressedRequestContentLength(int uncompressedRequestContentLength) {
+    setAttribute('http.request.body.size', uncompressedRequestContentLength);
+  }
+
+  set uncompressedResponseContentLength(int uncompressedResponseContentLength) {
+    setAttribute('http.response.body.size', uncompressedResponseContentLength);
   }
 
   set samplingProbability(double? samplingProbability) {
