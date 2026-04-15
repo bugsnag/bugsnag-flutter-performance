@@ -14,7 +14,7 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: HTTP Post
     When I run "HttpPostScenario"
@@ -27,8 +27,8 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "POST"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request_content_length" is greater than 0
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request.header.content-length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
     #this is to make sure that mutliple spans wont be created for the same request
   Scenario: HTTP Get Multiple Subscribers
@@ -50,7 +50,7 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "edited"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: HTTP Callback Cancel Span
     When I run "HttpCallbackCancelSpan"
@@ -75,6 +75,15 @@ Feature: Network Spans
     * I discard the oldest reflection
     * the reflection "traceparent" header matches the regex "^00-[A-Fa-f0-9]{32}-[A-Fa-f0-9]{16}-01"
 
+  Scenario: Uncompressed request/response body sizes
+    When I run "UncompressedNetworkBodySizesScenario"
+    And I wait to receive at least 1 span
+    Then the trace "Content-Type" header equals "application/json"
+    * the trace "Bugsnag-Span-Sampling" header equals "1:1"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0.name" equals "UncompressedBodySizes"
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request.body.size" equals 123
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.body.size" equals 456
+
     #DIO WRAPPER
 
   Scenario: DIO Get
@@ -88,7 +97,7 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: DIO Post
     When I run "DIOPostScenario"
@@ -101,8 +110,8 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "POST"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request_content_length" is greater than 0
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.request.header.content-length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: DIO Callback Url Edit
     When I run "DIOCallbackEditScenario"
@@ -115,7 +124,7 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" equals "edited"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: DIO Callback Cancel Span
     When I run "DIOCallbackCancelSpan"
@@ -138,7 +147,7 @@ Feature: Network Spans
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.method" equals "GET"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" string attribute "http.url" matches the regex "^http:\/\/\S*:\d{4}(\/.*)?"
     * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.status_code" is greater than 0
-    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response_content_length" is greater than 0
+    * the trace payload field "resourceSpans.0.scopeSpans.0.spans.0" integer attribute "http.response.header.content-length" is greater than 0
 
   Scenario: Network callback type
     When I run "CheckNetworkCallbackTypeScenario"

@@ -3,6 +3,14 @@ Changelog
 
 ## TBD
 
+* Add cpu, memory and rendering metrics [#141](https://github.com/bugsnag/bugsnag-flutter-performance/pull/141)
+
+## 2.0.1 (2026-04-13)
+
+* Align HTTP content-length attrs with OTel semantic conventions  [#143](https://github.com/bugsnag/bugsnag-flutter-performance/pull/143)
+
+## 2.0.0 (2026-02-26)
+
 * Raise the minimum supported flutter sdk version to 3.24.0 and the minimum dart version to 3.5.0 [#136](https://github.com/bugsnag/bugsnag-flutter-performance/pull/136)
 
 * Update the version constraint for the device_info_plus dependency [#136](https://github.com/bugsnag/bugsnag-flutter-performance/pull/136)
