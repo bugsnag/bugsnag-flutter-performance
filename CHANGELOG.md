@@ -1,9 +1,11 @@
 Changelog
 =========
 
-## TBD
+## 2.1.0 (2026-04-28)
 
-* Add cpu, memory and rendering metrics [#141](https://github.com/bugsnag/bugsnag-flutter-performance/pull/141)
+### Enhancements
+
+* Add performance metrics support for spans: rendering (FPS/frame stats), CPU usage, and memory usage, with global enablement and per-span overrides. [#141](https://github.com/bugsnag/bugsnag-flutter-performance/pull/141)
 
 ## 2.0.1 (2026-04-13)
 
