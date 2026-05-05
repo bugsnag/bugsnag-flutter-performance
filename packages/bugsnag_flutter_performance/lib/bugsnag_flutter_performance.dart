@@ -15,6 +15,9 @@ export 'package:bugsnag_flutter_performance/bugsnag_flutter_performance.dart'
 export 'package:bugsnag_flutter_performance/src/span_context.dart'
     show BugsnagPerformanceSpanContext;
 export 'src/span.dart' show BugsnagPerformanceSpan;
+export 'src/span_options.dart' show SpanOptions;
+export 'src/metrics/enabled_metrics.dart' show EnabledMetrics;
+export 'src/metrics/span_metrics.dart' show SpanMetrics;
 export 'src/widgets/bugsnag_loading_indicator.dart'
     show BugsnagLoadingIndicator;
 export 'src/widgets/bugsnag_navigation_container.dart'
@@ -51,6 +54,7 @@ class BugsnagPerformance {
     int? attributeStringValueLimit,
     int? attributeArrayLengthLimit,
     List<Future<bool> Function(BugsnagPerformanceSpan)>? onSpanEndCallbacks,
+    EnabledMetrics? enabledMetrics,
   }) {
     _validateApiKey(apiKey);
     return _client.start(
@@ -67,6 +71,7 @@ class BugsnagPerformance {
       attributeStringValueLimit: attributeStringValueLimit,
       attributeArrayLengthLimit: attributeArrayLengthLimit,
       onSpanEndCallbacks: onSpanEndCallbacks,
+      enabledMetrics: enabledMetrics,
     );
   }
 
@@ -82,7 +87,8 @@ class BugsnagPerformance {
       {DateTime? startTime,
       BugsnagPerformanceSpanContext? parentContext,
       bool? makeCurrentContext = true,
-      bool? isFirstClass = true}) {
+      bool? isFirstClass = true,
+      SpanOptions? options}) {
     return _client.startSpan(
       name,
       startTime: startTime,
@@ -92,6 +98,7 @@ class BugsnagPerformance {
         category: 'custom',
         isFirstClass: isFirstClass,
       ),
+      options: options,
     );
   }
 
@@ -133,7 +140,8 @@ class BugsnagPerformance {
     return _client.getCurrentSpanContext();
   }
 
-  R? getSpanControl<R extends SpanControl>({Map<String, dynamic> params = const {}}) {
+  R? getSpanControl<R extends SpanControl>(
+      {Map<String, dynamic> params = const {}}) {
     return _client.getSpanControl<R>(params: params);
   }
 }

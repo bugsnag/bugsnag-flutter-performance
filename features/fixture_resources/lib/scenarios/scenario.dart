@@ -53,6 +53,7 @@ abstract class Scenario {
     int? attributeStringValueLimit,
     int? attributeArrayLengthLimit,
     List<Future<bool> Function(BugsnagPerformanceSpan)>? onSpanEndCallbacks,
+    EnabledMetrics? enabledMetrics,
   }) async {
     bugsnag_performance.setExtraConfig("instrumentAppStart", false);
     bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 1000);
@@ -69,6 +70,7 @@ abstract class Scenario {
       attributeStringValueLimit: attributeStringValueLimit,
       attributeArrayLengthLimit: attributeArrayLengthLimit,
       onSpanEndCallbacks: onSpanEndCallbacks,
+      enabledMetrics: enabledMetrics,
     );
     if (shouldUseNotifier && endpointConfiguration != null) {
       await bugsnag.start(

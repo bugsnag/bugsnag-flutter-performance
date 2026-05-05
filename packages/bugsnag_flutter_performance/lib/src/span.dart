@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:bugsnag_flutter_performance/src/configuration.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/date_time.dart';
 import 'package:bugsnag_flutter_performance/src/extensions/int.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes.dart';
 import 'package:bugsnag_flutter_performance/src/span_attributes_limits.dart';
 import 'package:bugsnag_flutter_performance/src/span_context.dart';
+import 'package:bugsnag_flutter_performance/src/span_options.dart';
 import 'package:bugsnag_flutter_performance/src/util/clock.dart';
 import 'package:bugsnag_flutter_performance/src/util/random.dart';
 import 'package:flutter/foundation.dart';
@@ -44,14 +46,17 @@ class BugsnagPerformanceSpanImpl
   BugsnagPerformanceSpanImpl(
       {required String name,
       required this.startTime,
-      void Function(BugsnagPerformanceSpan)? onEnded,
+      Future<void> Function(BugsnagPerformanceSpan)? onEnded,
       void Function(BugsnagPerformanceSpan)? onCanceled,
       TraceId? traceId,
       SpanId? spanId,
       this.parentSpanId,
       int? attributeCountLimit,
-      BugsnagPerformanceSpanAttributes? attributes})
-      : _name = name, _originalName = name {
+      BugsnagPerformanceSpanAttributes? attributes,
+      SpanOptions? options})
+      : _name = name,
+        _originalName = name,
+        _options = options {
     this.traceId = traceId ?? randomTraceId();
     this.spanId = spanId ?? randomSpanId();
     this.onEnded = onEnded ?? _onEnded;
@@ -61,6 +66,7 @@ class BugsnagPerformanceSpanImpl
   }
   String _name;
   final String _originalName;
+  final SpanOptions? _options;
   static int globalAttributeCountLimit = SpanAttributesLimits.limitValue(
       type: SpanAttributesLimitType.attributeCountLimit);
 
@@ -80,7 +86,7 @@ class BugsnagPerformanceSpanImpl
   DateTime? _endTime;
   var isSampled = false;
   var _isMutable = true;
-  late final void Function(BugsnagPerformanceSpan) onEnded;
+  late final Future<void> Function(BugsnagPerformanceSpan) onEnded;
   late final void Function(BugsnagPerformanceSpan) onCanceled;
   late final BugsnagClock clock;
   late final int attributeCountLimit;
@@ -102,13 +108,17 @@ class BugsnagPerformanceSpanImpl
       return;
     }
     _endTime = endTime ?? clock.now();
-    makeMutable(false);
+
     if (cancelled) {
+      makeMutable(false);
       onCanceled(this);
       return;
     }
+
     // Update span attributes with network information if provided
-    if (httpStatusCode != null) attributes.httpStatusCode = httpStatusCode;
+    if (httpStatusCode != null) {
+      attributes.httpStatusCode = httpStatusCode;
+    }
     if (requestContentLength != null && requestContentLength > 0) {
       attributes.requestContentLength = requestContentLength;
     }
@@ -125,7 +135,22 @@ class BugsnagPerformanceSpanImpl
       attributes.uncompressedResponseContentLength =
           uncompressedResponseContentLength;
     }
-    onEnded(this);
+
+    // Make the span immutable immediately after it has ended, so user-facing
+    // APIs like setAttribute/rename can no longer mutate it.
+    makeMutable(false);
+
+    // Invoke onEnded asynchronously. Any internal code that needs to attach
+    // metrics should not rely on public mutators that check _isMutable.
+    // Note: We cannot await here as end() is not async to maintain API compatibility.
+    unawaited(
+      onEnded(this).catchError((error, stackTrace) {
+        if (kDebugMode) {
+          print(
+              'Error in onEnded callback for span $name: $error\n$stackTrace');
+        }
+      }),
+    );
   }
 
   @override
@@ -137,6 +162,13 @@ class BugsnagPerformanceSpanImpl
       }
       return;
     }
+    setAttributeInternal(key, value);
+  }
+
+  /// Internal method to set attributes that bypasses mutability check.
+  /// Used by metrics collection which runs after span.end() is called.
+  /// @nodoc
+  void setAttributeInternal(String key, dynamic value) {
     if (!attributes.hasAttribute(key) &&
         value != null &&
         attributes.count >= attributeCountLimit) {
@@ -152,10 +184,11 @@ class BugsnagPerformanceSpanImpl
   }
 
   BugsnagPerformanceSpanImpl.fromJson(Map<String, dynamic> json,
-      [void Function(BugsnagPerformanceSpan)? onEnded])
+      [Future<void> Function(BugsnagPerformanceSpan)? onEnded])
       : startTime = int.parse(json['startTimeUnixNano']).timeFromNanos,
         _name = json['name'] as String,
         _originalName = json['name'] as String,
+        _options = null,
         _endTime = json['endTimeUnixNano'] != null
             ? int.parse(json['endTimeUnixNano']).timeFromNanos
             : null,
@@ -211,6 +244,9 @@ class BugsnagPerformanceSpanImpl
     return _endTime == null;
   }
 
+  /// Gets the span options, if any were provided
+  SpanOptions? get options => _options;
+
   @override
   String get encodedTraceId => _encodeTraceId(traceId);
 
@@ -228,7 +264,6 @@ class BugsnagPerformanceSpanImpl
     }
     _name = newName;
   }
-
 }
 
 String _encodeSpanId(SpanId spanId) {
@@ -253,6 +288,6 @@ SpanId? _decodeSpanId(String? spanIdString) {
   return BigInt.tryParse(spanIdString, radix: 16);
 }
 
-void _onEnded(BugsnagPerformanceSpan span) {}
+Future<void> _onEnded(BugsnagPerformanceSpan span) async {}
 
 void _onCanceled(BugsnagPerformanceSpan span) {}

@@ -8,7 +8,7 @@ class SetCustomAppStartNameScenario extends Scenario {
   Future<void> run() async {
     bugsnag_performance.setExtraConfig("instrumentAppStart", true);
     bugsnag_performance.setExtraConfig("probabilityValueExpireTime", 1000);
-    bugsnag_performance.start(
+    await bugsnag_performance.start(
         apiKey: '12312312312312312312312312312312',
         endpoint: Uri.parse('${FixtureConfig.MAZE_HOST}/traces'));
     final control = bugsnag_performance.getSpanControl<AppStartSpanControl>();
