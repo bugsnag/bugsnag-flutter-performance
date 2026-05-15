@@ -48,6 +48,20 @@ class MetricsDisabledScenario extends Scenario {
   }
 }
 
+/// Scenario with NO enabledMetrics config at all — verifies SDK defaults to all metrics off.
+class MetricsDefaultDisabledScenario extends Scenario {
+  @override
+  Future<void> run() async {
+    // Intentionally not passing enabledMetrics — relies on SDK default (all off)
+    await startBugsnag();
+    setMaxBatchSize(1);
+
+    final span = bugsnag_performance.startSpan('MetricsDefaultDisabledSpan');
+    await Future.delayed(const Duration(seconds: 2));
+    span.end();
+  }
+}
+
 /// Scenario with only rendering metrics enabled
 class RenderingMetricsOnlyScenario extends Scenario {
   @override
@@ -89,6 +103,118 @@ class PerSpanMetricsOverrideScenario extends Scenario {
       ),
     );
     
+    await Future.delayed(const Duration(seconds: 4));
+    span.end();
+  }
+}
+
+/// Global all metrics ON, but this span overrides memory OFF.
+/// Expect: rendering + cpu present, memory absent.
+class PerSpanMemoryDisabledScenario extends Scenario {
+  @override
+  Future<void> run() async {
+    await startBugsnag(
+      enabledMetrics: const EnabledMetrics(rendering: true, cpu: true, memory: true),
+    );
+    setMaxBatchSize(1);
+
+    final span = bugsnag_performance.startSpan(
+      'PerSpanMemoryDisabledSpan',
+      options: const SpanOptions(metrics: SpanMetrics(memory: false)),
+    );
+
+    await Future.delayed(const Duration(seconds: 4));
+    span.end();
+  }
+}
+
+/// Global all metrics ON, but this span overrides rendering OFF.
+/// Expect: cpu + memory present, rendering absent.
+class PerSpanRenderingDisabledScenario extends Scenario {
+  @override
+  Future<void> run() async {
+    await startBugsnag(
+      enabledMetrics: const EnabledMetrics(rendering: true, cpu: true, memory: true),
+    );
+    setMaxBatchSize(1);
+
+    final span = bugsnag_performance.startSpan(
+      'PerSpanRenderingDisabledSpan',
+      options: const SpanOptions(metrics: SpanMetrics(rendering: false)),
+    );
+
+    await Future.delayed(const Duration(seconds: 4));
+    span.end();
+  }
+}
+
+/// Global all metrics ON, but span overrides ALL OFF.
+/// Expect: no rendering/cpu/memory attributes.
+class PerSpanAllDisabledScenario extends Scenario {
+  @override
+  Future<void> run() async {
+    await startBugsnag(
+      enabledMetrics: const EnabledMetrics(rendering: true, cpu: true, memory: true),
+    );
+    setMaxBatchSize(1);
+
+    final span = bugsnag_performance.startSpan(
+      'PerSpanAllDisabledSpan',
+      options: const SpanOptions(metrics: SpanMetrics.none()),
+    );
+
+    await Future.delayed(const Duration(seconds: 4));
+    span.end();
+  }
+}
+
+/// Global all metrics OFF, but span overrides ALL ON.
+/// Expect: rendering/cpu/memory attributes present.
+class PerSpanAllEnabledScenario extends Scenario {
+  @override
+  Future<void> run() async {
+    await startBugsnag(
+      enabledMetrics: const EnabledMetrics(rendering: false, cpu: false, memory: false),
+    );
+    setMaxBatchSize(1);
+
+    final span = bugsnag_performance.startSpan(
+      'PerSpanAllEnabledSpan',
+      options: const SpanOptions(metrics: SpanMetrics.all()),
+    );
+
+    await Future.delayed(const Duration(seconds: 4));
+    span.end();
+  }
+}
+
+/// Only CPU metrics enabled globally.
+/// Expect: cpu_* present, rendering + memory absent.
+class CpuMetricsOnlyScenario extends Scenario {
+  @override
+  Future<void> run() async {
+    await startBugsnag(
+      enabledMetrics: const EnabledMetrics(rendering: false, cpu: true, memory: false),
+    );
+    setMaxBatchSize(1);
+
+    final span = bugsnag_performance.startSpan('CpuOnlySpan');
+    await Future.delayed(const Duration(seconds: 4));
+    span.end();
+  }
+}
+
+/// Only Memory metrics enabled globally.
+/// Expect: memory.* present, rendering + cpu absent.
+class MemoryMetricsOnlyScenario extends Scenario {
+  @override
+  Future<void> run() async {
+    await startBugsnag(
+      enabledMetrics: const EnabledMetrics(rendering: false, cpu: false, memory: true),
+    );
+    setMaxBatchSize(1);
+
+    final span = bugsnag_performance.startSpan('MemoryOnlySpan');
     await Future.delayed(const Duration(seconds: 4));
     span.end();
   }

@@ -18,22 +18,31 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Row(
-            // Use Column for vertical alignment
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Center the buttons horizontally
-            children: [
-              TextButton(
-                onPressed: sendCustomSpan, // Replace with your actual function
-                child: Text('Send Custom Span'),
-              ),
-              SizedBox(width: 20), // Spacing between buttons, adjust as needed
-              TextButton(
-                onPressed:
-                    sendNetworkSpan, // You'll need to define this function
-                child: Text('Send Network Span'),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                TextButton(
+                  onPressed: sendCustomSpan,
+                  child: const Text('Send Custom Span'),
+                ),
+                TextButton(
+                  onPressed: sendCpuSpan,
+                  child: const Text('Send CPU Metrics Span'),
+                ),
+                TextButton(
+                  onPressed: sendMemorySpan,
+                  child: const Text('Send Memory Metrics Span'),
+                ),
+                TextButton(
+                  onPressed: sendNetworkSpan,
+                  child: const Text('Send Network Span'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -42,6 +51,30 @@ class MainApp extends StatelessWidget {
 
   void sendCustomSpan() {
     bugsnag_performance.startSpan('test').end();
+  }
+
+  Future<void> sendCpuSpan() async {
+    final options = const SpanOptions().withMetrics(
+      const SpanMetrics(cpu: true, rendering: false, memory: false),
+    );
+    final span = bugsnag_performance.startSpan(
+      'example.per_span.cpu_only',
+      options: options,
+    );
+    await Future<void>.delayed(const Duration(seconds: 3));
+    span.end();
+  }
+
+  Future<void> sendMemorySpan() async {
+    final options = const SpanOptions().withMetrics(
+      const SpanMetrics(cpu: false, rendering: false, memory: true),
+    );
+    final span = bugsnag_performance.startSpan(
+      'example.per_span.memory_only',
+      options: options,
+    );
+    await Future<void>.delayed(const Duration(seconds: 3));
+    span.end();
   }
 
   void sendNetworkSpan() {
