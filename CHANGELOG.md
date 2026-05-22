@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 2.1.1 (2026-05-22)
+
+### Bug fixes
+
+* Fix per-span metrics override not collecting data when global metrics are disabled
+* Fix race condition in CPU and memory collector initialization preventing native samplers being invoked multiple times
+
 ## 2.1.0 (2026-04-28)
 
 ### Enhancements
