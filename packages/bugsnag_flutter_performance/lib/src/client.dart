@@ -321,6 +321,18 @@ class BugsnagPerformanceClientImpl implements BugsnagPerformanceClient {
       _addContext(span);
     }
     _potentiallyOpenSpans[span.spanId] = span;
+
+    // Pre-warm collectors at span start so samplers have time to gather data
+    // before span end.
+    final spanMetrics = options?.metrics;
+    if (_metricsManager != null &&
+        (spanMetrics != null ||
+            configuration?.enabledMetrics.hasAnyEnabled == true)) {
+      _metricsManager!.prepareCollectors(spanMetrics).catchError((e) {
+        // prepareCollectors failure is non-fatal; metrics will be skipped
+      });
+    }
+
     return span;
   }
 

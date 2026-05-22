@@ -21,6 +21,46 @@ class MetricsManager {
         _cpuCollector = CpuMetricsCollector(),
         _memoryCollector = MemoryMetricsCollector();
 
+  Future<void> _ensureCollectorsReady(EnabledMetrics effectiveMetrics) async {
+    if (effectiveMetrics.rendering) {
+      try {
+        _renderingCollector.enabled.value = true;
+        _renderingCollector.attach();
+      } catch (e) {
+        if (kDebugMode) {
+          print('Failed to ensure collector is ready: $e');
+        }
+      }
+    }
+
+    if (effectiveMetrics.cpu) {
+      try {
+        await _cpuCollector.initialize();
+      } catch (e) {
+        if (kDebugMode) {
+          print('collector ready cpu failed: $e');
+        }
+      }
+    }
+
+    if (effectiveMetrics.memory) {
+      try {
+        await _memoryCollector.initialize();
+      } catch (e) {
+        if (kDebugMode) {
+          print('collector ready memory failed: $e');
+        }
+      }
+    }
+  }
+
+  /// Pre-warms collectors needed for a span based on its per-span metrics.
+  /// Called at span start so samplers have time to collect data before span end.
+  Future<void> prepareCollectors(SpanMetrics? spanMetrics) async {
+    final effectiveMetrics = resolveMetrics(spanMetrics);
+    await _ensureCollectorsReady(effectiveMetrics);
+  }
+
   /// Initializes all enabled metrics collectors
   Future<void> initialize() async {
     if (_globalMetrics.rendering) {
@@ -90,6 +130,7 @@ class MetricsManager {
     SpanMetrics? spanMetrics,
   }) async {
     final effectiveMetrics = resolveMetrics(spanMetrics);
+    await _ensureCollectorsReady(effectiveMetrics);
     final attributes = <String, Object>{};
 
     // Collect rendering metrics if enabled

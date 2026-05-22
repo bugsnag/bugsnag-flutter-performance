@@ -31,17 +31,26 @@ class CpuMetricsCollector {
 
   bool _initialized = false;
 
+  /// Cached in-flight init future so concurrent calls share the same operation
+  /// and never invoke initCpuSampler more than once on the native side.
+  Future<void>? _initFuture;
+
   /// Initializes the CPU metrics collector
   Future<void> initialize() async {
     if (_initialized || (!Platform.isAndroid && !Platform.isIOS)) return;
+    _initFuture ??= _doInitialize();
+    await _initFuture;
+  }
 
+  Future<void> _doInitialize() async {
     try {
       await _methodChannel.invokeMethod('initCpuSampler', {
         'period': 1000, // 1 second sampling period
       });
       _initialized = true;
     } catch (e) {
-      // Initialization failed, metrics won't be available
+      // Reset so a future retry can attempt initialization again
+      _initFuture = null;
     }
   }
 
@@ -51,10 +60,11 @@ class CpuMetricsCollector {
 
     try {
       await _methodChannel.invokeMethod('stopCpuSampler');
-      _initialized = false;
     } catch (e) {
-      // Disposal failed, but mark as not initialized anyway
+      // Disposal failed, continue cleanup anyway
+    } finally {
       _initialized = false;
+      _initFuture = null;
     }
   }
 

@@ -34,10 +34,18 @@ class MemoryMetricsCollector {
   bool _initialized = false;
   int? _physicalDeviceMemory;
 
+  /// Cached in-flight init future so concurrent calls share the same operation
+  /// and never invoke initMemorySampler more than once on the native side.
+  Future<void>? _initFuture;
+
   /// Initializes the memory metrics collector
   Future<void> initialize() async {
     if (_initialized || (!Platform.isAndroid && !Platform.isIOS)) return;
+    _initFuture ??= _doInitialize();
+    await _initFuture;
+  }
 
+  Future<void> _doInitialize() async {
     try {
       final result =
           await _methodChannel.invokeMethod<Map>('initMemorySampler', {
@@ -50,7 +58,8 @@ class MemoryMetricsCollector {
 
       _initialized = true;
     } catch (e) {
-      // Initialization failed, metrics won't be available
+      // Reset so a future retry can attempt initialization again
+      _initFuture = null;
     }
   }
 
@@ -60,10 +69,11 @@ class MemoryMetricsCollector {
 
     try {
       await _methodChannel.invokeMethod('stopMemorySampler');
-      _initialized = false;
     } catch (e) {
-      // Disposal failed, but mark as not initialized anyway
+      // Disposal failed, continue cleanup anyway
+    } finally {
       _initialized = false;
+      _initFuture = null;
     }
   }
 
