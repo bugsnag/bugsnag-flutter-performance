@@ -1,12 +1,12 @@
 Changelog
 =========
 
-## 2.1.1 (2026-05-22)
+## 2.1.1 (2026-05-25)
 
 ### Bug fixes
 
-* Fix per-span metrics override not collecting data when global metrics are disabled
-* Fix race condition in CPU and memory collector initialization preventing native samplers being invoked multiple times
+* Fix per-span metrics override not collecting data when global metrics are disabled [#148](https://github.com/bugsnag/bugsnag-flutter-performance/pull/148)
+* Fix race condition in CPU and memory collector initialization preventing native samplers being invoked multiple times. [#148](https://github.com/bugsnag/bugsnag-flutter-performance/pull/148)
 
 ## 2.1.0 (2026-04-28)
 
