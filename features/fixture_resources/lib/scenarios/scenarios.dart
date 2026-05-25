@@ -24,6 +24,7 @@ import 'dio_callback_edit_scenario.dart';
 import 'initial_p_scenario.dart';
 import 'manual_navigation_span_scenario.dart';
 import 'manual_span_scenario.dart';
+import 'metrics_scenario.dart';
 import 'probability_expiry_scenario.dart';
 import 'start_sdk_default.dart';
 import 'simple_nested_span_scenario.dart';
@@ -99,6 +100,17 @@ final List<ScenarioInfo<Scenario>> scenarios = [
   ScenarioInfo('CustomAppVersionScenario', () => CustomAppVersionScenario()),
   ScenarioInfo('ManualSpanIsFirstClassFalseScenario',
       () => ManualSpanIsFirstClassFalseScenario()),
+  ScenarioInfo('MetricsScenario', () => MetricsScenario()),
+  ScenarioInfo('MetricsDisabledScenario', () => MetricsDisabledScenario()),
+  ScenarioInfo('MetricsDefaultDisabledScenario', () => MetricsDefaultDisabledScenario()),
+  ScenarioInfo('RenderingMetricsOnlyScenario', () => RenderingMetricsOnlyScenario()),
+  ScenarioInfo('PerSpanMetricsOverrideScenario', () => PerSpanMetricsOverrideScenario()),
+  ScenarioInfo('PerSpanMemoryDisabledScenario', () => PerSpanMemoryDisabledScenario()),
+  ScenarioInfo('PerSpanRenderingDisabledScenario', () => PerSpanRenderingDisabledScenario()),
+  ScenarioInfo('PerSpanAllDisabledScenario', () => PerSpanAllDisabledScenario()),
+  ScenarioInfo('PerSpanAllEnabledScenario', () => PerSpanAllEnabledScenario()),
+  ScenarioInfo('CpuMetricsOnlyScenario', () => CpuMetricsOnlyScenario()),
+  ScenarioInfo('MemoryMetricsOnlyScenario', () => MemoryMetricsOnlyScenario()),
   ScenarioInfo('GetCurrentContextScenario', () => GetCurrentContextScenario()),
   ScenarioInfo('AutoInstrumentNavigationBasicDeferScenario',
       () => AutoInstrumentNavigationBasicDeferScenario()),
