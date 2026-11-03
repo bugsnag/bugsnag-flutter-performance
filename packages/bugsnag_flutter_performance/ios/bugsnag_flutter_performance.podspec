@@ -9,10 +9,9 @@ Bugsnag Flutter Performance plugin with CPU, memory, and rendering metrics suppo
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Bugsnag' => 'support@bugsnag.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.source_files = 'bugsnag_flutter_performance/Sources/bugsnag_flutter_performance/**/*.swift'
   s.dependency 'Flutter'
-  s.platform = :ios, '11.0'
+  s.platform = :ios, '12.0'
   s.swift_version = '5.0'
 
   # Flutter.framework does not contain a i386 slice.
