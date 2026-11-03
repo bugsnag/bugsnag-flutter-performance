@@ -196,5 +196,5 @@ class ResourceAttributesProviderImpl implements ResourceAttributesProvider {
     return "Unknown";
   }
 
-  static String get _getSDKVersion => 'v2.2.0';
+  static String get _getSDKVersion => '2.2.0';
 }
