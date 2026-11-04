@@ -85,7 +85,10 @@ $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" bugsnag_flutter_dart_io_htt
 
 $FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" dio
 
-$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" bugsnag_flutter
+# Pinned to 4.2.2: the 4.3.0 podspec sets header_mappings_dir, which breaks the
+# iOS build (headers copied to a bogus path) when CocoaPods resolves the plugin
+# through Flutter's .symlinks. Unpin once a fixed bugsnag_flutter is released.
+$FLUTTER_BIN pub add --directory="$FIXTURE_LOCATION" "bugsnag_flutter:4.2.2"
 
 echo "update min sdk version in android gradle file"
 
