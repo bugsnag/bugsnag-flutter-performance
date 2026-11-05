@@ -1,6 +1,16 @@
 Changelog
 =========
 
+## 2.2.0 (2026-11-03)
+
+### Enhancements
+
+* Add Swift Package Manager support for iOS. CocoaPods remains supported [#151](https://github.com/bugsnag/bugsnag-flutter-performance/pull/151)
+
+### Changes
+
+* Raised the minimum supported iOS version to 12.0 [#151](https://github.com/bugsnag/bugsnag-flutter-performance/pull/151)
+
 ## 2.1.1 (2026-05-25)
 
 ### Bug fixes
