@@ -10,6 +10,7 @@ steps:
     steps:
       - label: ":test_tube: {{matrix}}"
         matrix:
+          - "3.47.9"
           - "3.38.3"
           - "3.24.4"
         timeout_in_minutes: 10
@@ -30,6 +31,7 @@ steps:
       - label: "Build iOS Test Fixture {{matrix}}"
         key: "ios-fixture"
         matrix:
+          - "3.47.9"
           - "3.38.3"
           - "3.24.4"
         timeout_in_minutes: 20
@@ -46,6 +48,7 @@ steps:
       - label: "Build Android Test Fixture {{matrix}}"
         key: "android-fixture"
         matrix:
+          - "3.47.9"
           - "3.38.3"
           - "3.24.4"
         timeout_in_minutes: 20
@@ -65,6 +68,7 @@ steps:
         depends_on: "ios-fixture"
         timeout_in_minutes: 20
         matrix:
+          - "3.47.9"
           - "3.38.3"
           - "3.24.4"
         env:
@@ -104,6 +108,7 @@ steps:
         depends_on: "android-fixture"
         timeout_in_minutes: 20
         matrix:
+          - "3.47.9"
           - "3.38.3"
           - "3.24.4"
         env:
